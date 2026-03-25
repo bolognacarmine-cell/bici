@@ -40,5 +40,17 @@ Il sito è ottimizzato per **iOS Safari** e **Android Chrome**, includendo:
 - **Palette**: Gradienti Blue/Cyan (`#0a75ad` → `#00d4ff`) con accenti Orange meccanico.
 - **Tipografia**: *Plus Jakarta Sans* (Sans) e *Space Grotesk* (Display).
 
+## 🌐 Deployment su Render
+
+Il sito è pronto per essere ospitato su [Render.com](https://render.com/). Segui questi passaggi:
+
+1. Crea un nuovo **Web Service** su Render.
+2. Collega il tuo repository GitHub `bici`.
+3. Configura le seguenti impostazioni:
+   - **Runtime**: `Node`
+   - **Build Command**: `npm install && npm run build`
+   - **Start Command**: `npm start`
+4. Aggiungi (opzionale) le variabili d'ambiente se necessario.
+
 ---
 © 2026 Ciclofficina Vincenzo – Marcianise (CE). Tutti i diritti riservati.
