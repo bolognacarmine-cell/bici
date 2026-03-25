@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ciclofficina Vincenzo – Tradizione e Passione su Due Ruote
 
-## Getting Started
+Benvenuti nel repository ufficiale della **Ciclofficina Vincenzo**. Questo progetto è un sito web moderno sviluppato con **Next.js 16**, **Tailwind CSS 4** e **GSAP**, progettato per riflettere i trend UI del 2026 e offrire un'esperienza utente premium su dispositivi mobile e desktop.
 
-First, run the development server:
+## 🚀 Caratteristiche Tecniche
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Framework**: [Next.js](https://nextjs.org/) (App Router)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) con Glassmorphism 2.0
+- **Animazioni**: [GSAP](https://greensock.com/gsap/) (Scroll-triggered) e [Framer Motion](https://www.framer.com/motion/) (3D Tilt effects)
+- **PWA**: Configurazione Progressive Web App con supporto Offline e Safe-area per iOS/Android
+- **AI Integration**: Chatbot "Vincenzo AI" integrato con supporto Voice Search (Web Speech API)
+- **Admin Panel**: Pannello di amministrazione dedicato per la gestione dinamica di Promozioni e Prodotti
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠 Installazione
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clona il repository:
+   ```bash
+   git clone https://github.com/bolognacarmine-cell/bici.git
+   ```
+2. Installa le dipendenze:
+   ```bash
+   npm install
+   ```
+3. Avvia il server di sviluppo:
+   ```bash
+   npm run dev
+   ```
+4. Visita `http://localhost:3000` per vedere il sito o `http://localhost:3000/admin` per il pannello admin.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📱 Ottimizzazione Mobile 2026
 
-## Learn More
+Il sito è ottimizzato per **iOS Safari** e **Android Chrome**, includendo:
+- Gestione della **Dynamic Island** e dei Notch tramite `safe-area-inset`.
+- Touch targets minimi di **48x48px**.
+- Feedback aptico (**Haptics**) sulle interazioni principali.
+- Performance Lighthouse puntate al **100/100**.
 
-To learn more about Next.js, take a look at the following resources:
+## 🎨 Design System
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Palette**: Gradienti Blue/Cyan (`#0a75ad` → `#00d4ff`) con accenti Orange meccanico.
+- **Tipografia**: *Plus Jakarta Sans* (Sans) e *Space Grotesk* (Display).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+© 2026 Ciclofficina Vincenzo – Marcianise (CE). Tutti i diritti riservati.
