@@ -1,0 +1,38 @@
+{
+  "hero": {
+    "title": "Da Vincenzo ai suoi figli:\npassione per la bicicletta",
+    "subtitle": "Ciclofficina Vincenzo – Tradizione e Passione su Due Ruote a Marcianise dal 1980."
+  },
+  "history": {
+    "title": "La Storia & Chi Siamo Oggi",
+    "content": [
+      "Da oltre quarant’anni, in Via Novelli 51 a Marcianise, il nome Vincenzo è sinonimo di biciclette, passione e fiducia.",
+      "Vincenzo, storico commerciante e riparatore, ha dedicato la sua vita a questo mestiere, accogliendo generazioni di ciclisti nel suo laboratorio con un sorriso e una chiave inglese sempre in mano.",
+      "Oggi, nel suo ricordo, i suoi figli continuano con orgoglio l’attività di famiglia, mantenendo viva la stessa cura, competenza e onestà che lo hanno sempre contraddistinto.",
+      "La Ciclofficina Vincenzo è un punto di riferimento per chi ama la bicicletta in tutte le sue forme: dallo sportivo all’appassionato della domenica, dal pendolare all’avventuriero.",
+      "Offriamo un servizio completo di riparazione, manutenzione e vendita di biciclette e accessori, combinando esperienza artigianale e soluzioni moderne."
+    ]
+  },
+  "services": [
+    { "title": "Riparazione & Manutenzione", "desc": "Ogni tipo di bicicletta, dalle classiche alle moderne." },
+    { "title": "Revisione Completa", "desc": "Freni, cambio, ruote e trasmissione per una guida sicura." },
+    { "title": "Gomme & Camere d'aria", "desc": "Sostituzione rapida e professionale di copertoni e camere d'aria." },
+    { "title": "Personalizzazione", "desc": "Messa a punto per bici da corsa e mountain bike." },
+    { "title": "Vendita Accessori", "desc": "Luci, caschi, catene e ricambi delle migliori marche." },
+    { "title": "Consulenza Esperta", "desc": "Ti guidiamo nella scelta della tua prossima bici." }
+  ],
+  "contact": {
+    "address": "Via Novelli, 51 – Marcianise (CE)",
+    "phone": "+39 0823 [numero]",
+    "hours": [
+      "Lunedì – Sabato: 8:30 – 13:00 / 15:30 – 19:30",
+      "Domenica: Chiuso"
+    ]
+  },
+  "promotions": [
+    { "title": "Sconto 20% su MTB", "description": "Fino a fine mese", "image": "/bici1.jpg" }
+  ],
+  "products": [
+    { "name": "Bici da Corsa Carbon", "price": "1200€", "description": "Leggera e veloce", "image": "/bici1.jpg" }
+  ]
+}
