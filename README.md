@@ -1,6 +1,6 @@
-# Ciclofficina Vincenzo – Tradizione e Passione su Due Ruote
+# Bici Vincenzo – Tradizione e Passione su Due Ruote
 
-Benvenuti nel repository ufficiale della **Ciclofficina Vincenzo**. Questo progetto è un sito web moderno sviluppato con **Next.js 16**, **Tailwind CSS 4** e **GSAP**, progettato per riflettere i trend UI del 2026 e offrire un'esperienza utente premium su dispositivi mobile e desktop.
+Benvenuti nel repository ufficiale di **Bici Vincenzo**. Questo progetto è un sito web moderno sviluppato con **Next.js 16**, **Tailwind CSS 4** e **GSAP**, progettato per riflettere i trend UI del 2026 e offrire un'esperienza utente premium su dispositivi mobile e desktop.
 
 ## 🚀 Caratteristiche Tecniche
 
@@ -42,15 +42,15 @@ Il sito è ottimizzato per **iOS Safari** e **Android Chrome**, includendo:
 
 ## 🌐 Deployment su Render
 
-Il sito è pronto per essere ospitato su [Render.com](https://render.com/). Segui questi passaggi:
+Il sito è ottimizzato per il deployment su **Render.com**.
 
-1. Crea un nuovo **Web Service** su Render.
-2. Collega il tuo repository GitHub `bici`.
-3. Configura le seguenti impostazioni:
+1. Crea un nuovo **Web Service**.
+2. Collega il repository GitHub.
+3. Imposta il **Name** come `bicivincenzo` per ottenere l'URL `bicivincenzo.onrender.com`.
+4. Configura:
    - **Runtime**: `Node`
    - **Build Command**: `npm install && npm run build`
    - **Start Command**: `npm start`
-4. Aggiungi (opzionale) le variabili d'ambiente se necessario.
 
 ---
 © 2026 Ciclofficina Vincenzo – Marcianise (CE). Tutti i diritti riservati.
