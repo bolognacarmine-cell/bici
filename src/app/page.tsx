@@ -94,7 +94,7 @@ export default function Home() {
       )}
 
       {/* Hero Section */}
-      <section ref={heroRef} className="relative h-[90vh] flex items-center justify-center overflow-hidden">
+      <section ref={heroRef} className="relative h-[92vh] flex items-center justify-center overflow-hidden">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 z-0">
           <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary-start/10 rounded-full blur-[120px] animate-pulse" />
@@ -103,7 +103,7 @@ export default function Home() {
             src="/bici1.jpg"
             alt="Vincenzo Ciclofficina"
             fill
-            className="object-cover opacity-30 dark:opacity-20 mix-blend-overlay grayscale hover:grayscale-0 transition-all duration-1000"
+            className="object-cover object-top opacity-30 dark:opacity-20 mix-blend-overlay grayscale hover:grayscale-0 transition-all duration-1000"
             priority
           />
         </div>
@@ -149,17 +149,17 @@ export default function Home() {
       </section>
 
       {/* La Storia Section */}
-      <section id="storia" ref={historyRef} className="py-32 relative">
+      <section id="storia" ref={historyRef} className="py-24 md:py-32 relative">
         <div className="container mx-auto px-6">
           <div className="max-w-6xl mx-auto">
-             <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                <div className="order-2 lg:order-1">
-                   <TiltCard className="h-[600px] overflow-hidden group shadow-3xl">
+             <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-center">
+                <div className="w-full lg:w-1/2 order-2 lg:order-1">
+                   <TiltCard className="h-[400px] md:h-[600px] overflow-hidden group shadow-3xl">
                       <Image 
                         src="/bici1.jpg" 
                         alt="Storia" 
                         fill 
-                        className="object-cover group-hover:scale-110 transition-transform duration-700"
+                        className="object-cover object-top group-hover:scale-110 transition-transform duration-700"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-12">
                          <div className="flex gap-4 mb-4">
@@ -170,8 +170,8 @@ export default function Home() {
                       </div>
                    </TiltCard>
                 </div>
-                <div className="order-1 lg:order-2">
-                   <div className="section-header mb-12">
+                <div className="w-full lg:w-1/2 order-1 lg:order-2">
+                   <div className="section-header mb-8 md:mb-12">
                       <span className="text-gradient font-bold uppercase tracking-widest text-sm mb-4 block">La Nostra Eredità</span>
                       <h2 className="text-4xl md:text-6xl font-display font-bold mb-8">{data.history.title}</h2>
                       <div className="space-y-8 text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed">
@@ -251,44 +251,44 @@ export default function Home() {
       )}
 
       {/* Perché Sceglierci */}
-      <section id="perche" ref={whyRef} className="py-32 relative">
+      <section id="perche" ref={whyRef} className="py-24 md:py-32 relative">
         <div className="container mx-auto px-6">
-           <div className="glass dark:glass-dark rounded-[40px] p-12 md:p-24 overflow-hidden relative border border-white/20">
+           <div className="glass dark:glass-dark rounded-[30px] md:rounded-[40px] p-8 md:p-24 overflow-hidden relative border border-white/20">
               <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary-start/10 to-transparent pointer-events-none" />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                 <div>
+              <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
+                 <div className="w-full lg:w-1/2">
                     <h2 className="text-4xl md:text-6xl font-display font-bold mb-10 leading-tight">Perché Scegliere la Nostra <span className="text-gradient">Officina</span></h2>
-                    <div className="space-y-10">
+                    <div className="space-y-8 md:space-y-10">
                        {[
                          { title: "Passione di Famiglia", desc: "Non siamo solo un'officina, siamo una storia che si tramanda da generazioni." },
                          { title: "Precisione 2026", desc: "Utilizziamo strumenti di precisione laser per ogni messa a punto." },
                          { title: "Consulenza AI", desc: "Analizziamo i tuoi dati di guida per consigliarti l'assetto perfetto." }
                        ].map((item, i) => (
-                         <div key={i} className="flex gap-6">
-                            <div className="w-12 h-12 rounded-full bg-secondary-start/20 flex items-center justify-center flex-shrink-0">
+                         <div key={i} className="flex gap-4 md:gap-6">
+                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-secondary-start/20 flex items-center justify-center flex-shrink-0">
                                <span className="text-secondary-start font-bold">{i+1}</span>
                             </div>
                             <div>
-                               <h4 className="text-xl font-bold mb-2">{item.title}</h4>
-                               <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed">{item.desc}</p>
+                               <h4 className="text-lg md:text-xl font-bold mb-1 md:mb-2">{item.title}</h4>
+                               <p className="text-sm md:text-base text-zinc-500 dark:text-zinc-400 leading-relaxed">{item.desc}</p>
                             </div>
                          </div>
                        ))}
                     </div>
                  </div>
-                 <div className="relative h-[500px]">
+                 <div className="w-full lg:w-1/2 relative h-[400px] md:h-[500px]">
                     <div className="absolute inset-0 bg-gradient-to-tr from-primary-start/20 to-secondary-start/20 rounded-3xl blur-3xl animate-pulse" />
-                    <TiltCard className="h-full bg-white dark:bg-zinc-900 rounded-3xl p-12 shadow-2xl flex flex-col justify-center items-center text-center">
-                       <div className="text-8xl font-display font-black text-gradient mb-4">40+</div>
-                       <div className="text-2xl font-bold uppercase tracking-widest text-zinc-400">Anni di Eccellenza</div>
-                       <div className="mt-12 flex -space-x-4">
+                    <TiltCard className="h-full bg-white dark:bg-zinc-900 rounded-3xl p-8 md:p-12 shadow-2xl flex flex-col justify-center items-center text-center">
+                       <div className="text-6xl md:text-8xl font-display font-black text-gradient mb-4">40+</div>
+                       <div className="text-xl md:text-2xl font-bold uppercase tracking-widest text-zinc-400">Anni di Eccellenza</div>
+                       <div className="mt-8 md:mt-12 flex -space-x-4">
                           {[1,2,3,4,5].map(i => (
-                            <div key={i} className="w-14 h-14 rounded-full border-4 border-white dark:border-zinc-900 bg-zinc-200 overflow-hidden">
+                            <div key={i} className="w-10 h-10 md:w-14 md:h-14 rounded-full border-4 border-white dark:border-zinc-900 bg-zinc-200 overflow-hidden">
                                <div className="w-full h-full bg-gradient-to-br from-zinc-300 to-zinc-500" />
                             </div>
                           ))}
                        </div>
-                       <p className="mt-6 text-zinc-500">Oltre 10,000 ciclisti serviti a Marcianise.</p>
+                       <p className="mt-4 md:mt-6 text-sm md:text-base text-zinc-500">Oltre 10,000 ciclisti serviti a Marcianise.</p>
                     </TiltCard>
                  </div>
               </div>
