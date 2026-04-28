@@ -42,15 +42,28 @@ Il sito è ottimizzato per **iOS Safari** e **Android Chrome**, includendo:
 
 ## 🌐 Deployment su Render
 
-Il sito è ottimizzato per il deployment su **Render.com**.
+Il sito è ottimizzato per il deployment su **Render.com**, con **deploy automatico** ad ogni push su GitHub.
 
-1. Crea un nuovo **Web Service**.
-2. Collega il repository GitHub.
-3. Imposta il **Name** come `ciclofficinavincenzo` per ottenere l'URL `ciclofficinavincenzo.onrender.com`.
-4. Configura:
-   - **Runtime**: `Node`
-   - **Build Command**: `npm install && npm run build`
-   - **Start Command**: `npm start`
+### Opzione consigliata (Blueprint)
+
+Nel repo è presente [render.yaml](file:///c:/Users/Acer/bici/render.yaml).
+
+1. Su Render: **New** → **Blueprint**
+2. Seleziona il repository GitHub
+3. Conferma: Render leggerà `render.yaml` e creerà il servizio con:
+   - `autoDeploy: true` (redeploy automatico ad ogni push)
+   - `buildCommand: npm ci && npm run build`
+   - `startCommand: next start -p $PORT`
+
+### Opzione manuale (Web Service)
+
+1. Crea un nuovo **Web Service**
+2. Collega il repository GitHub
+3. Imposta:
+   - **Runtime**: Node
+   - **Build Command**: `npm ci && npm run build`
+   - **Start Command**: `node node_modules/next/dist/bin/next start -p $PORT`
+4. In **Settings** verifica che **Auto-Deploy** sia attivo
 
 ---
 © 2026 Ciclofficina Vincenzo – Marcianise (CE). Tutti i diritti riservati.
