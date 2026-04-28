@@ -2,85 +2,81 @@
 
 import { useState, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { Sun, Moon, Bike, Menu, X, Search, Mic } from 'lucide-react'
-import { useTheme } from 'next-themes'
+import { Bike, Menu, X, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
 export const Navbar = () => {
   const [mounted, setMounted] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const { theme, setTheme } = useTheme()
   const { scrollY } = useScroll()
 
-  const navHeight = useTransform(scrollY, [0, 50], ["90px", "70px"])
-  const navBg = useTransform(scrollY, [0, 50], ["rgba(255,255,255,0)", "rgba(255,255,255,0.7)"])
+  const navHeight = useTransform(scrollY, [0, 56], ["88px", "72px"])
+  const navBg = useTransform(scrollY, [0, 56], ["rgba(5,6,8,0.10)", "rgba(5,6,8,0.72)"])
+  const navBorder = useTransform(scrollY, [0, 56], ["rgba(255,255,255,0.08)", "rgba(255,255,255,0.16)"])
 
   useEffect(() => setMounted(true), [])
 
   if (!mounted) return null
 
+  const items = [
+    { label: 'Modelli', id: 'modelli' },
+    { label: 'Perché', id: 'perche' },
+    { label: 'Tecnologia', id: 'tecnologia' },
+    { label: 'Gallery', id: 'gallery' },
+    { label: 'Recensioni', id: 'testimonial' },
+    { label: 'Configura', id: 'configura' },
+  ]
+
   return (
     <motion.nav
-      style={{ height: navHeight, background: navBg }}
-      className="fixed top-0 left-0 right-0 z-50 flex items-center glass backdrop-blur-xl transition-colors duration-300 pt-[env(safe-area-inset-top)]"
+      style={{ height: navHeight, background: navBg, borderColor: navBorder }}
+      className="fixed top-0 left-0 right-0 z-50 flex items-center backdrop-blur-xl transition-colors duration-300 border-b pt-[env(safe-area-inset-top)]"
     >
       <div className="container mx-auto px-6 flex justify-between items-center">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 btn-primary rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
-            <Bike className="text-white w-6 h-6" />
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-white/6 border border-white/12 neon-ring group-hover:scale-[1.03] transition-transform duration-300">
+            <Bike className="text-white w-6 h-6 opacity-90" />
           </div>
           <span className="font-display text-2xl font-bold tracking-tight">
-            Ciclofficina <span className="text-gradient">Vincenzo</span>
+            VOLT<span className="text-gradient">BIKE</span>
           </span>
         </Link>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8">
-          {[
-            { label: 'Promozioni', id: 'promozioni' },
-            { label: 'Storia', id: 'storia' },
-            { label: 'Servizi', id: 'servizi' },
-            { label: 'Prodotti', id: 'prodotti' },
-            { label: 'Perché', id: 'perche' },
-            { label: 'Contatti', id: 'contatti' }
-          ].map((item) => (
+          {items.slice(0, 5).map((item) => (
             <Link
               key={item.id}
               href={`#${item.id}`}
-              className="font-medium text-zinc-600 dark:text-zinc-300 hover:text-primary-start transition-colors"
+              className="text-sm font-semibold tracking-wide text-white/75 hover:text-white transition-colors"
             >
               {item.label}
             </Link>
           ))}
           
-          <div className="flex items-center gap-4 ml-4">
-             <button className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
-                <Search className="w-5 h-5 text-zinc-500" />
-             </button>
-             <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+          <div className="flex items-center gap-3 ml-6">
+            <Link
+              href="#configura"
+              className="tap-target px-5 py-3 rounded-2xl btn-primary font-bold text-sm flex items-center gap-2 hover:shadow-[0_0_40px_rgba(0,245,255,0.20)] transition-shadow"
             >
-              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
+              Configura ora
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
 
         {/* Mobile Menu Toggle */}
         <div className="md:hidden flex items-center gap-4">
-           <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 transition-colors"
-            >
-              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
-            <button onClick={() => {
+          <button
+            className="tap-target p-3 rounded-2xl bg-white/6 border border-white/12 backdrop-blur-xl"
+            onClick={() => {
               setMobileMenuOpen(!mobileMenuOpen)
               if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10)
-            }}>
-              {mobileMenuOpen ? <X /> : <Menu />}
-            </button>
+            }}
+          >
+            {mobileMenuOpen ? <X /> : <Menu />}
+          </button>
         </div>
       </div>
 
@@ -89,17 +85,10 @@ export const Navbar = () => {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute top-full left-0 right-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-6 md:hidden glass-dark"
+          className="absolute top-full left-0 right-0 p-6 md:hidden glass-dark border-b border-white/10"
         >
-          <div className="flex flex-col gap-6 items-center">
-            {[
-              { label: 'Promozioni', id: 'promozioni' },
-              { label: 'Storia', id: 'storia' },
-              { label: 'Servizi', id: 'servizi' },
-              { label: 'Prodotti', id: 'prodotti' },
-              { label: 'Perché', id: 'perche' },
-              { label: 'Contatti', id: 'contatti' }
-            ].map((item) => (
+          <div className="flex flex-col gap-3">
+            {items.map((item) => (
               <Link
                 key={item.id}
                 href={`#${item.id}`}
@@ -107,7 +96,7 @@ export const Navbar = () => {
                   setMobileMenuOpen(false)
                   if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10)
                 }}
-                className="text-xl font-bold w-full py-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-center active:bg-zinc-100 dark:active:bg-zinc-800 transition-colors"
+                className="tap-target w-full px-4 py-4 rounded-2xl bg-white/3 border border-white/10 text-lg font-bold text-white/90 active:bg-white/8 transition-colors"
               >
                 {item.label}
               </Link>

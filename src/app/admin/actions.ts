@@ -1,9 +1,10 @@
 'use server'
 
-import fs from 'fs/promises';
-import path from 'path';
+import { revalidatePath } from 'next/cache'
+import { writeSiteData } from '@/lib/site-data'
 
-export async function updateData(newData: any) {
-  const filePath = path.join(process.cwd(), 'src', 'data.json');
-  await fs.writeFile(filePath, JSON.stringify(newData, null, 2));
+export async function updateData(newData: unknown) {
+  await writeSiteData(newData)
+  revalidatePath('/')
+  revalidatePath('/admin')
 }

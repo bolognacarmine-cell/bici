@@ -1,23 +1,44 @@
 'use client'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { updateData } from './actions';
-import dataInitial from '@/data.json';
 import Link from 'next/link';
 import { Plus, Trash2, Image as ImageIcon } from 'lucide-react';
+import { SiteDataSchema, type SiteData } from '@/lib/site-data-schema'
 
 export default function AdminPage() {
-  const [data, setData] = useState(dataInitial);
+  const [data, setData] = useState<SiteData | null>(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/site-data', { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((json) => {
+        const parsed = SiteDataSchema.parse(json)
+        if (!cancelled) setData(parsed);
+      })
+      .catch(() => {
+        if (!cancelled) setMessage('Errore durante il caricamento dati.');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const handleSave = async () => {
+    if (!data) return;
     setSaving(true);
     try {
       await updateData(data);
       setMessage('Modifiche salvate con successo!');
+      fetch('/api/site-data', { cache: 'no-store' })
+        .then((res) => res.json())
+        .then((json) => setData(SiteDataSchema.parse(json)))
+        .catch(() => {});
       setTimeout(() => setMessage(''), 3000);
-    } catch (error) {
+    } catch {
       setMessage('Errore durante il salvataggio.');
     } finally {
       setSaving(false);
@@ -25,36 +46,63 @@ export default function AdminPage() {
   };
 
   const addPromotion = () => {
+    if (!data) return;
     const newPromotions = [...(data.promotions || []), { title: '', description: '', image: '/bici1.jpg' }];
     setData({ ...data, promotions: newPromotions });
   };
 
   const removePromotion = (index: number) => {
-    const newPromotions = data.promotions.filter((_, i) => i !== index);
+    if (!data) return;
+    const newPromotions = (data.promotions ?? []).filter((_, i) => i !== index);
     setData({ ...data, promotions: newPromotions });
   };
 
   const updatePromotion = (index: number, field: string, value: string) => {
-    const newPromotions = [...data.promotions];
+    if (!data) return;
+    const newPromotions = [...(data.promotions ?? [])];
     newPromotions[index] = { ...newPromotions[index], [field]: value };
     setData({ ...data, promotions: newPromotions });
   };
 
   const addProduct = () => {
+    if (!data) return;
     const newProducts = [...(data.products || []), { name: '', price: '', description: '', image: '/bici1.jpg' }];
     setData({ ...data, products: newProducts });
   };
 
   const removeProduct = (index: number) => {
-    const newProducts = data.products.filter((_, i) => i !== index);
+    if (!data) return;
+    const newProducts = (data.products ?? []).filter((_, i) => i !== index);
     setData({ ...data, products: newProducts });
   };
 
   const updateProduct = (index: number, field: string, value: string) => {
-    const newProducts = [...data.products];
+    if (!data) return;
+    const newProducts = [...(data.products ?? [])];
     newProducts[index] = { ...newProducts[index], [field]: value };
     setData({ ...data, products: newProducts });
   };
+
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-zinc-100 p-8 font-sans">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-zinc-800">Pannello Admin</h1>
+              <p className="text-zinc-500">Caricamento dati…</p>
+            </div>
+            <Link href="/" className="px-4 py-2 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-colors">
+              Torna al sito
+            </Link>
+          </div>
+          {message && (
+            <div className="mb-6 p-4 rounded-lg text-center font-medium bg-red-100 text-red-700">{message}</div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-zinc-100 p-8 font-sans">

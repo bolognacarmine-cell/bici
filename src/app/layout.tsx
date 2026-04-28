@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-plus-jakarta-sans",
+  variable: "--font-inter",
   display: 'swap',
 });
 
@@ -16,23 +16,38 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Ciclofficina Vincenzo – Tradizione e Passione su Due Ruote",
-  description: "Ciclofficina Vincenzo a Marcianise: riparazione, manutenzione e vendita di biciclette da oltre 40 anni.",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "Ciclofficina Vincenzo",
+  metadataBase: new URL("https://voltbike.example"),
+  title: {
+    default: "VOLTBIKE — Bici elettriche premium",
+    template: "%s — VOLTBIKE",
   },
-  formatDetection: {
-    telephone: true,
+  description:
+    "Bici elettriche premium con autonomia fino a 150km, design italiano e tecnologia connessa. Urban, Mountain, Cargo, Folding: scegli la tua prossima libertà.",
+  applicationName: "VOLTBIKE",
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "VOLTBIKE" },
+  formatDetection: { telephone: false },
+  openGraph: {
+    type: "website",
+    title: "VOLTBIKE — Bici elettriche premium",
+    description:
+      "Autonomia fino a 150km, motore silenzioso e connettività App. Design minimal con anima futuristica.",
+    siteName: "VOLTBIKE",
+    images: [{ url: "/bici1.jpg", width: 1600, height: 900, alt: "VOLTBIKE e-bike" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "VOLTBIKE — Bici elettriche premium",
+    description:
+      "Autonomia fino a 150km, motore silenzioso e connettività App. Design minimal con anima futuristica.",
+    images: ["/bici1.jpg"],
   },
   manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
+    { media: "(prefers-color-scheme: light)", color: "#050608" },
+    { media: "(prefers-color-scheme: dark)", color: "#050608" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -48,13 +63,13 @@ export default function RootLayout({
     <html
       lang="it"
       suppressHydrationWarning
-      className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} antialiased`}
+      className={`${inter.variable} ${spaceGrotesk.variable} antialiased`}
     >
       <body className="min-h-screen flex flex-col">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
         >
           {children}

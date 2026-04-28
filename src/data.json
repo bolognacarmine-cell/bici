@@ -1,38 +1,131 @@
 {
-  "hero": {
-    "title": "Da Vincenzo ai suoi figli:\npassione per la bicicletta",
-    "subtitle": "Ciclofficina Vincenzo – Tradizione e Passione su Due Ruote a Marcianise dal 1980."
+  "brand": {
+    "name": "VOLTBIKE",
+    "headline": "La libertà ha un nuovo motore",
+    "subheadline": "Bici elettriche premium con autonomia fino a 150km e design italiano. Silenziose, connesse, fatte per muoversi oltre i limiti."
   },
-  "history": {
-    "title": "La Storia & Chi Siamo Oggi",
-    "content": [
-      "Da oltre quarant’anni, in Via Novelli 51 a Marcianise, il nome Vincenzo è sinonimo di biciclette, passione e fiducia.",
-      "Vincenzo, storico commerciante e riparatore, ha dedicato la sua vita a questo mestiere, accogliendo generazioni di ciclisti nel suo laboratorio con un sorriso e una chiave inglese sempre in mano.",
-      "Oggi, nel suo ricordo, i suoi figli continuano con orgoglio l’attività di famiglia, mantenendo viva la stessa cura, competenza e onestà che lo hanno sempre contraddistinto.",
-      "La Ciclofficina Vincenzo è un punto di riferimento per chi ama la bicicletta in tutte le sue forme: dallo sportivo all’appassionato della domenica, dal pendolare all’avventuriero.",
-      "Offriamo un servizio completo di riparazione, manutenzione e vendita di biciclette e accessori, combinando esperienza artigianale e soluzioni moderne."
-    ]
-  },
-  "services": [
-    { "title": "Riparazione & Manutenzione", "desc": "Ogni tipo di bicicletta, dalle classiche alle moderne." },
-    { "title": "Revisione Completa", "desc": "Freni, cambio, ruote e trasmissione per una guida sicura." },
-    { "title": "Gomme & Camere d'aria", "desc": "Sostituzione rapida e professionale di copertoni e camere d'aria." },
-    { "title": "Personalizzazione", "desc": "Messa a punto per bici da corsa e mountain bike." },
-    { "title": "Vendita Accessori", "desc": "Luci, caschi, catene e ricambi delle migliori marche." },
-    { "title": "Consulenza Esperta", "desc": "Ti guidiamo nella scelta della tua prossima bici." }
+  "kpis": [
+    { "label": "Autonomia", "value": "150km" },
+    { "label": "Ricarica", "value": "0–80% · 2.5h" },
+    { "label": "Peso", "value": "da 17.9kg" }
   ],
-  "contact": {
-    "address": "Via Novelli, 51 – Marcianise (CE)",
-    "phone": "+39 0823 [numero]",
-    "hours": [
-      "Lunedì – Sabato: 8:30 – 13:00 / 15:30 – 19:30",
-      "Domenica: Chiuso"
-    ]
-  },
-  "promotions": [
-    { "title": "Sconto 20% su MTB", "description": "Fino a fine mese", "image": "/bici1.jpg" }
+  "models": [
+    {
+      "id": "urban",
+      "name": "Urban Pulse",
+      "category": "City / Commuting",
+      "price": "€3.490",
+      "rangeKm": 150,
+      "topSpeed": "25 km/h",
+      "image": "https://images.unsplash.com/photo-1520975916090-3105956dac38?auto=format&fit=crop&w=1600&q=80"
+    },
+    {
+      "id": "mountain",
+      "name": "Mountain Vector",
+      "category": "Trail / Enduro",
+      "price": "€4.990",
+      "rangeKm": 130,
+      "topSpeed": "25 km/h",
+      "image": "https://images.unsplash.com/photo-1520975682037-6f70b0fa3fe3?auto=format&fit=crop&w=1600&q=80"
+    },
+    {
+      "id": "cargo",
+      "name": "Cargo Atlas",
+      "category": "Family / Delivery",
+      "price": "€4.290",
+      "rangeKm": 120,
+      "topSpeed": "25 km/h",
+      "image": "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=1600&q=80"
+    },
+    {
+      "id": "folding",
+      "name": "Folding Neo",
+      "category": "Compact / Travel",
+      "price": "€2.990",
+      "rangeKm": 110,
+      "topSpeed": "25 km/h",
+      "image": "https://images.unsplash.com/photo-1576438339608-4207b30d3c63?auto=format&fit=crop&w=1600&q=80"
+    }
   ],
-  "products": [
-    { "name": "Bici da Corsa Carbon", "price": "1200€", "description": "Leggera e veloce", "image": "/bici1.jpg" }
-  ]
+  "features": [
+    {
+      "title": "Batteria removibile",
+      "desc": "Sgancio rapido, ricarica ovunque. Celle di ultima generazione per densità e durata."
+    },
+    {
+      "title": "Motore centrale silenzioso",
+      "desc": "Coppia immediata e naturale. Zero vibrazioni, feeling da bici muscolare."
+    },
+    {
+      "title": "App Companion",
+      "desc": "Anti-furto, diagnostica, mappe, modalità assistenza e statistiche in tempo reale."
+    },
+    {
+      "title": "Materiali premium",
+      "desc": "Alluminio aerospaziale e inserti in carbonio per rigidità e leggerezza."
+    },
+    {
+      "title": "Sicurezza intelligente",
+      "desc": "Luci automatiche, sensori, freni a disco e tracking integrato."
+    },
+    {
+      "title": "Ergonomia italiana",
+      "desc": "Geometrie studiate per comfort e controllo: città, trail, viaggi."
+    }
+  ],
+  "technology": [
+    {
+      "title": "PowerCore Battery",
+      "desc": "Gestione termica attiva e cicli ottimizzati: più autonomia, meno degrado.",
+      "image": "https://images.unsplash.com/photo-1557166984-ef7f6f1d2b57?auto=format&fit=crop&w=1600&q=80"
+    },
+    {
+      "title": "TorqueSense Motor",
+      "desc": "Sensori coppia/cadenza per un’assistenza che anticipa il tuo gesto.",
+      "image": "https://images.unsplash.com/photo-1558981403-c5f9891b6b9d?auto=format&fit=crop&w=1600&q=80"
+    },
+    {
+      "title": "SmartRide OS",
+      "desc": "Display LCD, profili utente e aggiornamenti OTA. Una bici che evolve.",
+      "image": "https://images.unsplash.com/photo-1581404917879-67e0b3b5c1d7?auto=format&fit=crop&w=1600&q=80"
+    }
+  ],
+  "gallery": [
+    "https://images.unsplash.com/photo-1529421308418-eab98863cee7?auto=format&fit=crop&w=1600&q=80",
+    "https://images.unsplash.com/photo-1520975623954-8f7d7c6ff0ac?auto=format&fit=crop&w=1600&q=80",
+    "https://images.unsplash.com/photo-1520975746756-9c9b5cf78c1f?auto=format&fit=crop&w=1600&q=80",
+    "https://images.unsplash.com/photo-1509474520651-53cf6a80536f?auto=format&fit=crop&w=1600&q=80",
+    "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?auto=format&fit=crop&w=1600&q=80",
+    "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1600&q=80"
+  ],
+  "testimonials": [
+    {
+      "name": "Martina R.",
+      "role": "Commuter · Milano",
+      "quote": "Silenziosa e reattiva. In città sembra di scivolare: arrivo ovunque senza sudare e con stile.",
+      "rating": 5
+    },
+    {
+      "name": "Luca D.",
+      "role": "Trail rider · Trentino",
+      "quote": "La spinta è naturale, il controllo in discesa è impeccabile. Sembra tecnologia che sparisce e lascia solo la guida.",
+      "rating": 5
+    },
+    {
+      "name": "Sara P.",
+      "role": "Family · Roma",
+      "quote": "Cargo Atlas ha cambiato le nostre giornate: bambini, spesa, lavoro. Tutto più semplice e più veloce.",
+      "rating": 5
+    }
+  ],
+  "footer": {
+    "email": "hello@voltbike.example",
+    "phone": "+39 02 000000",
+    "address": "Milano · Italia",
+    "social": [
+      { "label": "Instagram", "href": "#" },
+      { "label": "YouTube", "href": "#" },
+      { "label": "X", "href": "#" }
+    ]
+  }
 }
