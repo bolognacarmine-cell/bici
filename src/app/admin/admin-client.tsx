@@ -97,7 +97,7 @@ export default function AdminClientPage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-zinc-100 p-8 font-sans">
+      <div className="min-h-screen bg-zinc-100 p-8 font-sans text-zinc-900">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
@@ -115,7 +115,7 @@ export default function AdminClientPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-100 p-8 font-sans">
+    <div className="min-h-screen bg-zinc-100 p-8 font-sans text-zinc-900">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -178,7 +178,7 @@ export default function AdminClientPage() {
                         placeholder="URL Immagine"
                         value={promo.image}
                         onChange={(e) => updatePromotion(idx, 'image', e.target.value)}
-                        className="mt-2 w-full px-3 py-1 text-xs border border-zinc-200 rounded outline-none"
+                        className="mt-2 w-full px-3 py-1 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
                       />
                     </div>
                     <div className="md:col-span-2 space-y-4">
@@ -188,7 +188,7 @@ export default function AdminClientPage() {
                           type="text"
                           value={promo.title}
                           onChange={(e) => updatePromotion(idx, 'title', e.target.value)}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none"
+                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none bg-white text-zinc-900 placeholder-zinc-400"
                         />
                       </div>
                       <div>
@@ -196,7 +196,7 @@ export default function AdminClientPage() {
                         <textarea
                           value={promo.description}
                           onChange={(e) => updatePromotion(idx, 'description', e.target.value)}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none h-20"
+                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none h-20 bg-white text-zinc-900 placeholder-zinc-400"
                         />
                       </div>
                     </div>
@@ -241,7 +241,7 @@ export default function AdminClientPage() {
                       placeholder="URL Immagine"
                       value={product.image}
                       onChange={(e) => updateProduct(idx, 'image', e.target.value)}
-                      className="w-full px-3 py-1 text-xs border border-zinc-200 rounded outline-none"
+                      className="w-full px-3 py-1 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
                     />
                     <div>
                       <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Nome Prodotto</label>
@@ -249,7 +249,7 @@ export default function AdminClientPage() {
                         type="text"
                         value={product.name}
                         onChange={(e) => updateProduct(idx, 'name', e.target.value)}
-                        className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none font-bold"
+                        className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none font-bold bg-white text-zinc-900 placeholder-zinc-400"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
@@ -259,7 +259,7 @@ export default function AdminClientPage() {
                           type="text"
                           value={product.price}
                           onChange={(e) => updateProduct(idx, 'price', e.target.value)}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none text-[#e67e22] font-bold"
+                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none text-[#e67e22] font-bold bg-white placeholder-zinc-400"
                         />
                       </div>
                       <div>
@@ -268,7 +268,7 @@ export default function AdminClientPage() {
                           type="text"
                           value={product.description}
                           onChange={(e) => updateProduct(idx, 'description', e.target.value)}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none text-sm"
+                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none text-sm bg-white text-zinc-900 placeholder-zinc-400"
                         />
                       </div>
                     </div>
