@@ -7,16 +7,76 @@ export function getSiteDataFilePath() {
   return path.join(process.cwd(), 'src', 'data.json')
 }
 
+function slugify(input: string) {
+  return input
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '')
+}
+
+function normalizeSiteData(input: SiteData): SiteData {
+  const products = Array.isArray(input.products) ? [...input.products] : []
+  const promotions = Array.isArray(input.promotions) ? [...input.promotions] : []
+
+  const skuSeen = new Set<string>()
+  for (let index = 0; index < products.length; index += 1) {
+    const p = products[index]
+    const current = String(p.sku || '').trim()
+    const generatedBase = slugify(p.name || `prodotto-${index + 1}`) || `prodotto-${index + 1}`
+    const sku = current || `SKU-${generatedBase.toUpperCase()}`
+    let candidate = sku
+    let i = 2
+    while (skuSeen.has(candidate.toLowerCase())) {
+      candidate = `${sku}-${i}`
+      i += 1
+    }
+    p.sku = candidate
+    skuSeen.add(candidate.toLowerCase())
+  }
+
+  const slugSeen = new Set<string>()
+  for (const p of products) {
+    const base = String(p.slug || '').trim() || slugify(p.name)
+    let candidate = base
+    let i = 2
+    while (candidate && slugSeen.has(candidate)) {
+      candidate = `${base}-${i}`
+      i += 1
+    }
+    if (candidate) {
+      p.slug = candidate
+      slugSeen.add(candidate)
+    }
+  }
+
+  const productSkuSet = new Set(products.map((p) => String(p.sku).trim()))
+  for (const promo of promotions) {
+    if (promo.scope === 'product') {
+      const sku = String(promo.productSku || '').trim()
+      if (!sku) {
+        throw new Error('Promo su prodotto: prodotto obbligatorio.')
+      }
+      if (!productSkuSet.has(sku)) {
+        throw new Error(`Promo su prodotto: SKU non trovato (${sku}).`)
+      }
+    }
+  }
+
+  return { ...input, products, promotions }
+}
+
 async function readSiteDataFromFile(): Promise<SiteData> {
   const filePath = getSiteDataFilePath()
   const raw = await fs.readFile(filePath, 'utf8')
   const parsed = JSON.parse(raw)
-  return SiteDataSchema.parse(parsed)
+  return normalizeSiteData(SiteDataSchema.parse(parsed))
 }
 
 async function writeSiteDataToFile(newData: unknown): Promise<void> {
   const filePath = getSiteDataFilePath()
-  const validated = SiteDataSchema.parse(newData)
+  const validated = normalizeSiteData(SiteDataSchema.parse(newData))
   await fs.writeFile(filePath, JSON.stringify(validated, null, 2))
 }
 
@@ -46,7 +106,7 @@ export async function readSiteData(): Promise<SiteData> {
   const pool = getPgPool()
   const res = await pool.query('SELECT data FROM site_data WHERE id=$1 LIMIT 1', ['default'])
   if (res.rowCount && res.rows[0]?.data) {
-    return SiteDataSchema.parse(res.rows[0].data)
+    return normalizeSiteData(SiteDataSchema.parse(res.rows[0].data))
   }
 
   const seed = await readSiteDataFromFile()
@@ -70,7 +130,7 @@ export async function writeSiteData(newData: unknown): Promise<void> {
 
   await ensureTable()
   const pool = getPgPool()
-  const validated = SiteDataSchema.parse(newData)
+  const validated = normalizeSiteData(SiteDataSchema.parse(newData))
   await pool.query(
     'INSERT INTO site_data (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, updated_at = now()',
     ['default', validated]

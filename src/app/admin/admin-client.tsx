@@ -6,6 +6,52 @@ import Link from 'next/link'
 import { Plus, Trash2, Image as ImageIcon } from 'lucide-react'
 import { SiteDataSchema, type SiteData } from '@/lib/site-data-schema'
 
+const CATEGORY_OPTIONS = [
+  { value: 'city', label: 'City' },
+  { value: 'mtb', label: 'MTB' },
+  { value: 'trekking', label: 'Trekking' },
+  { value: 'gravel', label: 'Gravel' },
+  { value: 'road', label: 'Corsa' },
+  { value: 'junior', label: 'Junior' },
+  { value: 'ebike_city', label: 'E-bike City' },
+  { value: 'ebike_trekking', label: 'E-bike Trekking' },
+  { value: 'ebike_emtb', label: 'E-MTB' },
+  { value: 'ebike_cargo', label: 'E-bike Cargo' },
+  { value: 'accessory', label: 'Accessori' },
+  { value: 'spare_part', label: 'Ricambi' },
+] as const
+
+const PRODUCT_STATUS_OPTIONS = [
+  { value: 'available', label: 'Disponibile' },
+  { value: 'out_of_stock', label: 'Esaurito' },
+  { value: 'preorder', label: 'Preordine' },
+  { value: 'discontinued', label: 'Fuori catalogo' },
+] as const
+
+const GENDER_OPTIONS = [
+  { value: 'uomo', label: 'Uomo' },
+  { value: 'donna', label: 'Donna' },
+  { value: 'unisex', label: 'Unisex' },
+] as const
+
+const PROMO_SCOPE_OPTIONS = [
+  { value: 'general', label: 'Generale' },
+  { value: 'category', label: 'Categoria' },
+  { value: 'product', label: 'Prodotto' },
+] as const
+
+const PROMO_STATUS_OPTIONS = [
+  { value: 'draft', label: 'Bozza' },
+  { value: 'active', label: 'Attiva' },
+  { value: 'scheduled', label: 'Programm.' },
+  { value: 'expired', label: 'Scaduta' },
+] as const
+
+const PROMO_DISCOUNT_TYPE_OPTIONS = [
+  { value: 'percent', label: '%' },
+  { value: 'amount', label: '€' },
+] as const
+
 export default function AdminClientPage() {
   const [data, setData] = useState<SiteData | null>(null)
   const [saving, setSaving] = useState(false)
@@ -50,8 +96,8 @@ export default function AdminClientPage() {
         })
         .catch(() => {})
       setTimeout(() => setMessage(''), 3000)
-    } catch {
-      setMessage('Errore durante il salvataggio.')
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : 'Errore durante il salvataggio.')
     } finally {
       setSaving(false)
     }
@@ -59,7 +105,18 @@ export default function AdminClientPage() {
 
   const addPromotion = () => {
     if (!data) return
-    const newPromotions = [...(data.promotions || []), { title: '', description: '', image: '/bici1.jpg' }]
+    const newPromotions = [
+      ...(data.promotions || []),
+      {
+        title: '',
+        scope: 'general',
+        status: 'draft',
+        discountType: 'percent',
+        discountValue: 10,
+        description: '',
+        image: '/bici1.jpg',
+      },
+    ]
     setData({ ...data, promotions: newPromotions })
   }
 
@@ -69,7 +126,7 @@ export default function AdminClientPage() {
     setData({ ...data, promotions: newPromotions })
   }
 
-  const updatePromotion = (index: number, field: string, value: string) => {
+  const updatePromotion = (index: number, field: string, value: any) => {
     if (!data) return
     const newPromotions = [...(data.promotions ?? [])]
     newPromotions[index] = { ...newPromotions[index], [field]: value }
@@ -78,7 +135,22 @@ export default function AdminClientPage() {
 
   const addProduct = () => {
     if (!data) return
-    const newProducts = [...(data.products || []), { name: '', price: '', description: '', image: '/bici1.jpg' }]
+    const newProducts = [
+      ...(data.products || []),
+      {
+        name: '',
+        category: 'city',
+        status: 'available',
+        sku: '',
+        slug: '',
+        price: '',
+        salePrice: '',
+        description: '',
+        brand: '',
+        image: '/bici1.jpg',
+        ebike: {},
+      },
+    ]
     setData({ ...data, products: newProducts })
   }
 
@@ -88,7 +160,7 @@ export default function AdminClientPage() {
     setData({ ...data, products: newProducts })
   }
 
-  const updateProduct = (index: number, field: string, value: string) => {
+  const updateProduct = (index: number, field: string, value: any) => {
     if (!data) return
     const newProducts = [...(data.products ?? [])]
     newProducts[index] = { ...newProducts[index], [field]: value }
@@ -168,7 +240,7 @@ export default function AdminClientPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="md:col-span-1">
                       <div className="aspect-video bg-zinc-200 rounded-lg overflow-hidden flex items-center justify-center relative">
-                        <img src={promo.image} alt="Preview" className="w-full h-full object-cover" />
+                        <img src={String((promo as any).image || '/bici1.jpg')} alt="Preview" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
                           <ImageIcon className="text-white" />
                         </div>
@@ -176,12 +248,98 @@ export default function AdminClientPage() {
                       <input
                         type="text"
                         placeholder="URL Immagine"
-                        value={promo.image}
+                        value={String((promo as any).image ?? '')}
                         onChange={(e) => updatePromotion(idx, 'image', e.target.value)}
                         className="mt-2 w-full px-3 py-1 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
                       />
                     </div>
                     <div className="md:col-span-2 space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Tipo promo</label>
+                          <select
+                            value={(promo as any).scope ?? 'general'}
+                            onChange={(e) => updatePromotion(idx, 'scope', e.target.value)}
+                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                          >
+                            {PROMO_SCOPE_OPTIONS.map((o) => (
+                              <option key={o.value} value={o.value}>
+                                {o.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Stato</label>
+                          <select
+                            value={(promo as any).status ?? 'draft'}
+                            onChange={(e) => updatePromotion(idx, 'status', e.target.value)}
+                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                          >
+                            {PROMO_STATUS_OPTIONS.map((o) => (
+                              <option key={o.value} value={o.value}>
+                                {o.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Sconto</label>
+                          <div className="grid grid-cols-3 gap-2">
+                            <select
+                              value={(promo as any).discountType ?? 'percent'}
+                              onChange={(e) => updatePromotion(idx, 'discountType', e.target.value)}
+                              className="col-span-1 px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                            >
+                              {PROMO_DISCOUNT_TYPE_OPTIONS.map((o) => (
+                                <option key={o.value} value={o.value}>
+                                  {o.label}
+                                </option>
+                              ))}
+                            </select>
+                            <input
+                              className="col-span-2 px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                              type="number"
+                              step="0.01"
+                              value={Number((promo as any).discountValue ?? 10)}
+                              onChange={(e) => updatePromotion(idx, 'discountValue', Number(e.target.value))}
+                            />
+                          </div>
+                        </div>
+                        {((promo as any).scope ?? 'general') === 'product' && (
+                          <div>
+                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prodotto</label>
+                            <select
+                              value={(promo as any).productSku ?? ''}
+                              onChange={(e) => updatePromotion(idx, 'productSku', e.target.value)}
+                              className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                            >
+                              <option value="">Seleziona…</option>
+                              {(data.products ?? []).map((p: any) => (
+                                <option key={String(p.sku)} value={String(p.sku)}>
+                                  {p.name} ({p.sku})
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                        {((promo as any).scope ?? 'general') === 'category' && (
+                          <div>
+                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Categoria</label>
+                            <select
+                              value={(promo as any).category ?? 'city'}
+                              onChange={(e) => updatePromotion(idx, 'category', e.target.value)}
+                              className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                            >
+                              {CATEGORY_OPTIONS.map((o) => (
+                                <option key={o.value} value={o.value}>
+                                  {o.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                      </div>
                       <div>
                         <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Titolo Promo</label>
                         <input
@@ -191,10 +349,52 @@ export default function AdminClientPage() {
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none bg-white text-zinc-900 placeholder-zinc-400"
                         />
                       </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Inizio</label>
+                          <input
+                            type="date"
+                            value={String((promo as any).startsAt ?? '')}
+                            onChange={(e) => updatePromotion(idx, 'startsAt', e.target.value)}
+                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Fine</label>
+                          <input
+                            type="date"
+                            value={String((promo as any).endsAt ?? '')}
+                            onChange={(e) => updatePromotion(idx, 'endsAt', e.target.value)}
+                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Codice</label>
+                          <input
+                            type="text"
+                            value={String((promo as any).code ?? '')}
+                            onChange={(e) => updatePromotion(idx, 'code', e.target.value)}
+                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Mostra in home</label>
+                          <select
+                            value={String(Boolean((promo as any).showOnHome))}
+                            onChange={(e) => updatePromotion(idx, 'showOnHome', e.target.value === 'true')}
+                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                          >
+                            <option value="false">No</option>
+                            <option value="true">Sì</option>
+                          </select>
+                        </div>
+                      </div>
                       <div>
                         <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Descrizione</label>
                         <textarea
-                          value={promo.description}
+                          value={String((promo as any).description ?? '')}
                           onChange={(e) => updatePromotion(idx, 'description', e.target.value)}
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none h-20 bg-white text-zinc-900 placeholder-zinc-400"
                         />
@@ -243,6 +443,36 @@ export default function AdminClientPage() {
                       onChange={(e) => updateProduct(idx, 'image', e.target.value)}
                       className="w-full px-3 py-1 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
                     />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Categoria</label>
+                        <select
+                          value={(product as any).category ?? 'city'}
+                          onChange={(e) => updateProduct(idx, 'category', e.target.value)}
+                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                        >
+                          {CATEGORY_OPTIONS.map((o) => (
+                            <option key={o.value} value={o.value}>
+                              {o.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Stato</label>
+                        <select
+                          value={(product as any).status ?? 'available'}
+                          onChange={(e) => updateProduct(idx, 'status', e.target.value)}
+                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                        >
+                          {PRODUCT_STATUS_OPTIONS.map((o) => (
+                            <option key={o.value} value={o.value}>
+                              {o.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
                     <div>
                       <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Nome Prodotto</label>
                       <input
@@ -251,6 +481,52 @@ export default function AdminClientPage() {
                         onChange={(e) => updateProduct(idx, 'name', e.target.value)}
                         className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none font-bold bg-white text-zinc-900 placeholder-zinc-400"
                       />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">SKU</label>
+                        <input
+                          type="text"
+                          value={String((product as any).sku ?? '')}
+                          onChange={(e) => updateProduct(idx, 'sku', e.target.value)}
+                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Slug</label>
+                        <input
+                          type="text"
+                          value={String((product as any).slug ?? '')}
+                          onChange={(e) => updateProduct(idx, 'slug', e.target.value)}
+                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Genere</label>
+                        <select
+                          value={String((product as any).gender ?? '')}
+                          onChange={(e) => updateProduct(idx, 'gender', e.target.value || undefined)}
+                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                        >
+                          <option value="">—</option>
+                          {GENDER_OPTIONS.map((o) => (
+                            <option key={o.value} value={o.value}>
+                              {o.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Marca</label>
+                        <input
+                          type="text"
+                          value={String((product as any).brand ?? '')}
+                          onChange={(e) => updateProduct(idx, 'brand', e.target.value)}
+                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                        />
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -263,15 +539,102 @@ export default function AdminClientPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Descrizione Breve</label>
+                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo scontato</label>
                         <input
                           type="text"
-                          value={product.description}
-                          onChange={(e) => updateProduct(idx, 'description', e.target.value)}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none text-sm bg-white text-zinc-900 placeholder-zinc-400"
+                          value={String((product as any).salePrice ?? '')}
+                          onChange={(e) => updateProduct(idx, 'salePrice', e.target.value)}
+                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
                         />
                       </div>
                     </div>
+                    <div>
+                      <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Descrizione breve</label>
+                      <input
+                        type="text"
+                        value={String((product as any).description ?? '')}
+                        onChange={(e) => updateProduct(idx, 'description', e.target.value)}
+                        className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                      />
+                    </div>
+                    {String((product as any).category ?? '').startsWith('ebike_') && (
+                      <div className="rounded-xl border border-zinc-200 bg-white p-4 space-y-3">
+                        <div className="text-sm font-bold text-zinc-800">Dati e-bike</div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Batteria (Wh)</label>
+                            <input
+                              type="number"
+                              value={String((product as any).ebike?.batteryWh ?? '')}
+                              onChange={(e) =>
+                                updateProduct(idx, 'ebike', {
+                                  ...(product as any).ebike,
+                                  batteryWh: e.target.value === '' ? undefined : Number(e.target.value),
+                                })
+                              }
+                              className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Autonomia (km)</label>
+                            <input
+                              type="number"
+                              value={String((product as any).ebike?.rangeKm ?? '')}
+                              onChange={(e) =>
+                                updateProduct(idx, 'ebike', {
+                                  ...(product as any).ebike,
+                                  rangeKm: e.target.value === '' ? undefined : Number(e.target.value),
+                                })
+                              }
+                              className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Motore (W)</label>
+                            <input
+                              type="number"
+                              value={String((product as any).ebike?.motorW ?? '')}
+                              onChange={(e) =>
+                                updateProduct(idx, 'ebike', {
+                                  ...(product as any).ebike,
+                                  motorW: e.target.value === '' ? undefined : Number(e.target.value),
+                                })
+                              }
+                              className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Coppia (Nm)</label>
+                            <input
+                              type="number"
+                              value={String((product as any).ebike?.torqueNm ?? '')}
+                              onChange={(e) =>
+                                updateProduct(idx, 'ebike', {
+                                  ...(product as any).ebike,
+                                  torqueNm: e.target.value === '' ? undefined : Number(e.target.value),
+                                })
+                              }
+                              className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                            />
+                          </div>
+                          <div className="col-span-2">
+                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Tempo ricarica (h)</label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              value={String((product as any).ebike?.chargeTimeH ?? '')}
+                              onChange={(e) =>
+                                updateProduct(idx, 'ebike', {
+                                  ...(product as any).ebike,
+                                  chargeTimeH: e.target.value === '' ? undefined : Number(e.target.value),
+                                })
+                              }
+                              className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

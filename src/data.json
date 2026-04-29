@@ -1,31 +1,149 @@
 {
   "promotions": [
     {
-      "title": "Test",
-      "description": "Descxxxx",
+      "title": "Primavera Urbana",
+      "scope": "category",
+      "category": "city",
+      "status": "active",
+      "discountType": "percent",
+      "discountValue": 15,
+      "endsAt": "2026-05-31",
+      "showOnHome": true,
+      "description": "Sconto su bici da città selezionate: perfette per commuting e tempo libero.",
       "image": "/bici1.jpg"
     },
     {
-      "title": "ddd",
-      "description": "dddd",
+      "title": "E-bike Trekking Weekend",
+      "scope": "product",
+      "productSku": "SKU-ELYSIUM-TREK-E50",
+      "status": "active",
+      "discountType": "percent",
+      "discountValue": 10,
+      "endsAt": "2026-06-15",
+      "showOnHome": true,
+      "description": "Promo limitata sulla e-bike trekking: autonomia, comfort e assistenza premium.",
       "image": "/bici1.jpg"
     },
     {
-      "title": "ddd",
-      "description": "ddd",
+      "title": "Kit Sicurezza",
+      "scope": "general",
+      "status": "active",
+      "discountType": "amount",
+      "discountValue": 20,
+      "description": "€20 di sconto su accessori selezionati: luci, caschi e antifurti.",
       "image": "/bici1.jpg"
     },
     {
-      "title": "ddd",
-      "description": "ddd",
+      "title": "Officina: Tagliando",
+      "scope": "general",
+      "status": "active",
+      "discountType": "percent",
+      "discountValue": 10,
+      "description": "Sconto su check-up e manutenzione completa per ripartire in sicurezza.",
       "image": "/bici1.jpg"
     }
   ],
   "products": [
     {
-      "name": "sssssssdddssssssddss",
-      "price": "10",
-      "description": "Breve",
+      "name": "City Donna Classic 7V",
+      "category": "city",
+      "gender": "donna",
+      "status": "available",
+      "sku": "SKU-CITY-DONNA-7V",
+      "price": "549",
+      "description": "Bici da città comoda e affidabile, perfetta per spostamenti quotidiani.",
+      "brand": "VincenzoBike",
+      "image": "/bici1.jpg"
+    },
+    {
+      "name": "MTB Trail Pro 29",
+      "category": "mtb",
+      "gender": "uomo",
+      "status": "available",
+      "sku": "SKU-MTB-TRAIL-29",
+      "price": "1290",
+      "description": "Hardtail 29\" per trail e sterrati, assetto solido e componenti robusti.",
+      "brand": "VincenzoBike",
+      "image": "/bici1.jpg"
+    },
+    {
+      "name": "Gravel Unisex Allroad",
+      "category": "gravel",
+      "gender": "unisex",
+      "status": "available",
+      "sku": "SKU-GRAVEL-ALLROAD",
+      "price": "1590",
+      "description": "Versatile su asfalto e strade bianche: comfort, scorrevolezza e controllo.",
+      "brand": "VincenzoBike",
+      "image": "/bici1.jpg"
+    },
+    {
+      "name": "Road Race 105",
+      "category": "road",
+      "gender": "uomo",
+      "status": "preorder",
+      "sku": "SKU-ROAD-RACE-105",
+      "price": "2190",
+      "salePrice": "1990",
+      "description": "Bici da corsa per allenamenti e granfondo: reattiva e precisa.",
+      "brand": "VincenzoBike",
+      "image": "/bici1.jpg"
+    },
+    {
+      "name": "E-bike City Donna E35",
+      "category": "ebike_city",
+      "gender": "donna",
+      "status": "available",
+      "sku": "SKU-EBIKE-CITY-E35",
+      "price": "2490",
+      "description": "Assistita urbana: partenze fluide, comfort e autonomia reale per la settimana.",
+      "brand": "VincenzoBike",
+      "ebike": { "batteryWh": 504, "rangeKm": 110, "motorW": 250, "torqueNm": 60, "chargeTimeH": 4.5, "display": "LCD", "assistLevels": 5 },
+      "image": "/bici1.jpg"
+    },
+    {
+      "name": "E-bike Trekking Unisex E50",
+      "category": "ebike_trekking",
+      "gender": "unisex",
+      "status": "available",
+      "sku": "SKU-ELYSIUM-TREK-E50",
+      "price": "3290",
+      "description": "Trekking assistita: autonomia estesa, portapacchi e comfort per viaggi e commuting.",
+      "brand": "VincenzoBike",
+      "ebike": { "batteryWh": 630, "rangeKm": 130, "motorW": 250, "torqueNm": 75, "chargeTimeH": 5.5, "display": "Color", "assistLevels": 5 },
+      "image": "/bici1.jpg"
+    },
+    {
+      "name": "E-MTB Enduro E70",
+      "category": "ebike_emtb",
+      "gender": "uomo",
+      "status": "available",
+      "sku": "SKU-EMTB-ENDURO-E70",
+      "price": "4490",
+      "description": "E-MTB pronta per il trail: coppia generosa e controllo in discesa.",
+      "brand": "VincenzoBike",
+      "ebike": { "batteryWh": 720, "rangeKm": 120, "motorW": 250, "torqueNm": 85, "chargeTimeH": 6.0, "display": "Color", "assistLevels": 5 },
+      "image": "/bici1.jpg"
+    },
+    {
+      "name": "Casco Urban MIPS",
+      "category": "accessory",
+      "gender": "unisex",
+      "status": "available",
+      "sku": "SKU-ACC-CASCO-MIPS",
+      "price": "79",
+      "description": "Casco urbano leggero con protezione MIPS e ventilazione ottimizzata.",
+      "brand": "VincenzoBike",
+      "image": "/bici1.jpg"
+    },
+    {
+      "name": "Catena 11v Rinforzata",
+      "category": "spare_part",
+      "status": "available",
+      "sku": "SKU-RIC-CATENA-11V",
+      "price": "29",
+      "description": "Catena 11 velocità per trasmissioni strada/gravel: scorrevolezza e durata.",
+      "brand": "VincenzoBike",
       "image": "/bici1.jpg"
     }
   ],
