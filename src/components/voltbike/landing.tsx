@@ -30,6 +30,15 @@ const reveal = {
   show: { opacity: 1, y: 0, filter: 'blur(0px)' },
 }
 
+function toImageUrl(input: any, fallbackSize: string) {
+  if (!input) return null
+  if (typeof input === 'string') return input
+  const prompt = typeof input.prompt === 'string' ? input.prompt : null
+  if (!prompt) return null
+  const size = typeof input.size === 'string' ? input.size : fallbackSize
+  return `https://coreva-normal.trae.ai/api/ide/v1/text_to_image?prompt=${encodeURIComponent(prompt)}&image_size=${encodeURIComponent(size)}`
+}
+
 export function VoltbikeLanding() {
   const rootRef = useRef<HTMLDivElement | null>(null)
   const prefersReducedMotion = useMemo(() => {
@@ -38,6 +47,8 @@ export function VoltbikeLanding() {
   }, [])
 
   const services = ((data as any).services ?? []) as Array<any>
+  const tech = ((data as any).technology ?? []) as Array<any>
+  const gallery = ((data as any).gallery ?? []) as Array<any>
   const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     (data as any).footer?.address ?? ''
   )}`
@@ -195,8 +206,8 @@ export function VoltbikeLanding() {
                       <MapPinned className="w-4 h-4 text-white/70" />
                       Dove siamo
                     </div>
-                    <div className="mt-2 text-white text-2xl font-extrabold">Via Saverio Merola</div>
-                    <div className="text-white/55 text-xs mt-1">S. Simeone · Marcianise (CE)</div>
+                    <div className="mt-2 text-white text-2xl font-extrabold">Via Novelli, 51</div>
+                    <div className="text-white/55 text-xs mt-1">Marcianise (CE)</div>
                   </div>
                 </div>
 
@@ -282,7 +293,7 @@ export function VoltbikeLanding() {
                   <TiltCard className="h-full">
                     <div className="relative h-full rounded-[32px] overflow-hidden border border-white/12 bg-white/2">
                       <Image
-                        src={s.image}
+                        src={toImageUrl(s.image, 'landscape_16_9') ?? '/bici1.jpg'}
                         alt={s.title}
                         fill
                         sizes="(max-width: 768px) 82vw, 640px"
@@ -467,11 +478,11 @@ export function VoltbikeLanding() {
 
           <div className="mt-12 h-[72vh] md:h-[74vh]">
             <div data-track className="h-full flex gap-6 md:gap-8 px-6 md:px-20">
-              {(data as any).technology.map((t: any) => (
+              {tech.map((t: any) => (
                 <div key={t.title} className="h-full w-[86vw] sm:w-[70vw] md:w-[720px] flex-none">
                   <div className="relative h-full rounded-[32px] overflow-hidden border border-white/12 bg-white/2">
                     <Image
-                      src={t.image}
+                      src={toImageUrl(t.image, 'landscape_16_9') ?? '/bici1.jpg'}
                       alt={t.title}
                       fill
                       sizes="(max-width: 768px) 86vw, 720px"
@@ -534,7 +545,8 @@ export function VoltbikeLanding() {
           </motion.div>
 
           <div className="mt-14 columns-2 md:columns-3 gap-4 md:gap-6">
-            {((data as any).gallery as string[]).map((src, idx) => {
+            {gallery.map((item, idx) => {
+              const src = toImageUrl(item, 'portrait_4_3') ?? '/bici1.jpg'
               const aspect =
                 idx % 6 === 0
                   ? 'aspect-[4/5]'

@@ -55,7 +55,7 @@
       "title": "Manutenzione completa",
       "desc": "Check-up, regolazioni e messa a punto per tornare a pedalare in sicurezza.",
       "bullets": ["Freni", "Cambio", "Trasmissione"],
-      "image": "/bici1.jpg"
+      "image": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Workbench_of_a_bicycle_dealer.jpg"
     },
     {
       "id": "riparazioni",
@@ -63,7 +63,7 @@
       "title": "Riparazioni rapide",
       "desc": "Interventi su forature, ruote, freni e componenti: dalla diagnosi alla soluzione.",
       "bullets": ["Forature", "Ruote", "Freni"],
-      "image": "/bici1.jpg"
+      "image": "https://upload.wikimedia.org/wikipedia/commons/9/97/Bicycle_repair_shop_-_bike_parts_on_work_bench.jpg"
     },
     {
       "id": "ebike",
@@ -71,7 +71,7 @@
       "title": "Elettriche e assistite",
       "desc": "Assistenza e manutenzione su bici elettriche e a pedalata assistita, con controlli mirati.",
       "bullets": ["Diagnosi", "Check componenti", "Messa a punto"],
-      "image": "/bici1.jpg"
+      "image": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Munich_-_Two_men_working_in_a_Bicycle_repair_shop_-_5893.jpg"
     },
     {
       "id": "domicilio",
@@ -79,7 +79,7 @@
       "title": "Riparazioni a domicilio",
       "desc": "Se non puoi spostarti, valutiamo insieme un intervento a domicilio in base al tipo di riparazione.",
       "bullets": ["Su richiesta", "Valutazione intervento", "Comodo"],
-      "image": "/bici1.jpg"
+      "image": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Kitakyushu_%28%E5%8C%97%E4%B9%9D%E5%B7%9E%29%2C_Fukuoka_Prefecture%2C_Japan_%F0%9F%87%AF%F0%9F%87%B5_-_Bicycle_Repair.jpg"
     },
     {
       "id": "ricambi",
@@ -87,7 +87,7 @@
       "title": "Accessori e ricambi",
       "desc": "Vendita accessori, ricambi e gadget. Possibilità di ordinare ricambistica specifica per ogni necessità.",
       "bullets": ["Accessori", "Ricambi", "Ordini"],
-      "image": "/bici1.jpg"
+      "image": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Bicycle_repair_tools%2C_Bicycle_Kitchen%2C_Los_Angeles.jpg"
     }
   ],
   "models": [
@@ -158,26 +158,26 @@
     {
       "title": "Diagnosi e regolazioni",
       "desc": "Controlli mirati e regolazioni per componenti e trasmissione, con attenzione alla sicurezza.",
-      "image": "/bici1.jpg"
+      "image": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Workbench_of_a_bicycle_dealer.jpg"
     },
     {
       "title": "Ruote e pneumatici",
       "desc": "Interventi su forature, camere d’aria e gomme: gonfiaggio e controlli disponibili anche in officina.",
-      "image": "/bici1.jpg"
+      "image": "https://upload.wikimedia.org/wikipedia/commons/9/97/Bicycle_repair_shop_-_bike_parts_on_work_bench.jpg"
     },
     {
       "title": "Ricambi su ordinazione",
       "desc": "Possibilità di ordinare ricambistica specifica per ogni necessità, oltre ad accessori e gadget.",
-      "image": "/bici1.jpg"
+      "image": "https://upload.wikimedia.org/wikipedia/commons/9/91/Bicycle_repair_shop.jpg"
     }
   ],
   "gallery": [
-    "/bici1.jpg",
-    "/bici1.jpg",
-    "/bici1.jpg",
-    "/bici1.jpg",
-    "/bici1.jpg",
-    "/bici1.jpg"
+    "https://upload.wikimedia.org/wikipedia/commons/2/29/Bike_workshop_-_bicycle_repair_shop.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/d/d7/Munich_-_Two_men_working_in_a_Bicycle_repair_shop_-_5893.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/9/97/Bicycle_repair_shop_-_bike_parts_on_work_bench.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/4/4c/Workbench_of_a_bicycle_dealer.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/9/91/Bicycle_repair_shop.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/0/0f/Le_m%C3%A9cano-v%C3%A9los.jpg"
   ],
   "testimonials": [
     {
@@ -202,7 +202,7 @@
   "footer": {
     "email": "info@vincenzobike.example",
     "phone": "+39 000 000 0000",
-    "address": "Via Saverio Merola, Rione S. Simeone, Marcianise (CE), Italia",
+    "address": "Via Novelli, 51, Marcianise (CE) 81025, Italia",
     "social": [
       {
         "label": "Instagram",

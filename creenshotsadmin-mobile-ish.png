@@ -1,0 +1,22 @@
+warning: in the working copy of 'src/components/voltbike/landing.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/data.json', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/src/components/voltbike/landing.tsx b/src/components/voltbike/landing.tsx[m
+[1mindex 3f9e775..aa3e0a7 100644[m
+[1m--- a/src/components/voltbike/landing.tsx[m
+[1m+++ b/src/components/voltbike/landing.tsx[m
+[36m@@ -197,4 +197,4 @@[m [mexport function VoltbikeLanding() {[m
+                     </div>[m
+[31m-                    <div className="mt-2 text-white text-2xl font-extrabold">Via Saverio Merola</div>[m
+[31m-                    <div className="text-white/55 text-xs mt-1">S. Simeone · Marcianise (CE)</div>[m
+[32m+[m[32m                    <div className="mt-2 text-white text-2xl font-extrabold">Via Novelli, 51</div>[m
+[32m+[m[32m                    <div className="text-white/55 text-xs mt-1">Marcianise (CE)</div>[m
+                   </div>[m
+[1mdiff --git a/src/data.json b/src/data.json[m
+[1mindex 95c2e65..9f5be76 100644[m
+[1m--- a/src/data.json[m
+[1m+++ b/src/data.json[m
+[36m@@ -204,3 +204,3 @@[m
+     "phone": "+39 000 000 0000",[m
+[31m-    "address": "Via Saverio Merola, Rione S. Simeone, Marcianise (CE), Italia",[m
+[32m+[m[32m    "address": "Via Novelli, 51, Marcianise (CE) 81025, Italia",[m
+     "social": [[m

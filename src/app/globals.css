@@ -97,8 +97,8 @@ body {
 }
 
 .tap-target {
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 48px;
+  min-height: 48px;
   touch-action: manipulation;
 }
 
