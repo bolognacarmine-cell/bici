@@ -1,22 +1,20 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import Image from 'next/image'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { motion } from 'framer-motion'
 import {
   ArrowRight,
-  BatteryCharging,
   Check,
-  Cpu,
-  MapPinned,
   Play,
-  ShieldCheck,
-  Smartphone,
   Sparkles,
   Star,
-  Weight,
+  Wrench,
+  Home,
+  ShoppingBag,
+  MapPinned,
 } from 'lucide-react'
 
 import { Navbar } from '@/components/navbar'
@@ -32,14 +30,6 @@ const reveal = {
   show: { opacity: 1, y: 0, filter: 'blur(0px)' },
 }
 
-function formatEUR(value: number) {
-  return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
-}
-
-function parseEUR(value: string) {
-  return Number(value.replace(/[^\d]/g, ''))
-}
-
 export function VoltbikeLanding() {
   const rootRef = useRef<HTMLDivElement | null>(null)
   const prefersReducedMotion = useMemo(() => {
@@ -47,17 +37,10 @@ export function VoltbikeLanding() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches
   }, [])
 
-  const models = (data as any).models as Array<any>
-  const [modelId, setModelId] = useState(models?.[0]?.id ?? 'urban')
-  const selectedModel = models.find((m) => m.id === modelId) ?? models?.[0]
-  const [color, setColor] = useState<'Graphite' | 'Electric Blue' | 'Lime'>('Graphite')
-  const [battery, setBattery] = useState<'Standard' | 'Extended'>('Standard')
-  const [acc, setAcc] = useState({ rack: true, lights: true, tracker: false })
-
-  const basePrice = selectedModel ? parseEUR(selectedModel.price) : 0
-  const batteryDelta = battery === 'Extended' ? 290 : 0
-  const accDelta = (acc.rack ? 120 : 0) + (acc.lights ? 70 : 0) + (acc.tracker ? 90 : 0)
-  const totalPrice = basePrice + batteryDelta + accDelta
+  const services = ((data as any).services ?? []) as Array<any>
+  const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    (data as any).footer?.address ?? ''
+  )}`
 
   useEffect(() => {
     if (prefersReducedMotion) return
@@ -118,7 +101,7 @@ export function VoltbikeLanding() {
         <div className="absolute inset-0">
           <Image
             src="/bici1.jpg"
-            alt="Bici elettrica premium VOLTBIKE"
+            alt="Officina biciclette"
             fill
             priority
             sizes="100vw"
@@ -134,7 +117,7 @@ export function VoltbikeLanding() {
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/12 text-white/80 text-xs tracking-widest uppercase font-semibold">
                 <span className="h-2 w-2 rounded-full bg-[rgb(0,245,255)] shadow-[0_0_18px_rgba(0,245,255,0.55)]" />
-                Design italiano · tecnologia connessa · performance silenziosa
+                Manutenzione · riparazioni · ricambi · accessori
               </div>
 
               <h1 className="mt-6 font-display font-extrabold tracking-tight text-[clamp(2.6rem,5vw,4.6rem)] leading-[0.98]">
@@ -150,13 +133,13 @@ export function VoltbikeLanding() {
               </p>
 
               <div className="hero-cta mt-10 flex flex-col sm:flex-row gap-4">
-                <MagneticButton href="#modelli" className="btn-primary px-7 py-4 font-bold">
-                  Scegli il tuo modello
+                <MagneticButton href="#servizi" className="btn-primary px-7 py-4 font-bold">
+                  Scopri i servizi
                   <ArrowRight className="w-5 h-5" />
                 </MagneticButton>
-                <MagneticButton href="#gallery" className="btn-secondary px-7 py-4 font-bold border border-white/12">
-                  Guarda il video
-                  <Play className="w-5 h-5" />
+                <MagneticButton href="#contatti" className="btn-secondary px-7 py-4 font-bold border border-white/12">
+                  Dove siamo
+                  <MapPinned className="w-5 h-5" />
                 </MagneticButton>
               </div>
 
@@ -179,54 +162,54 @@ export function VoltbikeLanding() {
                 className="glass border border-white/12 rounded-[32px] p-6 md:p-8"
               >
                 <div className="flex items-center justify-between">
-                  <div className="text-white font-bold tracking-tight">VOLTBIKE Control</div>
-                  <div className="text-white/50 text-xs font-semibold">SmartRide OS</div>
+                  <div className="text-white font-bold tracking-tight">{(data as any).brand.name}</div>
+                  <div className="text-white/50 text-xs font-semibold">Officina · Marcianise</div>
                 </div>
                 <div className="mt-6 grid grid-cols-2 gap-4">
                   <div className="rounded-2xl bg-white/4 border border-white/10 p-4">
                     <div className="flex items-center gap-2 text-white/85 font-semibold">
-                      <BatteryCharging className="w-4 h-4 text-[rgb(163,255,0)]" />
-                      Batteria
+                      <Wrench className="w-4 h-4 text-[rgb(163,255,0)]" />
+                      Manutenzione
                     </div>
-                    <div className="mt-2 text-white text-2xl font-extrabold">720Wh</div>
-                    <div className="text-white/55 text-xs mt-1">Removibile · Fast charge</div>
+                    <div className="mt-2 text-white text-2xl font-extrabold">Check-up</div>
+                    <div className="text-white/55 text-xs mt-1">Freni · cambio · ruote</div>
                   </div>
                   <div className="rounded-2xl bg-white/4 border border-white/10 p-4">
                     <div className="flex items-center gap-2 text-white/85 font-semibold">
-                      <Cpu className="w-4 h-4 text-[rgb(0,245,255)]" />
-                      Motore
+                      <Home className="w-4 h-4 text-[rgb(0,245,255)]" />
+                      A domicilio
                     </div>
-                    <div className="mt-2 text-white text-2xl font-extrabold">85Nm</div>
-                    <div className="text-white/55 text-xs mt-1">Centrale · Silenzioso</div>
+                    <div className="mt-2 text-white text-2xl font-extrabold">Su richiesta</div>
+                    <div className="text-white/55 text-xs mt-1">Riparazioni e assistenza</div>
                   </div>
                   <div className="rounded-2xl bg-white/4 border border-white/10 p-4">
                     <div className="flex items-center gap-2 text-white/85 font-semibold">
-                      <Smartphone className="w-4 h-4 text-white/70" />
-                      App
+                      <ShoppingBag className="w-4 h-4 text-white/70" />
+                      Accessori
                     </div>
-                    <div className="mt-2 text-white text-2xl font-extrabold">Live</div>
-                    <div className="text-white/55 text-xs mt-1">Tracking · Diagnostica</div>
+                    <div className="mt-2 text-white text-2xl font-extrabold">In negozio</div>
+                    <div className="text-white/55 text-xs mt-1">Ricambi · gadget · ordini</div>
                   </div>
                   <div className="rounded-2xl bg-white/4 border border-white/10 p-4">
                     <div className="flex items-center gap-2 text-white/85 font-semibold">
-                      <ShieldCheck className="w-4 h-4 text-white/70" />
-                      Sicurezza
+                      <MapPinned className="w-4 h-4 text-white/70" />
+                      Dove siamo
                     </div>
-                    <div className="mt-2 text-white text-2xl font-extrabold">Guard</div>
-                    <div className="text-white/55 text-xs mt-1">Anti-furto · SOS</div>
+                    <div className="mt-2 text-white text-2xl font-extrabold">Via Saverio Merola</div>
+                    <div className="text-white/55 text-xs mt-1">S. Simeone · Marcianise (CE)</div>
                   </div>
                 </div>
 
                 <div className="mt-6 rounded-2xl bg-[radial-gradient(500px_260px_at_30%_20%,rgba(0,245,255,0.18),transparent_60%),radial-gradient(500px_260px_at_70%_60%,rgba(163,255,0,0.12),transparent_65%)] border border-white/10 p-4">
                   <div className="flex items-center justify-between">
-                    <div className="text-white/80 text-sm font-semibold">Modalità assistenza</div>
-                    <div className="text-white/60 text-xs">Eco · Sport · Boost</div>
+                    <div className="text-white/80 text-sm font-semibold">Pompa gratuita</div>
+                    <div className="text-white/60 text-xs">Gonfiaggio ruote</div>
                   </div>
                   <div className="mt-3 flex items-center gap-2">
                     <div className="h-2 flex-1 rounded-full bg-white/8 overflow-hidden">
-                      <div className="h-full w-[72%] bg-[linear-gradient(90deg,rgba(0,245,255,0.95),rgba(163,255,0,0.9))]" />
+                      <div className="h-full w-[100%] bg-[linear-gradient(90deg,rgba(0,245,255,0.95),rgba(163,255,0,0.9))]" />
                     </div>
-                    <div className="text-white font-bold text-sm">Boost</div>
+                    <div className="text-white font-bold text-sm">Sempre</div>
                   </div>
                 </div>
               </motion.div>
@@ -239,7 +222,37 @@ export function VoltbikeLanding() {
         </div>
       </section>
 
-      <section id="modelli" data-hscroll className="relative overflow-hidden">
+      <section id="storia" className="py-24 md:py-32 relative">
+        <div className="absolute inset-0 bg-[radial-gradient(900px_520px_at_50%_20%,rgba(0,245,255,0.08),transparent_62%)]" />
+        <div className="relative container mx-auto px-6">
+          <motion.div
+            variants={reveal}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-120px' }}
+            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-4xl"
+          >
+            <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Storia</div>
+            <h2 className="mt-3 font-display font-extrabold tracking-tight text-4xl md:text-6xl">
+              Addio a <span className="text-gradient">Vincenzo</span>
+            </h2>
+            <p className="mt-4 text-white/70 leading-relaxed">
+              Vincenzo Amati Bonaccorsi è cresciuto nel rione di S. Simeone a Marcianise. A soli 8 anni, quando tornava
+              da scuola, passava i pomeriggi nella bottega del fratello Mimmo: lì ha imparato il mestiere “come si faceva
+              una volta”, con pazienza e mani sporche di grasso.
+            </p>
+            <p className="mt-4 text-white/70 leading-relaxed">
+              La sua gioia era vedere le persone risalire in sella in sicurezza. A 19 anni era già il mastro e i ciclisti
+              chiedevano di lui. Con Antonetta Iodice ha costruito una famiglia: Antonio, Domenico e Luigi. Oggi la
+              bottega di famiglia continua grazie ai figli: Antonio e Luigi portano avanti l’attività, mentre Domenico
+              vive a Firenze. Vincenzo resta qui, in ogni riparazione fatta bene e in ogni bici che riparte.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      <section id="servizi" data-hscroll className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(900px_540px_at_10%_30%,rgba(0,245,255,0.10),transparent_60%),radial-gradient(900px_540px_at_90%_40%,rgba(163,255,0,0.08),transparent_60%)]" />
         <div className="relative z-10">
           <div className="container mx-auto px-6 pt-24 md:pt-28">
@@ -251,25 +264,26 @@ export function VoltbikeLanding() {
               transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
               className="max-w-3xl"
             >
-              <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Modelli</div>
+              <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Servizi</div>
               <h2 className="mt-3 font-display font-extrabold tracking-tight text-4xl md:text-6xl">
-                Scegli la tua <span className="text-gradient">traiettoria</span>
+                Officina per ogni <span className="text-gradient">necessità</span>
               </h2>
               <p className="mt-4 text-white/65 max-w-2xl">
-                Urban, Mountain, Cargo, Folding. Quattro anime, un solo obiettivo: portarti più lontano con meno sforzo.
+                Interventi di manutenzione e riparazione su bici muscolari, elettriche e a pedalata assistita. Accessori,
+                ricambi e possibilità di ordinare componenti specifici.
               </p>
             </motion.div>
           </div>
 
           <div className="mt-12 h-[74vh] md:h-[76vh]">
             <div data-track className="h-full flex gap-6 md:gap-8 px-6 md:px-20">
-              {models.map((m) => (
-                <div key={m.id} className="h-full w-[82vw] sm:w-[68vw] md:w-[640px] flex-none">
+              {services.map((s) => (
+                <div key={s.id} className="h-full w-[82vw] sm:w-[68vw] md:w-[640px] flex-none">
                   <TiltCard className="h-full">
                     <div className="relative h-full rounded-[32px] overflow-hidden border border-white/12 bg-white/2">
                       <Image
-                        src={m.image}
-                        alt={`${m.name} e-bike`}
+                        src={s.image}
+                        alt={s.title}
                         fill
                         sizes="(max-width: 768px) 82vw, 640px"
                         className="object-cover"
@@ -278,54 +292,42 @@ export function VoltbikeLanding() {
                       <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-between">
                         <div className="flex items-start justify-between gap-4">
                           <div>
-                            <div className="text-white/65 text-xs tracking-widest uppercase font-semibold">{m.category}</div>
+                            <div className="text-white/65 text-xs tracking-widest uppercase font-semibold">{s.category}</div>
                             <div className="mt-2 text-white text-3xl md:text-4xl font-extrabold tracking-tight font-display">
-                              {m.name}
+                              {s.title}
                             </div>
                           </div>
                           <div className="glass border border-white/12 rounded-2xl px-4 py-3">
-                            <div className="text-white/60 text-[10px] tracking-widest uppercase font-semibold">Da</div>
-                            <div className="text-white font-extrabold text-lg">{m.price}</div>
+                            <div className="text-white/60 text-[10px] tracking-widest uppercase font-semibold">Prenotazione</div>
+                            <div className="text-white font-extrabold text-lg">Su richiesta</div>
                           </div>
                         </div>
 
                         <div>
-                          <div className="grid grid-cols-3 gap-3">
-                            <div className="rounded-2xl bg-white/4 border border-white/10 p-4">
-                              <div className="flex items-center gap-2 text-white/80 text-xs font-semibold">
-                                <BatteryCharging className="w-4 h-4 text-[rgb(163,255,0)]" />
-                                Autonomia
+                          <div className="rounded-2xl bg-white/4 border border-white/10 p-6">
+                            <div className="text-white/75 leading-relaxed">{s.desc}</div>
+                            {Array.isArray(s.bullets) && s.bullets.length > 0 && (
+                              <div className="mt-5 flex flex-wrap gap-2">
+                                {s.bullets.map((b: string) => (
+                                  <div
+                                    key={b}
+                                    className="px-3 py-2 rounded-full bg-white/5 border border-white/10 text-white/70 text-xs font-semibold"
+                                  >
+                                    {b}
+                                  </div>
+                                ))}
                               </div>
-                              <div className="mt-2 text-white font-extrabold text-xl">{m.rangeKm}km</div>
-                            </div>
-                            <div className="rounded-2xl bg-white/4 border border-white/10 p-4">
-                              <div className="flex items-center gap-2 text-white/80 text-xs font-semibold">
-                                <Weight className="w-4 h-4 text-white/70" />
-                                Peso
-                              </div>
-                              <div className="mt-2 text-white font-extrabold text-xl">18–23kg</div>
-                            </div>
-                            <div className="rounded-2xl bg-white/4 border border-white/10 p-4">
-                              <div className="flex items-center gap-2 text-white/80 text-xs font-semibold">
-                                <MapPinned className="w-4 h-4 text-[rgb(0,245,255)]" />
-                                Max
-                              </div>
-                              <div className="mt-2 text-white font-extrabold text-xl">{m.topSpeed}</div>
-                            </div>
+                            )}
                           </div>
 
                           <div className="mt-5 flex flex-col sm:flex-row gap-3">
-                            <MagneticButton
-                              href="#configura"
-                              onClick={() => setModelId(m.id)}
-                              className="btn-primary px-6 py-4 font-bold flex-1"
-                            >
-                              Configura {m.name}
+                            <MagneticButton href="#contatti" className="btn-primary px-6 py-4 font-bold flex-1">
+                              Richiedi assistenza
                               <ArrowRight className="w-5 h-5" />
                             </MagneticButton>
-                            <MagneticButton href="#tecnologia" className="btn-secondary px-6 py-4 font-bold border border-white/12">
-                              Dettagli tech
-                              <Cpu className="w-5 h-5" />
+                            <MagneticButton href="#gallery" className="btn-secondary px-6 py-4 font-bold border border-white/12">
+                              Vedi l'officina
+                              <Play className="w-5 h-5" />
                             </MagneticButton>
                           </div>
                         </div>
@@ -339,7 +341,7 @@ export function VoltbikeLanding() {
 
           <div className="container mx-auto px-6 pb-10">
             <div className="text-white/50 text-xs">
-              Tip: su desktop passa il mouse sulle card per un tilt 3D. Su mobile, scorri e tocca per configurare.
+              Tip: su desktop passa il mouse sulle card per un tilt 3D. Su mobile, scorri orizzontalmente.
             </div>
           </div>
         </div>
@@ -355,12 +357,12 @@ export function VoltbikeLanding() {
             transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-4xl"
           >
-            <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Perché VOLTBIKE</div>
+            <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Perché VincenzoBike</div>
             <h2 className="mt-3 font-display font-extrabold tracking-tight text-4xl md:text-6xl">
-              Tecnologia che <span className="text-gradient">si sente</span>
+              Cura che <span className="text-gradient">si sente</span>
             </h2>
             <p className="mt-4 text-white/65 max-w-2xl">
-              Ogni dettaglio è pensato per velocità, libertà e controllo: materiali premium, integrazione smart e un’estetica minimalista.
+              Un’officina pensata per farti tornare in sella con serenità: diagnosi, manutenzione e riparazioni con attenzione ai dettagli.
             </p>
           </motion.div>
 
@@ -384,10 +386,10 @@ export function VoltbikeLanding() {
                 </div>
                 <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
-                    { icon: <BatteryCharging className="w-4 h-4 text-[rgb(163,255,0)]" />, title: 'Batteria removibile', desc: 'Sgancio rapido · ricarica ovunque.' },
-                    { icon: <Cpu className="w-4 h-4 text-[rgb(0,245,255)]" />, title: 'Motore centrale', desc: 'Coppia naturale · silenzioso.' },
-                    { icon: <Smartphone className="w-4 h-4 text-white/70" />, title: 'App Companion', desc: 'Mappe · anti-furto · diagnostica.' },
-                    { icon: <ShieldCheck className="w-4 h-4 text-white/70" />, title: 'Sicurezza', desc: 'Tracking · luci auto · freni a disco.' },
+                    { icon: <Wrench className="w-4 h-4 text-[rgb(163,255,0)]" />, title: 'Riparazioni', desc: 'Freni · cambio · ruote · forature.' },
+                    { icon: <Check className="w-4 h-4 text-[rgb(0,245,255)]" />, title: 'Manutenzione', desc: 'Check-up · regolazioni · sicurezza.' },
+                    { icon: <Home className="w-4 h-4 text-white/70" />, title: 'A domicilio', desc: 'Interventi su richiesta.' },
+                    { icon: <ShoppingBag className="w-4 h-4 text-white/70" />, title: 'Accessori e ricambi', desc: 'Vendita · gadget · ordini specifici.' },
                   ].map((f) => (
                     <div key={f.title} className="rounded-2xl bg-white/4 border border-white/10 p-4">
                       <div className="flex items-center gap-2 text-white/90 font-semibold">
@@ -453,12 +455,12 @@ export function VoltbikeLanding() {
               transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
               className="max-w-3xl"
             >
-              <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Tecnologia</div>
+              <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Officina</div>
               <h2 className="mt-3 font-display font-extrabold tracking-tight text-4xl md:text-6xl">
-                Potenza. Sensori. <span className="text-gradient">Intelligenza.</span>
+                Manutenzione. Riparazioni. <span className="text-gradient">Ricambi.</span>
               </h2>
               <p className="mt-4 text-white/65 max-w-2xl">
-                Batterie, motore e software lavorano insieme: un’esperienza fluida e naturale, con un parallax leggero e un racconto tecnico premium.
+                Interventi su bici muscolari, elettriche e a pedalata assistita: dalla diagnosi alla messa a punto, fino alla ricambistica su ordinazione.
               </p>
             </motion.div>
           </div>
@@ -477,17 +479,17 @@ export function VoltbikeLanding() {
                     />
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,8,0.18)_0%,rgba(5,6,8,0.88)_74%)]" />
                     <div className="absolute inset-0 p-7 md:p-10 flex flex-col justify-end">
-                      <div className="text-white/65 text-xs tracking-widest uppercase font-semibold">VOLTBIKE Labs</div>
+                      <div className="text-white/65 text-xs tracking-widest uppercase font-semibold">VincenzoBike · Officina</div>
                       <div className="mt-3 text-white text-3xl md:text-4xl font-extrabold tracking-tight font-display">
                         {t.title}
                       </div>
                       <div className="mt-4 text-white/70 leading-relaxed max-w-xl">{t.desc}</div>
                       <div className="mt-7 flex flex-wrap gap-2">
                         {[
-                          'Ottimizzazione cicli',
-                          'Diagnostica real-time',
-                          'Aggiornamenti OTA',
-                          'Sensori torque/cadenza',
+                          'Diagnosi e-bike',
+                          'Freni e dischi',
+                          'Trasmissione',
+                          'Ruote e gomme',
                         ].map((tag) => (
                           <div
                             key={tag}
@@ -522,12 +524,12 @@ export function VoltbikeLanding() {
             transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-4xl"
           >
-            <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Esperienza di guida</div>
+            <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Officina</div>
             <h2 className="mt-3 font-display font-extrabold tracking-tight text-4xl md:text-6xl">
-              Cinematica. Reale. <span className="text-gradient">VOLT.</span>
+              Dentro l’<span className="text-gradient">officina</span>
             </h2>
             <p className="mt-4 text-white/65 max-w-2xl">
-              Lifestyle, commuting, trail e viaggi: immagini realistiche con luce “premium” in stile Unsplash/Pexels.
+              Una selezione di immagini e dettagli: attrezzatura, componenti e lavori di manutenzione.
             </p>
           </motion.div>
 
@@ -547,7 +549,7 @@ export function VoltbikeLanding() {
                           : 'aspect-[5/4]'
               return (
                 <motion.div
-                  key={src}
+                  key={`${src}-${idx}`}
                   initial={{ opacity: 0, y: 16, filter: 'blur(10px)' }}
                   whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   viewport={{ once: true, margin: '-120px' }}
@@ -559,7 +561,7 @@ export function VoltbikeLanding() {
                   >
                     <Image
                       src={src}
-                      alt="Esperienza di guida VOLTBIKE"
+                      alt="Officina biciclette"
                       fill
                       sizes="(max-width: 768px) 50vw, 33vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
@@ -589,7 +591,7 @@ export function VoltbikeLanding() {
               Persone. Storie. <span className="text-gradient">Libertà.</span>
             </h2>
             <p className="mt-4 text-white/65 max-w-2xl">
-              Recensioni ad alta fiducia: qualità percepita, comfort e tecnologia che semplifica la vita.
+              Esperienze reali: riparazioni puntuali, manutenzione accurata e supporto su richiesta anche a domicilio.
             </p>
           </motion.div>
 
@@ -614,7 +616,7 @@ export function VoltbikeLanding() {
                   <div className="mt-6 text-white/75 leading-relaxed text-lg">“{t.quote}”</div>
                   <div className="mt-8 flex items-center gap-2 text-white/55 text-sm font-semibold">
                     <Sparkles className="w-4 h-4 text-[rgb(163,255,0)]" />
-                    Verificato · VOLTBIKE Owners Club
+                    Verificato · Clienti VincenzoBike
                   </div>
                 </div>
               ))}
@@ -623,7 +625,7 @@ export function VoltbikeLanding() {
         </div>
       </section>
 
-      <section id="configura" className="py-24 md:py-32">
+      <section id="contatti" className="py-24 md:py-32">
         <div className="container mx-auto px-6">
           <motion.div
             variants={reveal}
@@ -633,156 +635,88 @@ export function VoltbikeLanding() {
             transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-4xl"
           >
-            <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Configuratore</div>
+            <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Contatti</div>
             <h2 className="mt-3 font-display font-extrabold tracking-tight text-4xl md:text-6xl">
-              Inizia il tuo <span className="text-gradient">viaggio</span>
+              Vieni in <span className="text-gradient">officina</span>
             </h2>
             <p className="mt-4 text-white/65 max-w-2xl">
-              Un configuratore semplice e veloce: scegli modello, colore, batteria e accessori. Prezzo aggiornato in tempo reale.
+              {`Siamo in ${(data as any).footer.address}. Aperto dal lunedì al sabato dalle 09:00 alle 20:00 (domenica chiuso). Riparazioni a domicilio su richiesta. Pompa per gonfiaggio ruote disponibile gratuitamente.`}
             </p>
           </motion.div>
 
           <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="lg:col-span-7 glass border border-white/12 rounded-[32px] p-8 md:p-10">
-              <div className="text-white font-bold">Modello</div>
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {models.map((m) => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => setModelId(m.id)}
-                    className={`tap-target px-4 py-3 rounded-2xl border text-sm font-bold transition-colors ${
-                      modelId === m.id
-                        ? 'border-white/20 bg-white/10 text-white'
-                        : 'border-white/10 bg-white/4 text-white/70 hover:text-white hover:bg-white/6'
-                    }`}
-                  >
-                    {m.id === 'urban' ? 'Urban' : m.id === 'mountain' ? 'Mountain' : m.id === 'cargo' ? 'Cargo' : 'Folding'}
-                  </button>
+              <div className="text-white font-bold">Cosa trovi da VincenzoBike</div>
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  {
+                    icon: <Wrench className="w-4 h-4 text-[rgb(163,255,0)]" />,
+                    title: 'Manutenzione e riparazioni',
+                    desc: 'Bici muscolari, elettriche e a pedalata assistita.',
+                  },
+                  {
+                    icon: <Home className="w-4 h-4 text-[rgb(0,245,255)]" />,
+                    title: 'Riparazioni a domicilio',
+                    desc: 'Disponibile su richiesta, in base al tipo di intervento.',
+                  },
+                  {
+                    icon: <Check className="w-4 h-4 text-white/80" />,
+                    title: 'Pompa gratuita',
+                    desc: 'Gonfiaggio ruote disponibile gratuitamente in officina.',
+                  },
+                  {
+                    icon: <ShoppingBag className="w-4 h-4 text-white/80" />,
+                    title: 'Accessori e ricambi',
+                    desc: 'Vendita gadget e possibilità di ordinare ricambistica specifica.',
+                  },
+                ].map((c) => (
+                  <div key={c.title} className="rounded-2xl bg-white/4 border border-white/10 p-6">
+                    <div className="flex items-center gap-2 text-white/90 font-semibold">
+                      {c.icon}
+                      {c.title}
+                    </div>
+                    <div className="mt-2 text-white/65 leading-relaxed">{c.desc}</div>
+                  </div>
                 ))}
               </div>
 
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <div className="text-white font-bold">Colore</div>
-                  <div className="mt-4 flex flex-wrap gap-3">
-                    {([
-                      { label: 'Graphite', chip: 'bg-white/10 border-white/12' },
-                      { label: 'Electric Blue', chip: 'bg-[rgba(0,245,255,0.14)] border-[rgba(0,245,255,0.30)]' },
-                      { label: 'Lime', chip: 'bg-[rgba(163,255,0,0.14)] border-[rgba(163,255,0,0.30)]' },
-                    ] as const).map((c) => (
-                      <button
-                        key={c.label}
-                        type="button"
-                        onClick={() => setColor(c.label)}
-                        className={`tap-target px-4 py-3 rounded-2xl border text-sm font-bold transition-colors ${
-                          color === c.label ? `text-white ${c.chip}` : 'border-white/10 bg-white/4 text-white/70 hover:text-white'
-                        }`}
-                      >
-                        {c.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <div className="text-white font-bold">Batteria</div>
-                  <div className="mt-4 grid grid-cols-2 gap-3">
-                    {([
-                      { label: 'Standard', desc: '540Wh' },
-                      { label: 'Extended', desc: '720Wh (+€290)' },
-                    ] as const).map((b) => (
-                      <button
-                        key={b.label}
-                        type="button"
-                        onClick={() => setBattery(b.label)}
-                        className={`tap-target px-4 py-3 rounded-2xl border text-sm font-bold transition-colors ${
-                          battery === b.label
-                            ? 'border-white/20 bg-white/10 text-white'
-                            : 'border-white/10 bg-white/4 text-white/70 hover:text-white hover:bg-white/6'
-                        }`}
-                      >
-                        <div>{b.label}</div>
-                        <div className="text-[11px] text-white/60 font-semibold mt-1">{b.desc}</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8">
-                <div className="text-white font-bold">Accessori</div>
-                <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {[
-                    { k: 'rack', label: 'Portapacchi', price: 120 },
-                    { k: 'lights', label: 'Luci smart', price: 70 },
-                    { k: 'tracker', label: 'Tracker GPS', price: 90 },
-                  ].map((a) => (
-                    <button
-                      key={a.k}
-                      type="button"
-                      onClick={() => setAcc((p) => ({ ...p, [a.k]: !(p as any)[a.k] }))}
-                      className={`tap-target px-4 py-3 rounded-2xl border text-sm font-bold transition-colors ${
-                        (acc as any)[a.k]
-                          ? 'border-white/20 bg-white/10 text-white'
-                          : 'border-white/10 bg-white/4 text-white/70 hover:text-white hover:bg-white/6'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <div>{a.label}</div>
-                        <div className="text-white/60 text-xs font-semibold">+€{a.price}</div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+              <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                <a
+                  href={mapsHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-primary px-7 py-4 font-bold rounded-2xl inline-flex items-center justify-center gap-2"
+                >
+                  Apri in Maps
+                  <ArrowRight className="w-5 h-5" />
+                </a>
+                <a
+                  href={`mailto:${(data as any).footer.email}`}
+                  className="btn-secondary px-7 py-4 font-bold rounded-2xl inline-flex items-center justify-center gap-2 border border-white/12"
+                >
+                  Scrivici
+                  <ArrowRight className="w-5 h-5" />
+                </a>
               </div>
             </div>
 
             <div className="lg:col-span-5 glass border border-white/12 rounded-[32px] p-8 md:p-10 relative overflow-hidden">
               <div className="absolute inset-0 bg-[radial-gradient(650px_340px_at_40%_20%,rgba(0,245,255,0.12),transparent_70%),radial-gradient(650px_340px_at_70%_70%,rgba(163,255,0,0.10),transparent_72%)]" />
               <div className="relative">
-                <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Riepilogo</div>
-                <div className="mt-3 text-white text-3xl md:text-4xl font-extrabold tracking-tight font-display">
-                  {selectedModel?.name ?? 'VOLTBIKE'}
+                <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Indirizzo</div>
+                <div className="mt-3 text-white text-2xl md:text-3xl font-extrabold tracking-tight font-display">
+                  {(data as any).footer.address}
                 </div>
-                <div className="mt-2 text-white/65">{selectedModel?.category}</div>
 
                 <div className="mt-8 rounded-2xl bg-white/4 border border-white/10 p-6">
                   <div className="flex items-center justify-between text-white/80 text-sm font-semibold">
-                    <div>Colore</div>
-                    <div className="text-white">{color}</div>
+                    <div>Email</div>
+                    <div className="text-white">{(data as any).footer.email}</div>
                   </div>
                   <div className="mt-3 flex items-center justify-between text-white/80 text-sm font-semibold">
-                    <div>Batteria</div>
-                    <div className="text-white">{battery === 'Extended' ? 'Extended 720Wh' : 'Standard 540Wh'}</div>
+                    <div>Telefono</div>
+                    <div className="text-white">{(data as any).footer.phone}</div>
                   </div>
-                  <div className="mt-3 flex items-center justify-between text-white/80 text-sm font-semibold">
-                    <div>Accessori</div>
-                    <div className="text-white">
-                      {(acc.rack ? 1 : 0) + (acc.lights ? 1 : 0) + (acc.tracker ? 1 : 0)} selezionati
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-8 flex items-end justify-between gap-6">
-                  <div>
-                    <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Prezzo stimato</div>
-                    <div className="mt-2 text-white text-4xl font-extrabold tracking-tight">{formatEUR(totalPrice)}</div>
-                  </div>
-                  <div className="text-right text-white/55 text-xs">
-                    IVA inclusa · consegna da 7–14 giorni · configurazione salvabile
-                  </div>
-                </div>
-
-                <div className="mt-8 flex flex-col gap-3">
-                  <MagneticButton className="btn-primary px-7 py-4 font-bold">
-                    Prenota una prova
-                    <ArrowRight className="w-5 h-5" />
-                  </MagneticButton>
-                  <MagneticButton className="btn-secondary px-7 py-4 font-bold border border-white/12">
-                    Scarica brochure
-                    <ArrowRight className="w-5 h-5" />
-                  </MagneticButton>
                 </div>
               </div>
             </div>
@@ -795,10 +729,11 @@ export function VoltbikeLanding() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
             <div className="md:col-span-5">
               <div className="font-display text-2xl font-extrabold tracking-tight text-white">
-                VOLT<span className="text-gradient">BIKE</span>
+                Vincenzo<span className="text-gradient">Bike</span>
               </div>
               <div className="mt-3 text-white/60 max-w-md">
-                Brand premium di e-bike: velocità, libertà e tecnologia. Design minimal con dettagli futuristici.
+                Assistenza, manutenzione e riparazioni per bici muscolari, elettriche e a pedalata assistita. Su richiesta,
+                riparazioni a domicilio e pompa gratuita in officina.
               </div>
             </div>
 
@@ -807,9 +742,9 @@ export function VoltbikeLanding() {
                 <div className="text-white font-bold">Esplora</div>
                 <div className="mt-4 flex flex-col gap-3 text-white/65 font-semibold">
                   {[
-                    { label: 'Modelli', id: 'modelli' },
-                    { label: 'Tecnologia', id: 'tecnologia' },
-                    { label: 'Configuratore', id: 'configura' },
+                    { label: 'Servizi', id: 'servizi' },
+                    { label: 'Officina', id: 'tecnologia' },
+                    { label: 'Contatti', id: 'contatti' },
                   ].map((l) => (
                     <a key={l.id} href={`#${l.id}`} className="hover:text-white transition-colors">
                       {l.label}
@@ -827,7 +762,7 @@ export function VoltbikeLanding() {
               </div>
               <div>
                 <div className="text-white font-bold">Newsletter</div>
-                <div className="mt-4 text-white/60 text-sm">Offerte e novità VOLTBIKE.</div>
+                <div className="mt-4 text-white/60 text-sm">Novità e promozioni VincenzoBike.</div>
                 <div className="mt-4 flex gap-3">
                   <input
                     className="h-12 w-full rounded-2xl bg-white/4 border border-white/10 px-4 text-white placeholder:text-white/35 outline-none focus:border-white/20"
@@ -845,7 +780,7 @@ export function VoltbikeLanding() {
           </div>
 
           <div className="mt-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-white/45 text-xs">
-            <div>© {new Date().getFullYear()} VOLTBIKE. Tutti i diritti riservati.</div>
+            <div>© {new Date().getFullYear()} VincenzoBike. Tutti i diritti riservati.</div>
             <div className="flex items-center gap-4">
               {(data as any).footer.social.map((s: any) => (
                 <a key={s.label} href={s.href} className="hover:text-white/70 transition-colors">

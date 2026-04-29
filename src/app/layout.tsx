@@ -16,29 +16,29 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://voltbike.example"),
+  metadataBase: new URL("https://vincenzobike.example"),
   title: {
-    default: "VOLTBIKE — Bici elettriche premium",
-    template: "%s — VOLTBIKE",
+    default: "VincenzoBike — Officina biciclette a Marcianise",
+    template: "%s — VincenzoBike",
   },
   description:
-    "Bici elettriche premium con autonomia fino a 150km, design italiano e tecnologia connessa. Urban, Mountain, Cargo, Folding: scegli la tua prossima libertà.",
-  applicationName: "VOLTBIKE",
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "VOLTBIKE" },
+    "Officina per manutenzione e riparazioni bici muscolari, elettriche e a pedalata assistita. Su richiesta, riparazioni a domicilio. Pompa gratuita e vendita accessori e ricambi.",
+  applicationName: "VincenzoBike",
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "VincenzoBike" },
   formatDetection: { telephone: false },
   openGraph: {
     type: "website",
-    title: "VOLTBIKE — Bici elettriche premium",
+    title: "VincenzoBike — Officina biciclette a Marcianise",
     description:
-      "Autonomia fino a 150km, motore silenzioso e connettività App. Design minimal con anima futuristica.",
-    siteName: "VOLTBIKE",
-    images: [{ url: "/bici1.jpg", width: 1600, height: 900, alt: "VOLTBIKE e-bike" }],
+      "Manutenzione e riparazioni per bici muscolari, elettriche e a pedalata assistita. Su richiesta, riparazioni a domicilio.",
+    siteName: "VincenzoBike",
+    images: [{ url: "/bici1.jpg", width: 1600, height: 900, alt: "Officina biciclette" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "VOLTBIKE — Bici elettriche premium",
+    title: "VincenzoBike — Officina biciclette a Marcianise",
     description:
-      "Autonomia fino a 150km, motore silenzioso e connettività App. Design minimal con anima futuristica.",
+      "Manutenzione e riparazioni per bici muscolari, elettriche e a pedalata assistita. Su richiesta, riparazioni a domicilio.",
     images: ["/bici1.jpg"],
   },
   manifest: "/manifest.json",
@@ -63,7 +63,7 @@ export default function RootLayout({
     <html
       lang="it"
       suppressHydrationWarning
-      className={`${inter.variable} ${spaceGrotesk.variable} antialiased`}
+      className={`dark ${inter.variable} ${spaceGrotesk.variable} antialiased`}
     >
       <body className="min-h-screen flex flex-col">
         <ThemeProvider

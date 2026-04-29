@@ -19,12 +19,12 @@ export const Navbar = () => {
   if (!mounted) return null
 
   const items = [
-    { label: 'Modelli', id: 'modelli' },
+    { label: 'Servizi', id: 'servizi' },
     { label: 'Perché', id: 'perche' },
-    { label: 'Tecnologia', id: 'tecnologia' },
+    { label: 'Officina', id: 'tecnologia' },
     { label: 'Gallery', id: 'gallery' },
     { label: 'Recensioni', id: 'testimonial' },
-    { label: 'Configura', id: 'configura' },
+    { label: 'Contatti', id: 'contatti' },
   ]
 
   return (
@@ -39,7 +39,7 @@ export const Navbar = () => {
             <Bike className="text-white w-6 h-6 opacity-90" />
           </div>
           <span className="font-display text-2xl font-bold tracking-tight">
-            VOLT<span className="text-gradient">BIKE</span>
+            Vincenzo<span className="text-gradient">Bike</span>
           </span>
         </Link>
 
@@ -57,10 +57,10 @@ export const Navbar = () => {
           
           <div className="flex items-center gap-3 ml-6">
             <Link
-              href="#configura"
+              href="#contatti"
               className="tap-target px-5 py-3 rounded-2xl btn-primary font-bold text-sm flex items-center gap-2 hover:shadow-[0_0_40px_rgba(0,245,255,0.20)] transition-shadow"
             >
-              Configura ora
+              Contattaci
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
