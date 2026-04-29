@@ -5,6 +5,7 @@ import { updateData } from './actions'
 import Link from 'next/link'
 import { Plus, Trash2, Image as ImageIcon } from 'lucide-react'
 import { SiteDataSchema, type SiteData } from '@/lib/site-data-schema'
+import type { Product, Promotion } from '@/lib/site-data-schema'
 
 const CATEGORY_OPTIONS = [
   { value: 'city', label: 'City' },
@@ -105,18 +106,16 @@ export default function AdminClientPage() {
 
   const addPromotion = () => {
     if (!data) return
-    const newPromotions = [
-      ...(data.promotions || []),
-      {
-        title: '',
-        scope: 'general',
-        status: 'draft',
-        discountType: 'percent',
-        discountValue: 10,
-        description: '',
-        image: '/bici1.jpg',
-      },
-    ]
+    const newPromotion = {
+      title: '',
+      scope: 'general',
+      status: 'draft',
+      discountType: 'percent',
+      discountValue: 10,
+      description: '',
+      image: '/bici1.jpg',
+    } satisfies Promotion
+    const newPromotions: Promotion[] = [...(data.promotions ?? []), newPromotion]
     setData({ ...data, promotions: newPromotions })
   }
 
@@ -135,22 +134,16 @@ export default function AdminClientPage() {
 
   const addProduct = () => {
     if (!data) return
-    const newProducts = [
-      ...(data.products || []),
-      {
-        name: '',
-        category: 'city',
-        status: 'available',
-        sku: '',
-        slug: '',
-        price: '',
-        salePrice: '',
-        description: '',
-        brand: '',
-        image: '/bici1.jpg',
-        ebike: {},
-      },
-    ]
+    const newProduct = {
+      name: '',
+      category: 'city',
+      status: 'available',
+      price: '',
+      description: '',
+      brand: '',
+      image: '/bici1.jpg',
+    } satisfies Product
+    const newProducts: Product[] = [...(data.products ?? []), newProduct]
     setData({ ...data, products: newProducts })
   }
 
@@ -311,7 +304,7 @@ export default function AdminClientPage() {
                             <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prodotto</label>
                             <select
                               value={(promo as any).productSku ?? ''}
-                              onChange={(e) => updatePromotion(idx, 'productSku', e.target.value)}
+                              onChange={(e) => updatePromotion(idx, 'productSku', e.target.value === '' ? undefined : e.target.value)}
                               className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
                             >
                               <option value="">Seleziona…</option>
@@ -488,7 +481,7 @@ export default function AdminClientPage() {
                         <input
                           type="text"
                           value={String((product as any).sku ?? '')}
-                          onChange={(e) => updateProduct(idx, 'sku', e.target.value)}
+                          onChange={(e) => updateProduct(idx, 'sku', e.target.value === '' ? undefined : e.target.value)}
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
                         />
                       </div>
@@ -497,7 +490,7 @@ export default function AdminClientPage() {
                         <input
                           type="text"
                           value={String((product as any).slug ?? '')}
-                          onChange={(e) => updateProduct(idx, 'slug', e.target.value)}
+                          onChange={(e) => updateProduct(idx, 'slug', e.target.value === '' ? undefined : e.target.value)}
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
                         />
                       </div>
@@ -543,7 +536,7 @@ export default function AdminClientPage() {
                         <input
                           type="text"
                           value={String((product as any).salePrice ?? '')}
-                          onChange={(e) => updateProduct(idx, 'salePrice', e.target.value)}
+                          onChange={(e) => updateProduct(idx, 'salePrice', e.target.value === '' ? undefined : e.target.value)}
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
                         />
                       </div>
