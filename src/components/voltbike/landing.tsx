@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -21,7 +21,7 @@ import { Navbar } from '@/components/navbar'
 import { TiltCard } from '@/components/tilt-card'
 import { CursorGlow } from '@/components/voltbike/cursor-glow'
 import { MagneticButton } from '@/components/voltbike/magnetic-button'
-import data from '@/data.json'
+import initialData from '@/data.json'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -41,6 +41,7 @@ function toImageUrl(input: any, fallbackSize: string) {
 
 export function VoltbikeLanding() {
   const rootRef = useRef<HTMLDivElement | null>(null)
+  const [data, setData] = useState<any>(initialData as any)
   const prefersReducedMotion = useMemo(() => {
     if (typeof window === 'undefined') return true
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -52,6 +53,19 @@ export function VoltbikeLanding() {
   const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     (data as any).footer?.address ?? ''
   )}`
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/site-data', { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((json) => {
+        if (!cancelled) setData(json)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     if (prefersReducedMotion) return
@@ -275,6 +289,130 @@ export function VoltbikeLanding() {
           </motion.div>
         </div>
       </section>
+
+      {Array.isArray((data as any).promotions) && (data as any).promotions.length > 0 && (
+        <section id="promozioni" className="py-24 md:py-32 relative">
+          <div className="absolute inset-0 bg-[radial-gradient(900px_520px_at_20%_20%,rgba(163,255,0,0.06),transparent_62%)]" />
+          <div className="relative container mx-auto px-6">
+            <motion.div
+              variants={reveal}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: '-120px' }}
+              transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+              className="max-w-4xl"
+            >
+              <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Promozioni</div>
+              <h2 className="mt-3 font-display font-extrabold tracking-tight text-4xl md:text-6xl">
+                Offerte <span className="text-gradient">in corso</span>
+              </h2>
+              <p className="mt-4 text-white/65 max-w-2xl">
+                Aggiornate dal pannello admin: gestisci titolo, descrizione e immagine in un attimo.
+              </p>
+            </motion.div>
+
+            <div className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-6">
+              {((data as any).promotions as any[]).map((p, idx) => (
+                <motion.div
+                  key={`${p.title}-${idx}`}
+                  initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
+                  whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  viewport={{ once: true, margin: '-120px' }}
+                  transition={{ duration: 0.7, delay: idx * 0.05, ease: [0.16, 1, 0.3, 1] }}
+                  className="group glass border border-white/12 rounded-[32px] overflow-hidden hover:border-white/20 transition-colors"
+                >
+                  <div className="relative aspect-[16/10] bg-white/3">
+                    <Image
+                      src={p.image || '/bici1.jpg'}
+                      alt={p.title || 'Promozione'}
+                      fill
+                      sizes="(max-width: 768px) 92vw, 46vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                      style={{ objectPosition: '50% 40%' }}
+                    />
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,8,0.06)_0%,rgba(5,6,8,0.62)_72%,rgba(5,6,8,0.80)_100%)]" />
+                  </div>
+                  <div className="p-7 md:p-8">
+                    <div className="text-white text-2xl font-extrabold tracking-tight font-display">
+                      {p.title || 'Promozione'}
+                    </div>
+                    <div className="mt-3 text-white/70 leading-relaxed">{p.description || ''}</div>
+                    <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                      <MagneticButton href="#contatti" className="btn-primary px-6 py-4 font-bold flex-1">
+                        Richiedi info
+                        <ArrowRight className="w-5 h-5" />
+                      </MagneticButton>
+                      <MagneticButton href="#servizi" className="btn-secondary px-6 py-4 font-bold border border-white/12">
+                        Vedi servizi
+                        <Play className="w-5 h-5" />
+                      </MagneticButton>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {Array.isArray((data as any).products) && (data as any).products.length > 0 && (
+        <section id="prodotti" className="py-24 md:py-32">
+          <div className="container mx-auto px-6">
+            <motion.div
+              variants={reveal}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: '-120px' }}
+              transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+              className="max-w-4xl"
+            >
+              <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Prodotti</div>
+              <h2 className="mt-3 font-display font-extrabold tracking-tight text-4xl md:text-6xl">
+                Ricambi & <span className="text-gradient">accessori</span>
+              </h2>
+              <p className="mt-4 text-white/65 max-w-2xl">
+                Una selezione gestita dal pannello admin. Nessun e-commerce: solo vetrina premium e richiesta rapida.
+              </p>
+            </motion.div>
+
+            <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {((data as any).products as any[]).map((p, idx) => (
+                <motion.div
+                  key={`${p.name}-${idx}`}
+                  initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
+                  whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  viewport={{ once: true, margin: '-120px' }}
+                  transition={{ duration: 0.7, delay: idx * 0.04, ease: [0.16, 1, 0.3, 1] }}
+                  className="group glass border border-white/12 rounded-[28px] p-6 hover:border-white/20 transition-colors"
+                >
+                  <div className="relative aspect-square rounded-2xl overflow-hidden bg-white/3 border border-white/10">
+                    <Image
+                      src={p.image || '/bici1.jpg'}
+                      alt={p.name || 'Prodotto'}
+                      fill
+                      sizes="(max-width: 768px) 92vw, (max-width: 1024px) 46vw, 22vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                      style={{ objectPosition: '50% 50%' }}
+                    />
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,8,0.00)_40%,rgba(5,6,8,0.72)_100%)]" />
+                  </div>
+                  <div className="mt-5 flex items-start justify-between gap-3">
+                    <div className="text-white font-extrabold tracking-tight">{p.name || 'Prodotto'}</div>
+                    <div className="text-white/80 font-bold">{p.price || ''}</div>
+                  </div>
+                  <div className="mt-2 text-white/65 text-sm leading-relaxed line-clamp-3">{p.description || ''}</div>
+                  <div className="mt-5">
+                    <MagneticButton href="#contatti" className="btn-secondary w-full px-5 py-4 font-bold border border-white/12">
+                      Richiedi disponibilità
+                      <ArrowRight className="w-5 h-5" />
+                    </MagneticButton>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section id="servizi" data-hscroll className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(900px_540px_at_10%_30%,rgba(0,245,255,0.10),transparent_60%),radial-gradient(900px_540px_at_90%_40%,rgba(163,255,0,0.08),transparent_60%)]" />
@@ -866,6 +1004,9 @@ export function VoltbikeLanding() {
           <div className="mt-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-white/45 text-xs">
             <div>© {new Date().getFullYear()} VincenzoBike. Tutti i diritti riservati.</div>
             <div className="flex items-center gap-4">
+              <a href="/admin" className="hover:text-white/70 transition-colors">
+                Admin
+              </a>
               {(data as any).footer.social.map((s: any) => (
                 <a key={s.label} href={s.href} className="hover:text-white/70 transition-colors">
                   {s.label}

@@ -19,11 +19,12 @@ export const Navbar = () => {
   if (!mounted) return null
 
   const items = [
+    { label: 'Promo', id: 'promozioni' },
+    { label: 'Shop', id: 'prodotti' },
     { label: 'Servizi', id: 'servizi' },
     { label: 'Perché', id: 'perche' },
     { label: 'Officina', id: 'officina' },
     { label: 'Gallery', id: 'gallery' },
-    { label: 'Recensioni', id: 'testimonial' },
     { label: 'Contatti', id: 'contatti' },
   ]
 
