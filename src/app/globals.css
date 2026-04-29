@@ -148,6 +148,16 @@ img {
   opacity: 0.7;
 }
 
+.img-op {
+  object-position: var(--op-mobile, 50% 50%);
+}
+
+@media (min-width: 768px) {
+  .img-op {
+    object-position: var(--op-desktop, 50% 50%);
+  }
+}
+
 @keyframes scan {
   0% { transform: translateY(-120%); }
   100% { transform: translateY(120%); }

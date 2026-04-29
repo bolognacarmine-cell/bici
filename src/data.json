@@ -199,6 +199,47 @@
       "rating": 5
     }
   ],
+  "workshop": {
+    "title": "Officina / Per ogni necessità",
+    "subtitle": "Manutenzione ordinaria, interventi tecnici e ricambi selezionati. Un servizio pulito, credibile e coerente con un brand premium.",
+    "cards": [
+      {
+        "title": "Manutenzione",
+        "desc": "Tagliando, check-up, controlli periodici: performance e sicurezza sempre al top.",
+        "image": "https://source.unsplash.com/1600x1200/?motorcycle,maintenance,garage&sig=21",
+        "objectPositionMobile": "55% 45%",
+        "objectPositionDesktop": "55% 40%"
+      },
+      {
+        "title": "Riparazioni",
+        "desc": "Tecnici al lavoro, interventi mirati e componenti verificati: riparti subito, senza compromessi.",
+        "image": "https://source.unsplash.com/1600x1200/?motorcycle,mechanic,repair&sig=22",
+        "objectPositionMobile": "50% 50%",
+        "objectPositionDesktop": "50% 45%"
+      },
+      {
+        "title": "Ricambi",
+        "desc": "Componenti, trasmissione, freni, accessori: dettagli tecnici e compatibilità garantita.",
+        "image": "https://source.unsplash.com/1600x1200/?motorcycle,parts,engine&sig=23",
+        "objectPositionMobile": "50% 55%",
+        "objectPositionDesktop": "50% 50%"
+      },
+      {
+        "title": "Diagnostica",
+        "desc": "Diagnostica e set-up: lettura parametri, test, calibrazioni e interventi mirati su elettronica e componenti.",
+        "image": "https://source.unsplash.com/1600x1200/?motorcycle,diagnostic,tools&sig=24",
+        "objectPositionMobile": "50% 50%",
+        "objectPositionDesktop": "50% 45%"
+      },
+      {
+        "title": "Assistenza",
+        "desc": "Supporto, consulenza e servizi dedicati: dalla scelta al post-vendita.",
+        "image": "https://source.unsplash.com/1600x1200/?motorcycle,service,technician&sig=25",
+        "objectPositionMobile": "50% 45%",
+        "objectPositionDesktop": "55% 45%"
+      }
+    ]
+  },
   "footer": {
     "email": "info@vincenzobike.example",
     "phone": "+39 000 000 0000",

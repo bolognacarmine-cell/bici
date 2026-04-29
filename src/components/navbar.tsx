@@ -19,12 +19,21 @@ export const Navbar = () => {
   if (!mounted) return null
 
   const items = [
+<<<<<<< HEAD
     { label: 'Servizi', id: 'servizi' },
+=======
+    { label: 'Modelli', id: 'modelli' },
+    { label: 'Officina', id: 'officina' },
+>>>>>>> f4cd6d0 (Messaggio del commit)
     { label: 'Perché', id: 'perche' },
     { label: 'Officina', id: 'tecnologia' },
     { label: 'Gallery', id: 'gallery' },
+<<<<<<< HEAD
     { label: 'Recensioni', id: 'testimonial' },
     { label: 'Contatti', id: 'contatti' },
+=======
+    { label: 'Configura', id: 'configura' },
+>>>>>>> f4cd6d0 (Messaggio del commit)
   ]
 
   return (

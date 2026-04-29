@@ -108,7 +108,7 @@ export function VoltbikeLanding() {
       <CursorGlow />
       <Navbar />
 
-      <section id="hero" className="relative min-h-[100svh] pt-28 md:pt-32">
+      <section id="hero" className="relative min-h-[108svh] md:min-h-[100svh] pt-28 md:pt-32">
         <div className="absolute inset-0">
           <Image
             src="/bici1.jpg"
@@ -116,9 +116,20 @@ export function VoltbikeLanding() {
             fill
             priority
             sizes="100vw"
-            className="object-cover object-top opacity-40"
+            className="md:hidden object-cover opacity-60"
+            style={{ objectPosition: '50% 35%' }}
           />
-          <div className="absolute inset-0 bg-[radial-gradient(1200px_700px_at_50%_20%,rgba(0,245,255,0.12),transparent_62%),radial-gradient(900px_600px_at_90%_45%,rgba(163,255,0,0.10),transparent_60%),linear-gradient(180deg,rgba(5,6,8,0.40),rgba(5,6,8,0.92))]" />
+          <Image
+            src="/bici1.jpg"
+            alt=""
+            aria-hidden="true"
+            fill
+            priority
+            sizes="100vw"
+            className="hidden md:block object-cover opacity-65"
+            style={{ objectPosition: '50% 18%' }}
+          />
+          <div className="absolute inset-0 bg-[radial-gradient(1200px_700px_at_50%_18%,rgba(0,245,255,0.12),transparent_62%),radial-gradient(900px_600px_at_90%_45%,rgba(163,255,0,0.10),transparent_60%),linear-gradient(180deg,rgba(5,6,8,0.18),rgba(5,6,8,0.82))]" />
           <div className="absolute inset-0 grid-overlay opacity-70" />
           <div className="absolute inset-0 scanline" />
         </div>
@@ -126,23 +137,32 @@ export function VoltbikeLanding() {
         <div className="relative z-10 container mx-auto px-6">
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-7">
+<<<<<<< HEAD
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/12 text-white/80 text-xs tracking-widest uppercase font-semibold">
                 <span className="h-2 w-2 rounded-full bg-[rgb(0,245,255)] shadow-[0_0_18px_rgba(0,245,255,0.55)]" />
                 Manutenzione · riparazioni · ricambi · accessori
               </div>
+=======
+              <div className="rounded-[32px] md:rounded-none bg-black/14 md:bg-transparent border border-white/10 md:border-transparent backdrop-blur-[2px] md:backdrop-blur-0 p-5 md:p-0">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/12 text-white/80 text-xs tracking-widest uppercase font-semibold">
+                  <span className="h-2 w-2 rounded-full bg-[rgb(0,245,255)] shadow-[0_0_18px_rgba(0,245,255,0.55)]" />
+                  Design italiano · tecnologia connessa · performance silenziosa
+                </div>
+>>>>>>> f4cd6d0 (Messaggio del commit)
 
-              <h1 className="mt-6 font-display font-extrabold tracking-tight text-[clamp(2.6rem,5vw,4.6rem)] leading-[0.98]">
-                {(data as any).brand.headline.split(' ').map((w: string, i: number) => (
-                  <span key={`${w}-${i}`} className="hero-word inline-block mr-3">
-                    {w}
-                  </span>
-                ))}
-              </h1>
+                <h1 className="mt-6 font-display font-extrabold tracking-tight text-[clamp(2.6rem,5vw,4.6rem)] leading-[0.98]">
+                  {(data as any).brand.headline.split(' ').map((w: string, i: number) => (
+                    <span key={`${w}-${i}`} className="hero-word inline-block mr-3">
+                      {w}
+                    </span>
+                  ))}
+                </h1>
 
-              <p className="hero-sub mt-6 max-w-2xl text-base md:text-lg text-white/70 leading-relaxed">
-                {(data as any).brand.subheadline}
-              </p>
+                <p className="hero-sub mt-6 max-w-2xl text-base md:text-lg text-white/70 leading-relaxed">
+                  {(data as any).brand.subheadline}
+                </p>
 
+<<<<<<< HEAD
               <div className="hero-cta mt-10 flex flex-col sm:flex-row gap-4">
                 <MagneticButton href="#servizi" className="btn-primary px-7 py-4 font-bold">
                   Scopri i servizi
@@ -153,14 +173,27 @@ export function VoltbikeLanding() {
                   <MapPinned className="w-5 h-5" />
                 </MagneticButton>
               </div>
+=======
+                <div className="hero-cta mt-10 flex flex-col sm:flex-row gap-4">
+                  <MagneticButton href="#modelli" className="btn-primary px-7 py-4 font-bold">
+                    Scegli il tuo modello
+                    <ArrowRight className="w-5 h-5" />
+                  </MagneticButton>
+                  <MagneticButton href="#gallery" className="btn-secondary px-7 py-4 font-bold border border-white/12">
+                    Guarda il video
+                    <Play className="w-5 h-5" />
+                  </MagneticButton>
+                </div>
+>>>>>>> f4cd6d0 (Messaggio del commit)
 
-              <div className="mt-12 grid grid-cols-3 gap-3 max-w-xl">
-                {(data as any).kpis.map((k: any) => (
-                  <div key={k.label} className="hero-kpi glass border border-white/10 rounded-2xl px-4 py-4">
-                    <div className="text-white text-xl md:text-2xl font-extrabold tracking-tight">{k.value}</div>
-                    <div className="text-white/60 text-xs tracking-wide uppercase mt-1">{k.label}</div>
-                  </div>
-                ))}
+                <div className="mt-12 grid grid-cols-3 gap-3 max-w-xl">
+                  {(data as any).kpis.map((k: any) => (
+                    <div key={k.label} className="hero-kpi glass border border-white/10 rounded-2xl px-4 py-4">
+                      <div className="text-white text-xl md:text-2xl font-extrabold tracking-tight">{k.value}</div>
+                      <div className="text-white/60 text-xs tracking-wide uppercase mt-1">{k.label}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -448,6 +481,65 @@ export function VoltbikeLanding() {
               >
                 <div className="text-white font-bold">{f.title}</div>
                 <div className="mt-3 text-white/65 leading-relaxed">{f.desc}</div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="officina" className="py-24 md:py-32">
+        <div className="container mx-auto px-6">
+          <motion.div
+            variants={reveal}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-120px' }}
+            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-4xl"
+          >
+            <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Officina</div>
+            <h2 className="mt-3 font-display font-extrabold tracking-tight text-4xl md:text-6xl">
+              {(data as any).workshop.title.split('/')[0].trim()}{' '}
+              <span className="text-gradient">/</span>{' '}
+              {(data as any).workshop.title.split('/')[1]?.trim()}
+            </h2>
+            <p className="mt-4 text-white/65 max-w-2xl">
+              {(data as any).workshop.subtitle}
+            </p>
+          </motion.div>
+
+          <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {((data as any).workshop.cards as any[]).map((c, idx) => (
+              <motion.div
+                key={c.title}
+                initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
+                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                viewport={{ once: true, margin: '-120px' }}
+                transition={{ duration: 0.7, delay: idx * 0.05, ease: [0.16, 1, 0.3, 1] }}
+                className="group glass border border-white/12 rounded-[32px] overflow-hidden hover:border-white/20 transition-colors"
+              >
+                <div className="relative aspect-[16/11] bg-white/3">
+                  <Image
+                    src={c.image}
+                    alt={c.title}
+                    fill
+                    sizes="(max-width: 768px) 92vw, (max-width: 1024px) 46vw, 30vw"
+                    className="object-cover img-op transition-transform duration-700 group-hover:scale-[1.03]"
+                    style={{
+                      ['--op-mobile' as any]: c.objectPositionMobile,
+                      ['--op-desktop' as any]: c.objectPositionDesktop,
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,8,0.06)_0%,rgba(5,6,8,0.62)_70%,rgba(5,6,8,0.78)_100%)]" />
+                </div>
+                <div className="p-7 md:p-8">
+                  <div className="text-white text-2xl font-extrabold tracking-tight font-display">{c.title}</div>
+                  <div className="mt-3 text-white/70 leading-relaxed">{c.desc}</div>
+                  <div className="mt-6 inline-flex items-center gap-2 text-white/65 text-sm font-semibold">
+                    <Sparkles className="w-4 h-4 text-[rgb(0,245,255)]" />
+                    Qualità verificata · interventi puliti
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -806,4 +898,3 @@ export function VoltbikeLanding() {
     </div>
   )
 }
-
