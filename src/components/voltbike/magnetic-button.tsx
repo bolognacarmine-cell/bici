@@ -11,7 +11,7 @@ type MagneticButtonProps = {
 }
 
 export function MagneticButton({ href, onClick, className = '', children }: MagneticButtonProps) {
-  const ref = useRef<HTMLAnchorElement | HTMLButtonElement | null>(null)
+  const ref = useRef<HTMLElement | null>(null)
   const prefersReducedMotion = useMemo(() => {
     if (typeof window === 'undefined') return true
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches
