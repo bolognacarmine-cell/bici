@@ -14,13 +14,20 @@ export default function AdminClientPage() {
   useEffect(() => {
     let cancelled = false
     fetch('/api/site-data', { cache: 'no-store' })
-      .then((res) => res.json())
-      .then((json) => {
-        const parsed = SiteDataSchema.parse(json)
+      .then(async (res) => {
+        const contentType = res.headers.get('content-type') || ''
+        const isJson = contentType.includes('application/json')
+        const body = isJson ? await res.json() : await res.text()
+        if (!res.ok) {
+          const msg =
+            typeof body === 'object' && body && 'error' in body ? String((body as any).error) : 'Errore durante il caricamento dati.'
+          throw new Error(msg)
+        }
+        const parsed = SiteDataSchema.parse(body)
         if (!cancelled) setData(parsed)
       })
-      .catch(() => {
-        if (!cancelled) setMessage('Errore durante il caricamento dati.')
+      .catch((e) => {
+        if (!cancelled) setMessage(e instanceof Error ? e.message : 'Errore durante il caricamento dati.')
       })
     return () => {
       cancelled = true
@@ -34,8 +41,13 @@ export default function AdminClientPage() {
       await updateData(data)
       setMessage('Modifiche salvate con successo!')
       fetch('/api/site-data', { cache: 'no-store' })
-        .then((res) => res.json())
-        .then((json) => setData(SiteDataSchema.parse(json)))
+        .then(async (res) => {
+          const contentType = res.headers.get('content-type') || ''
+          const isJson = contentType.includes('application/json')
+          const body = isJson ? await res.json() : await res.text()
+          if (!res.ok) return
+          setData(SiteDataSchema.parse(body))
+        })
         .catch(() => {})
       setTimeout(() => setMessage(''), 3000)
     } catch {
