@@ -117,7 +117,7 @@ export function VoltbikeLanding() {
             priority
             sizes="100vw"
             className="md:hidden object-cover opacity-60"
-            style={{ objectPosition: '50% 35%' }}
+            style={{ objectPosition: '32% 20%' }}
           />
           <Image
             src="/bici1.jpg"
@@ -127,7 +127,7 @@ export function VoltbikeLanding() {
             priority
             sizes="100vw"
             className="hidden md:block object-cover opacity-65"
-            style={{ objectPosition: '50% 18%' }}
+            style={{ objectPosition: '30% 14%' }}
           />
           <div className="absolute inset-0 bg-[radial-gradient(1200px_700px_at_50%_18%,rgba(0,245,255,0.12),transparent_62%),radial-gradient(900px_600px_at_90%_45%,rgba(163,255,0,0.10),transparent_60%),linear-gradient(180deg,rgba(5,6,8,0.18),rgba(5,6,8,0.82))]" />
           <div className="absolute inset-0 grid-overlay opacity-70" />
@@ -137,18 +137,11 @@ export function VoltbikeLanding() {
         <div className="relative z-10 container mx-auto px-6">
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-7">
-<<<<<<< HEAD
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/12 text-white/80 text-xs tracking-widest uppercase font-semibold">
-                <span className="h-2 w-2 rounded-full bg-[rgb(0,245,255)] shadow-[0_0_18px_rgba(0,245,255,0.55)]" />
-                Manutenzione · riparazioni · ricambi · accessori
-              </div>
-=======
               <div className="rounded-[32px] md:rounded-none bg-black/14 md:bg-transparent border border-white/10 md:border-transparent backdrop-blur-[2px] md:backdrop-blur-0 p-5 md:p-0">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/12 text-white/80 text-xs tracking-widest uppercase font-semibold">
                   <span className="h-2 w-2 rounded-full bg-[rgb(0,245,255)] shadow-[0_0_18px_rgba(0,245,255,0.55)]" />
-                  Design italiano · tecnologia connessa · performance silenziosa
+                  Manutenzione · riparazioni · ricambi · accessori
                 </div>
->>>>>>> f4cd6d0 (Messaggio del commit)
 
                 <h1 className="mt-6 font-display font-extrabold tracking-tight text-[clamp(2.6rem,5vw,4.6rem)] leading-[0.98]">
                   {(data as any).brand.headline.split(' ').map((w: string, i: number) => (
@@ -162,29 +155,16 @@ export function VoltbikeLanding() {
                   {(data as any).brand.subheadline}
                 </p>
 
-<<<<<<< HEAD
-              <div className="hero-cta mt-10 flex flex-col sm:flex-row gap-4">
-                <MagneticButton href="#servizi" className="btn-primary px-7 py-4 font-bold">
-                  Scopri i servizi
-                  <ArrowRight className="w-5 h-5" />
-                </MagneticButton>
-                <MagneticButton href="#contatti" className="btn-secondary px-7 py-4 font-bold border border-white/12">
-                  Dove siamo
-                  <MapPinned className="w-5 h-5" />
-                </MagneticButton>
-              </div>
-=======
                 <div className="hero-cta mt-10 flex flex-col sm:flex-row gap-4">
-                  <MagneticButton href="#modelli" className="btn-primary px-7 py-4 font-bold">
-                    Scegli il tuo modello
+                  <MagneticButton href="#servizi" className="btn-primary px-7 py-4 font-bold">
+                    Scopri i servizi
                     <ArrowRight className="w-5 h-5" />
                   </MagneticButton>
-                  <MagneticButton href="#gallery" className="btn-secondary px-7 py-4 font-bold border border-white/12">
-                    Guarda il video
-                    <Play className="w-5 h-5" />
+                  <MagneticButton href="#contatti" className="btn-secondary px-7 py-4 font-bold border border-white/12">
+                    Dove siamo
+                    <MapPinned className="w-5 h-5" />
                   </MagneticButton>
                 </div>
->>>>>>> f4cd6d0 (Messaggio del commit)
 
                 <div className="mt-12 grid grid-cols-3 gap-3 max-w-xl">
                   {(data as any).kpis.map((k: any) => (
