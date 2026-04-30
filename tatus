@@ -1,0 +1,5 @@
+[33meb5585c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mwork-eb5585c[m[33m, [m[1;31morigin/main[m[33m)[m Fix admin→sito, promo/prodotti e taglie junior
+[33me2fd3a4[m Fix: admin types for new promo/product
+[33mdb77fd2[m Admin: estensione ciclofficina
+[33m0edf2a9[m Admin: force black text
+[33m4f312fa[m Admin: show API load errors

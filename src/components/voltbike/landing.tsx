@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { motion } from 'framer-motion'
@@ -425,7 +426,11 @@ export function VoltbikeLanding() {
                   transition={{ duration: 0.7, delay: idx * 0.04, ease: [0.16, 1, 0.3, 1] }}
                   className="group glass border border-white/12 rounded-[28px] p-6 hover:border-white/20 transition-colors"
                 >
-                  <div className="relative aspect-square rounded-2xl overflow-hidden bg-white/3 border border-white/10">
+                  <Link
+                    href={`/prodotti/${encodeURIComponent(String(p?.slug || p?.sku || ''))}`}
+                    className="block relative aspect-square rounded-2xl overflow-hidden bg-white/3 border border-white/10"
+                    aria-label={`Apri dettagli: ${String(p?.name || 'Prodotto')}`}
+                  >
                     <img
                       src={p.image || '/bici1.jpg'}
                       alt={p.name || 'Prodotto'}
@@ -433,9 +438,14 @@ export function VoltbikeLanding() {
                       style={{ objectPosition: '50% 50%' }}
                     />
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,8,0.00)_40%,rgba(5,6,8,0.72)_100%)]" />
-                  </div>
+                  </Link>
                   <div className="mt-5 flex items-start justify-between gap-3">
-                    <div className="text-white font-extrabold tracking-tight">{p.name || 'Prodotto'}</div>
+                    <Link
+                      href={`/prodotti/${encodeURIComponent(String(p?.slug || p?.sku || ''))}`}
+                      className="text-white font-extrabold tracking-tight hover:underline"
+                    >
+                      {p.name || 'Prodotto'}
+                    </Link>
                     <div className="text-white/80 font-bold">{p.price || ''}</div>
                   </div>
                   <div className="mt-2 text-white/65 text-sm leading-relaxed line-clamp-3">{p.description || ''}</div>

@@ -119,6 +119,7 @@ const ProductSchema = z
     seoTitle: z.string().optional(),
     seoDescription: z.string().optional(),
   })
+  .passthrough()
   .superRefine((val, ctx) => {
     const price = Number.parseFloat(val.price)
     if (!Number.isFinite(price) || price <= 0) {
