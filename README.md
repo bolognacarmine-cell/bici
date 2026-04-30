@@ -46,14 +46,19 @@ Il sito è ottimizzato per il deployment su **Render.com**, con **deploy automat
 
 ### Opzione consigliata (Blueprint)
 
-Nel repo è presente [render.yaml](file:///c:/Users/Acer/bici/render.yaml).
+Nel repo è presente `render.yaml`.
 
 1. Su Render: **New** → **Blueprint**
 2. Seleziona il repository GitHub
 3. Conferma: Render leggerà `render.yaml` e creerà il servizio con:
    - `autoDeploy: true` (redeploy automatico ad ogni push)
    - `buildCommand: npm ci && npm run build`
-   - `startCommand: next start -p $PORT`
+   - `startCommand: npm run start -- --port $PORT`
+
+Variabili d’ambiente richieste:
+- `ADMIN_PASSWORD` (obbligatoria per abilitare l’admin)
+- `ADMIN_SESSION_SECRET` (consigliata; se assente viene usata `ADMIN_PASSWORD`)
+- `ADMIN_USER` (opzionale, default `admin`)
 
 ### Opzione manuale (Web Service)
 
@@ -62,7 +67,7 @@ Nel repo è presente [render.yaml](file:///c:/Users/Acer/bici/render.yaml).
 3. Imposta:
    - **Runtime**: Node
    - **Build Command**: `npm ci && npm run build`
-   - **Start Command**: `node node_modules/next/dist/bin/next start -p $PORT`
+   - **Start Command**: `npm run start -- --port $PORT`
 4. In **Settings** verifica che **Auto-Deploy** sia attivo
 
 ---

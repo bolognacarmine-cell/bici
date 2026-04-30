@@ -61,14 +61,14 @@ export const AIChatbot = () => {
   }
 
   return (
-    <div className="fixed bottom-8 right-8 z-[100]">
+    <div className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-[100]">
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
-            className="mb-4 w-[350px] h-[500px] glass dark:glass-dark rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+            className="mb-4 w-[calc(100vw-2rem)] max-w-[350px] h-[70vh] max-h-[500px] glass dark:glass-dark rounded-3xl overflow-hidden shadow-2xl flex flex-col"
           >
             {/* Header */}
             <div className="p-5 btn-primary flex justify-between items-center">

@@ -35,6 +35,11 @@ const GENDER_OPTIONS = [
   { value: 'unisex', label: 'Unisex' },
 ] as const
 
+const JUNIOR_WHEEL_SIZES = ['12"', '14"', '16"', '20"', '24"', '26"'] as const
+const ADULT_ALPHA_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'] as const
+const ROAD_FRAME_CM_SIZES = ['48 cm', '50 cm', '52 cm', '54 cm', '56 cm', '58 cm', '60 cm', '62 cm'] as const
+const MTB_FRAME_INCH_SIZES = ['13"', '15"', '17"', '19"', '21"'] as const
+
 const PROMO_SCOPE_OPTIONS = [
   { value: 'general', label: 'Generale' },
   { value: 'category', label: 'Categoria' },
@@ -441,7 +446,14 @@ export default function AdminClientPage() {
                         <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Categoria</label>
                         <select
                           value={(product as any).category ?? 'city'}
-                          onChange={(e) => updateProduct(idx, 'category', e.target.value)}
+                          onChange={(e) => {
+                            const nextCategory = e.target.value
+                            const nextMode =
+                              nextCategory === 'junior' ? 'inch' : nextCategory === 'road' ? 'cm' : nextCategory === 'mtb' ? 'alpha' : 'alpha'
+                            updateProduct(idx, 'category', nextCategory)
+                            updateProduct(idx, 'sizeMode', nextMode)
+                            updateProduct(idx, 'sizes', [])
+                          }}
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
                         >
                           {CATEGORY_OPTIONS.map((o) => (
@@ -466,6 +478,93 @@ export default function AdminClientPage() {
                         </select>
                       </div>
                     </div>
+
+                    {(() => {
+                      const category = String((product as any).category ?? 'city')
+                      const modeOptions =
+                        category === 'junior'
+                          ? (['inch'] as const)
+                          : category === 'road'
+                            ? (['cm'] as const)
+                            : category === 'mtb'
+                              ? (['alpha', 'inch'] as const)
+                              : (['alpha'] as const)
+                      const rawMode = String((product as any).sizeMode ?? '')
+                      const currentMode = (modeOptions as readonly string[]).includes(rawMode)
+                        ? (rawMode as (typeof modeOptions)[number])
+                        : modeOptions[0]
+                      const sizeOptions =
+                        currentMode === 'inch'
+                          ? category === 'junior'
+                            ? JUNIOR_WHEEL_SIZES
+                            : MTB_FRAME_INCH_SIZES
+                          : currentMode === 'cm'
+                            ? ROAD_FRAME_CM_SIZES
+                            : ADULT_ALPHA_SIZES
+                      const currentSizes = Array.isArray((product as any).sizes) ? ((product as any).sizes as string[]).map(String) : []
+                      const toggleSize = (value: string) => {
+                        const next = currentSizes.includes(value)
+                          ? currentSizes.filter((s) => s !== value)
+                          : [...currentSizes, value]
+                        updateProduct(idx, 'sizeMode', currentMode)
+                        updateProduct(idx, 'sizes', next)
+                      }
+                      return (
+                        <div className="rounded-xl border border-zinc-200 bg-white p-4">
+                          <div className="flex items-start justify-between gap-4">
+                            <div>
+                              <div className="text-sm font-bold text-zinc-800">Taglie</div>
+                              <div className="text-xs text-zinc-500 mt-1">
+                                {category === 'junior'
+                                  ? 'Bici bambino/a: misura ruota in pollici.'
+                                  : category === 'road'
+                                    ? 'Bici da corsa: taglie telaio in cm.'
+                                    : category === 'mtb'
+                                      ? 'MTB: standard oppure in pollici.'
+                                      : 'Taglie standard adulto.'}
+                              </div>
+                            </div>
+                            {modeOptions.length > 1 && (
+                              <div className="w-44">
+                                <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1">Formato</label>
+                                <select
+                                  value={currentMode}
+                                  onChange={(e) => {
+                                    updateProduct(idx, 'sizeMode', e.target.value)
+                                    updateProduct(idx, 'sizes', [])
+                                  }}
+                                  className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 text-sm"
+                                >
+                                  <option value="alpha">XS–XXL</option>
+                                  <option value="inch">Pollici</option>
+                                </select>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {sizeOptions.map((s) => {
+                              const active = currentSizes.includes(s)
+                              return (
+                                <button
+                                  key={s}
+                                  type="button"
+                                  onClick={() => toggleSize(s)}
+                                  className={
+                                    active
+                                      ? 'px-3 py-2 rounded-full bg-[#e67e22] text-white text-xs font-bold'
+                                      : 'px-3 py-2 rounded-full bg-zinc-50 border border-zinc-200 text-zinc-800 text-xs font-bold hover:bg-zinc-100'
+                                  }
+                                >
+                                  {s}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )
+                    })()}
+
                     <div>
                       <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Nome Prodotto</label>
                       <input

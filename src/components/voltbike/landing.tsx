@@ -22,6 +22,7 @@ import { TiltCard } from '@/components/tilt-card'
 import { CursorGlow } from '@/components/voltbike/cursor-glow'
 import { MagneticButton } from '@/components/voltbike/magnetic-button'
 import initialData from '@/data.json'
+import { SiteDataSchema } from '@/lib/site-data-schema'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -42,6 +43,8 @@ function toImageUrl(input: any, fallbackSize: string) {
 export function VoltbikeLanding() {
   const rootRef = useRef<HTMLDivElement | null>(null)
   const [data, setData] = useState<any>(initialData as any)
+  const [dataError, setDataError] = useState<string | null>(null)
+  const didFetchRef = useRef(false)
   const prefersReducedMotion = useMemo(() => {
     if (typeof window === 'undefined') return true
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -50,21 +53,49 @@ export function VoltbikeLanding() {
   const services = ((data as any).services ?? []) as Array<any>
   const tech = ((data as any).technology ?? []) as Array<any>
   const gallery = ((data as any).gallery ?? []) as Array<any>
+  const visiblePromotions = (((data as any).promotions ?? []) as Array<any>).filter((p) => {
+    if (p?.showOnHome === false) return false
+    const status = String(p?.status ?? 'draft')
+    if (status === 'active') return true
+    if (status === 'scheduled') {
+      const now = Date.now()
+      const starts = p?.startsAt ? Date.parse(String(p.startsAt)) : NaN
+      const ends = p?.endsAt ? Date.parse(String(p.endsAt)) : NaN
+      if (Number.isFinite(starts) && now < starts) return false
+      if (Number.isFinite(ends) && now > ends) return false
+      return true
+    }
+    return false
+  })
+  const visibleProducts = (((data as any).products ?? []) as Array<any>).filter((p) => {
+    const status = String(p?.status ?? 'available')
+    return status !== 'discontinued'
+  })
   const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     (data as any).footer?.address ?? ''
   )}`
 
   useEffect(() => {
-    let cancelled = false
-    fetch('/api/site-data', { cache: 'no-store' })
-      .then((res) => res.json())
-      .then((json) => {
-        if (!cancelled) setData(json)
+    if (didFetchRef.current) return
+    didFetchRef.current = true
+
+    const controller = new AbortController()
+    fetch('/api/site-data', { cache: 'no-store', signal: controller.signal })
+      .then(async (res) => {
+        const json = await res.json().catch(() => null)
+        if (!res.ok) {
+          const msg = json && typeof json === 'object' && 'error' in json ? String((json as any).error) : 'Errore nel caricamento dati.'
+          throw new Error(msg)
+        }
+        setData(SiteDataSchema.parse(json))
+        setDataError(null)
       })
-      .catch(() => {})
-    return () => {
-      cancelled = true
-    }
+      .catch((e) => {
+        if (controller.signal.aborted) return
+        setDataError(e instanceof Error ? e.message : 'Errore nel caricamento dati.')
+      })
+
+    return () => controller.abort()
   }, [])
 
   useEffect(() => {
@@ -117,6 +148,11 @@ export function VoltbikeLanding() {
     return () => ctx.revert()
   }, [prefersReducedMotion])
 
+  useEffect(() => {
+    if (prefersReducedMotion) return
+    ScrollTrigger.refresh()
+  }, [prefersReducedMotion, data])
+
   return (
     <div ref={rootRef} className="min-h-screen overflow-x-hidden bg-noise">
       <CursorGlow />
@@ -152,6 +188,12 @@ export function VoltbikeLanding() {
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-7">
               <div className="rounded-[32px] md:rounded-none bg-black/14 md:bg-transparent border border-white/10 md:border-transparent backdrop-blur-[2px] md:backdrop-blur-0 p-5 md:p-0">
+                {dataError && (
+                  <div className="mb-5 rounded-2xl border border-[#e67e22]/30 bg-[#e67e22]/10 px-4 py-3 text-sm text-white/85">
+                    <div className="font-semibold">Dati non aggiornati</div>
+                    <div className="text-white/65 mt-1">{dataError}</div>
+                  </div>
+                )}
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/12 text-white/80 text-xs tracking-widest uppercase font-semibold">
                   <span className="h-2 w-2 rounded-full bg-[rgb(0,245,255)] shadow-[0_0_18px_rgba(0,245,255,0.55)]" />
                   Manutenzione · riparazioni · ricambi · accessori
@@ -290,7 +332,7 @@ export function VoltbikeLanding() {
         </div>
       </section>
 
-      {Array.isArray((data as any).promotions) && (data as any).promotions.length > 0 && (
+      {visiblePromotions.length > 0 && (
         <section id="promozioni" className="py-24 md:py-32 relative">
           <div className="absolute inset-0 bg-[radial-gradient(900px_520px_at_20%_20%,rgba(163,255,0,0.06),transparent_62%)]" />
           <div className="relative container mx-auto px-6">
@@ -312,7 +354,7 @@ export function VoltbikeLanding() {
             </motion.div>
 
             <div className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-6">
-              {((data as any).promotions as any[]).map((p, idx) => (
+              {visiblePromotions.map((p, idx) => (
                 <motion.div
                   key={`${p.title}-${idx}`}
                   initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
@@ -322,12 +364,10 @@ export function VoltbikeLanding() {
                   className="group glass border border-white/12 rounded-[32px] overflow-hidden hover:border-white/20 transition-colors"
                 >
                   <div className="relative aspect-[16/10] bg-white/3">
-                    <Image
+                    <img
                       src={p.image || '/bici1.jpg'}
                       alt={p.title || 'Promozione'}
-                      fill
-                      sizes="(max-width: 768px) 92vw, 46vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                       style={{ objectPosition: '50% 40%' }}
                     />
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,8,0.06)_0%,rgba(5,6,8,0.62)_72%,rgba(5,6,8,0.80)_100%)]" />
@@ -355,7 +395,7 @@ export function VoltbikeLanding() {
         </section>
       )}
 
-      {Array.isArray((data as any).products) && (data as any).products.length > 0 && (
+      {visibleProducts.length > 0 && (
         <section id="prodotti" className="py-24 md:py-32">
           <div className="container mx-auto px-6">
             <motion.div
@@ -376,7 +416,7 @@ export function VoltbikeLanding() {
             </motion.div>
 
             <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {((data as any).products as any[]).map((p, idx) => (
+              {visibleProducts.map((p, idx) => (
                 <motion.div
                   key={`${p.name}-${idx}`}
                   initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
@@ -386,12 +426,10 @@ export function VoltbikeLanding() {
                   className="group glass border border-white/12 rounded-[28px] p-6 hover:border-white/20 transition-colors"
                 >
                   <div className="relative aspect-square rounded-2xl overflow-hidden bg-white/3 border border-white/10">
-                    <Image
+                    <img
                       src={p.image || '/bici1.jpg'}
                       alt={p.name || 'Prodotto'}
-                      fill
-                      sizes="(max-width: 768px) 92vw, (max-width: 1024px) 46vw, 22vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
                       style={{ objectPosition: '50% 50%' }}
                     />
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,8,0.00)_40%,rgba(5,6,8,0.72)_100%)]" />
@@ -401,6 +439,18 @@ export function VoltbikeLanding() {
                     <div className="text-white/80 font-bold">{p.price || ''}</div>
                   </div>
                   <div className="mt-2 text-white/65 text-sm leading-relaxed line-clamp-3">{p.description || ''}</div>
+                  {Array.isArray(p.sizes) && p.sizes.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {p.sizes.slice(0, 6).map((s: any) => (
+                        <div
+                          key={String(s)}
+                          className="px-3 py-2 rounded-full bg-white/5 border border-white/10 text-white/70 text-xs font-semibold"
+                        >
+                          {String(s)}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <div className="mt-5">
                     <MagneticButton href="#contatti" className="btn-secondary w-full px-5 py-4 font-bold border border-white/12">
                       Richiedi disponibilità

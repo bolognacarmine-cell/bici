@@ -14,7 +14,10 @@ export const Navbar = () => {
   const navBg = useTransform(scrollY, [0, 56], ["rgba(5,6,8,0.10)", "rgba(5,6,8,0.72)"])
   const navBorder = useTransform(scrollY, [0, 56], ["rgba(255,255,255,0.08)", "rgba(255,255,255,0.16)"])
 
-  useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    const id = setTimeout(() => setMounted(true), 0)
+    return () => clearTimeout(id)
+  }, [])
 
   if (!mounted) return null
 

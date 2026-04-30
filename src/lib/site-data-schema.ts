@@ -93,6 +93,9 @@ const ProductSchema = z
     gender: ProductGenderSchema.optional(),
     status: ProductStatusSchema.default('available'),
 
+    sizeMode: z.enum(['alpha', 'cm', 'inch']).optional(),
+    sizes: z.array(z.string()).optional(),
+
     sku: z.string().min(1).optional(),
     slug: z.string().optional(),
 
@@ -152,7 +155,7 @@ const ProductSchema = z
       } else {
         const required: Array<keyof z.infer<typeof EbikeSchema>> = ['batteryWh', 'rangeKm', 'motorW']
         for (const key of required) {
-          if (typeof (val.ebike as any)[key] !== 'number') {
+          if (typeof val.ebike[key] !== 'number') {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
               path: ['ebike', key],
@@ -161,6 +164,28 @@ const ProductSchema = z
           }
         }
       }
+    }
+
+    if (val.category === 'junior' && Array.isArray(val.sizes) && val.sizes.length > 0) {
+      const allowed = new Set(['12"', '14"', '16"', '20"', '24"', '26"'])
+      for (const s of val.sizes) {
+        if (!allowed.has(s)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['sizes'],
+            message: 'Per Junior usa taglie ruota in pollici (12", 14", 16", 20", 24", 26").',
+          })
+          break
+        }
+      }
+    }
+
+    if (val.category === 'junior' && val.sizeMode && val.sizeMode !== 'inch') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['sizeMode'],
+        message: 'Per Junior la taglia deve essere in pollici.',
+      })
     }
   })
 

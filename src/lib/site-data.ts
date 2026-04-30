@@ -59,7 +59,9 @@ function normalizeSiteData(input: SiteData): SiteData {
         throw new Error('Promo su prodotto: prodotto obbligatorio.')
       }
       if (!productSkuSet.has(sku)) {
-        throw new Error(`Promo su prodotto: SKU non trovato (${sku}).`)
+        promo.scope = 'general'
+        promo.status = 'draft'
+        promo.productSku = undefined
       }
     }
   }
