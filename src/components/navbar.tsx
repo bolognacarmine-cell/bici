@@ -24,9 +24,8 @@ export const Navbar = () => {
   const items = [
     { label: 'Promo', id: 'promozioni' },
     { label: 'Shop', id: 'prodotti' },
-    { label: 'Servizi', id: 'servizi' },
+    { label: 'Riparazioni', id: 'riparazioni' },
     { label: 'Perché', id: 'perche' },
-    { label: 'Officina', id: 'officina' },
     { label: 'Gallery', id: 'gallery' },
     { label: 'Contatti', id: 'contatti' },
   ]

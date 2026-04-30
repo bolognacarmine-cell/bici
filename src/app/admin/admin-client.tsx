@@ -119,6 +119,8 @@ export default function AdminClientPage() {
       discountValue: 10,
       description: '',
       image: '/bici1.jpg',
+      images: ['/bici1.jpg'],
+      offerActive: false,
     } satisfies Promotion
     const newPromotions: Promotion[] = [...(data.promotions ?? []), newPromotion]
     setData({ ...data, promotions: newPromotions })
@@ -147,6 +149,7 @@ export default function AdminClientPage() {
       description: '',
       brand: '',
       image: '/bici1.jpg',
+      images: ['/bici1.jpg'],
     } satisfies Product
     const newProducts: Product[] = [...(data.products ?? []), newProduct]
     setData({ ...data, products: newProducts })
@@ -237,19 +240,104 @@ export default function AdminClientPage() {
                   </button>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="md:col-span-1">
-                      <div className="aspect-video bg-zinc-200 rounded-lg overflow-hidden flex items-center justify-center relative">
-                        <img src={String((promo as any).image || '/bici1.jpg')} alt="Preview" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
-                          <ImageIcon className="text-white" />
-                        </div>
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="URL Immagine"
-                        value={String((promo as any).image ?? '')}
-                        onChange={(e) => updatePromotion(idx, 'image', e.target.value)}
-                        className="mt-2 w-full px-3 py-1 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
-                      />
+                      {(() => {
+                        const raw = (promo as any).images
+                        const images: string[] = Array.isArray(raw)
+                          ? raw.map(String).filter(Boolean)
+                          : (promo as any).image
+                            ? [String((promo as any).image)]
+                            : []
+                        const primary = images[0] || String((promo as any).image || '/bici1.jpg')
+
+                        const setImages = (next: string[]) => {
+                          const cleaned = next.map(String).map((x) => x.trim()).filter(Boolean)
+                          updatePromotion(idx, 'images', cleaned.length > 0 ? cleaned : undefined)
+                          updatePromotion(idx, 'image', cleaned[0] ?? undefined)
+                        }
+
+                        return (
+                          <div>
+                            <div className="aspect-video bg-zinc-200 rounded-lg overflow-hidden flex items-center justify-center relative">
+                              <img src={primary} alt="Preview" className="w-full h-full object-cover" />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
+                                <ImageIcon className="text-white" />
+                              </div>
+                            </div>
+
+                            <div className="mt-3">
+                              <div className="flex items-center justify-between">
+                                <label className="block text-xs font-bold text-zinc-500 uppercase">Immagini</label>
+                                <button
+                                  type="button"
+                                  onClick={() => setImages([...images, ''])}
+                                  className="text-xs font-bold text-[#e67e22] hover:text-[#d35400]"
+                                >
+                                  + Aggiungi
+                                </button>
+                              </div>
+                              <div className="mt-2 space-y-2">
+                                {(images.length > 0 ? images : ['']).map((url, imageIndex) => (
+                                  <div key={imageIndex} className="grid grid-cols-[1fr_auto] gap-2 items-center">
+                                    <input
+                                      type="text"
+                                      placeholder="URL immagine"
+                                      value={String(url ?? '')}
+                                      onChange={(e) => {
+                                        const next = [...(images.length > 0 ? images : [''])]
+                                        next[imageIndex] = e.target.value
+                                        setImages(next)
+                                      }}
+                                      className="w-full px-3 py-2 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                                    />
+                                    <div className="flex items-center gap-1">
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          if (imageIndex === 0) return
+                                          const next = [...images]
+                                          ;[next[imageIndex - 1], next[imageIndex]] = [next[imageIndex], next[imageIndex - 1]]
+                                          setImages(next)
+                                        }}
+                                        disabled={imageIndex === 0 || images.length <= 1}
+                                        className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
+                                        title="Sposta su"
+                                      >
+                                        ↑
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          if (imageIndex >= images.length - 1) return
+                                          const next = [...images]
+                                          ;[next[imageIndex + 1], next[imageIndex]] = [next[imageIndex], next[imageIndex + 1]]
+                                          setImages(next)
+                                        }}
+                                        disabled={imageIndex >= images.length - 1 || images.length <= 1}
+                                        className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
+                                        title="Sposta giù"
+                                      >
+                                        ↓
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const next = [...(images.length > 0 ? images : [''])]
+                                          next.splice(imageIndex, 1)
+                                          setImages(next)
+                                        }}
+                                        className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-red-600"
+                                        title="Rimuovi"
+                                      >
+                                        ×
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })()}
                     </div>
                     <div className="md:col-span-2 space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -304,6 +392,51 @@ export default function AdminClientPage() {
                             />
                           </div>
                         </div>
+                        <div>
+                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo (€)</label>
+                          <input
+                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                            type="number"
+                            step="0.01"
+                            value={typeof (promo as any).priceEur === 'number' ? Number((promo as any).priceEur) : ''}
+                            onChange={(e) =>
+                              updatePromotion(
+                                idx,
+                                'priceEur',
+                                e.target.value === '' ? undefined : Number(e.target.value)
+                              )
+                            }
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Offerta attiva</label>
+                          <select
+                            value={String(Boolean((promo as any).offerActive))}
+                            onChange={(e) => updatePromotion(idx, 'offerActive', e.target.value === 'true')}
+                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                          >
+                            <option value="false">No</option>
+                            <option value="true">Sì</option>
+                          </select>
+                        </div>
+                        {Boolean((promo as any).offerActive) && (
+                          <div>
+                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo offerta (€)</label>
+                            <input
+                              className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                              type="number"
+                              step="0.01"
+                              value={typeof (promo as any).offerPriceEur === 'number' ? Number((promo as any).offerPriceEur) : ''}
+                              onChange={(e) =>
+                                updatePromotion(
+                                  idx,
+                                  'offerPriceEur',
+                                  e.target.value === '' ? undefined : Number(e.target.value)
+                                )
+                              }
+                            />
+                          </div>
+                        )}
                         {((promo as any).scope ?? 'general') === 'product' && (
                           <div>
                             <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prodotto</label>
@@ -397,6 +530,79 @@ export default function AdminClientPage() {
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none h-20 bg-white text-zinc-900 placeholder-zinc-400"
                         />
                       </div>
+                      {(() => {
+                        const raw = (promo as any).extensions
+                        const extensions: Array<{ label: string; value: string }> = Array.isArray(raw)
+                          ? raw
+                              .map((x: any) => ({
+                                label: String(x?.label ?? '').trim(),
+                                value: String(x?.value ?? '').trim(),
+                              }))
+                              .filter((x: any) => x.label || x.value)
+                          : []
+
+                        const setExtensions = (next: Array<{ label: string; value: string }>) => {
+                          const cleaned = next
+                            .map((x) => ({ label: String(x.label ?? '').trim(), value: String(x.value ?? '').trim() }))
+                            .filter((x) => x.label && x.value)
+                          updatePromotion(idx, 'extensions', cleaned.length > 0 ? cleaned : undefined)
+                        }
+
+                        return (
+                          <div>
+                            <div className="flex items-center justify-between">
+                              <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Dettagli</label>
+                              <button
+                                type="button"
+                                onClick={() => setExtensions([...extensions, { label: '', value: '' }])}
+                                className="text-xs font-bold text-[#e67e22] hover:text-[#d35400]"
+                              >
+                                + Aggiungi
+                              </button>
+                            </div>
+                            <div className="space-y-2">
+                              {(extensions.length > 0 ? extensions : []).map((ext, extIndex) => (
+                                <div key={extIndex} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2">
+                                  <input
+                                    type="text"
+                                    placeholder="Etichetta"
+                                    value={ext.label}
+                                    onChange={(e) => {
+                                      const next = [...extensions]
+                                      next[extIndex] = { ...next[extIndex], label: e.target.value }
+                                      setExtensions(next)
+                                    }}
+                                    className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                                  />
+                                  <input
+                                    type="text"
+                                    placeholder="Valore"
+                                    value={ext.value}
+                                    onChange={(e) => {
+                                      const next = [...extensions]
+                                      next[extIndex] = { ...next[extIndex], value: e.target.value }
+                                      setExtensions(next)
+                                    }}
+                                    className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const next = [...extensions]
+                                      next.splice(extIndex, 1)
+                                      setExtensions(next)
+                                    }}
+                                    className="h-11 px-4 rounded-lg border border-zinc-200 bg-white text-red-600 font-bold"
+                                  >
+                                    Rimuovi
+                                  </button>
+                                </div>
+                              ))}
+                              {extensions.length === 0 && <div className="text-xs text-zinc-500">Nessun dettaglio.</div>}
+                            </div>
+                          </div>
+                        )
+                      })()}
                     </div>
                   </div>
                 </div>
@@ -428,19 +634,104 @@ export default function AdminClientPage() {
                     <Trash2 size={18} />
                   </button>
                   <div className="space-y-4">
-                    <div className="aspect-square bg-zinc-200 rounded-lg overflow-hidden flex items-center justify-center relative">
-                      <img src={product.image} alt="Preview" className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
-                        <ImageIcon className="text-white" />
-                      </div>
-                    </div>
-                    <input
-                      type="text"
-                      placeholder="URL Immagine"
-                      value={product.image}
-                      onChange={(e) => updateProduct(idx, 'image', e.target.value)}
-                      className="w-full px-3 py-1 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
-                    />
+                    {(() => {
+                      const raw = (product as any).images
+                      const images: string[] = Array.isArray(raw)
+                        ? raw.map(String).filter(Boolean)
+                        : (product as any).image
+                          ? [String((product as any).image)]
+                          : []
+                      const primary = images[0] || String((product as any).image || '/bici1.jpg')
+
+                      const setImages = (next: string[]) => {
+                        const cleaned = next.map(String).map((x) => x.trim()).filter(Boolean)
+                        updateProduct(idx, 'images', cleaned.length > 0 ? cleaned : undefined)
+                        updateProduct(idx, 'image', cleaned[0] ?? undefined)
+                      }
+
+                      return (
+                        <div>
+                          <div className="aspect-square bg-zinc-200 rounded-lg overflow-hidden flex items-center justify-center relative">
+                            <img src={primary} alt="Preview" className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
+                              <ImageIcon className="text-white" />
+                            </div>
+                          </div>
+
+                          <div className="mt-3">
+                            <div className="flex items-center justify-between">
+                              <label className="block text-xs font-bold text-zinc-500 uppercase">Immagini</label>
+                              <button
+                                type="button"
+                                onClick={() => setImages([...images, ''])}
+                                className="text-xs font-bold text-[#e67e22] hover:text-[#d35400]"
+                              >
+                                + Aggiungi
+                              </button>
+                            </div>
+                            <div className="mt-2 space-y-2">
+                              {(images.length > 0 ? images : ['']).map((url, imageIndex) => (
+                                <div key={imageIndex} className="grid grid-cols-[1fr_auto] gap-2 items-center">
+                                  <input
+                                    type="text"
+                                    placeholder="URL immagine"
+                                    value={String(url ?? '')}
+                                    onChange={(e) => {
+                                      const next = [...(images.length > 0 ? images : [''])]
+                                      next[imageIndex] = e.target.value
+                                      setImages(next)
+                                    }}
+                                    className="w-full px-3 py-2 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                                  />
+                                  <div className="flex items-center gap-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (imageIndex === 0) return
+                                        const next = [...images]
+                                        ;[next[imageIndex - 1], next[imageIndex]] = [next[imageIndex], next[imageIndex - 1]]
+                                        setImages(next)
+                                      }}
+                                      disabled={imageIndex === 0 || images.length <= 1}
+                                      className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
+                                      title="Sposta su"
+                                    >
+                                      ↑
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (imageIndex >= images.length - 1) return
+                                        const next = [...images]
+                                        ;[next[imageIndex + 1], next[imageIndex]] = [next[imageIndex], next[imageIndex + 1]]
+                                        setImages(next)
+                                      }}
+                                      disabled={imageIndex >= images.length - 1 || images.length <= 1}
+                                      className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
+                                      title="Sposta giù"
+                                    >
+                                      ↓
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const next = [...(images.length > 0 ? images : [''])]
+                                        next.splice(imageIndex, 1)
+                                        setImages(next)
+                                      }}
+                                      className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-red-600"
+                                      title="Rimuovi"
+                                    >
+                                      ×
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })()}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Categoria</label>
@@ -622,16 +913,42 @@ export default function AdminClientPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo</label>
+                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo (€)</label>
                         <input
-                          type="text"
-                          value={product.price}
-                          onChange={(e) => updateProduct(idx, 'price', e.target.value)}
+                          type="number"
+                          step="0.01"
+                          value={typeof (product as any).priceEur === 'number' ? Number((product as any).priceEur) : ''}
+                          onChange={(e) =>
+                            updateProduct(idx, 'priceEur', e.target.value === '' ? undefined : Number(e.target.value))
+                          }
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none text-[#e67e22] font-bold bg-white placeholder-zinc-400"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo scontato</label>
+                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo offerta (€)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={typeof (product as any).salePriceEur === 'number' ? Number((product as any).salePriceEur) : ''}
+                          onChange={(e) =>
+                            updateProduct(idx, 'salePriceEur', e.target.value === '' ? undefined : Number(e.target.value))
+                          }
+                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo (testo)</label>
+                        <input
+                          type="text"
+                          value={String((product as any).price ?? '')}
+                          onChange={(e) => updateProduct(idx, 'price', e.target.value === '' ? undefined : e.target.value)}
+                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo offerta (testo)</label>
                         <input
                           type="text"
                           value={String((product as any).salePrice ?? '')}
@@ -649,6 +966,79 @@ export default function AdminClientPage() {
                         className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
                       />
                     </div>
+                    {(() => {
+                      const raw = (product as any).extensions
+                      const extensions: Array<{ label: string; value: string }> = Array.isArray(raw)
+                        ? raw
+                            .map((x: any) => ({
+                              label: String(x?.label ?? '').trim(),
+                              value: String(x?.value ?? '').trim(),
+                            }))
+                            .filter((x: any) => x.label || x.value)
+                        : []
+
+                      const setExtensions = (next: Array<{ label: string; value: string }>) => {
+                        const cleaned = next
+                          .map((x) => ({ label: String(x.label ?? '').trim(), value: String(x.value ?? '').trim() }))
+                          .filter((x) => x.label && x.value)
+                        updateProduct(idx, 'extensions', cleaned.length > 0 ? cleaned : undefined)
+                      }
+
+                      return (
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Dettagli</label>
+                            <button
+                              type="button"
+                              onClick={() => setExtensions([...extensions, { label: '', value: '' }])}
+                              className="text-xs font-bold text-[#e67e22] hover:text-[#d35400]"
+                            >
+                              + Aggiungi
+                            </button>
+                          </div>
+                          <div className="space-y-2">
+                            {(extensions.length > 0 ? extensions : []).map((ext, extIndex) => (
+                              <div key={extIndex} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2">
+                                <input
+                                  type="text"
+                                  placeholder="Etichetta"
+                                  value={ext.label}
+                                  onChange={(e) => {
+                                    const next = [...extensions]
+                                    next[extIndex] = { ...next[extIndex], label: e.target.value }
+                                    setExtensions(next)
+                                  }}
+                                  className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Valore"
+                                  value={ext.value}
+                                  onChange={(e) => {
+                                    const next = [...extensions]
+                                    next[extIndex] = { ...next[extIndex], value: e.target.value }
+                                    setExtensions(next)
+                                  }}
+                                  className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const next = [...extensions]
+                                    next.splice(extIndex, 1)
+                                    setExtensions(next)
+                                  }}
+                                  className="h-11 px-4 rounded-lg border border-zinc-200 bg-white text-red-600 font-bold"
+                                >
+                                  Rimuovi
+                                </button>
+                              </div>
+                            ))}
+                            {extensions.length === 0 && <div className="text-xs text-zinc-500">Nessun dettaglio.</div>}
+                          </div>
+                        </div>
+                      )
+                    })()}
                     {String((product as any).category ?? '').startsWith('ebike_') && (
                       <div className="rounded-xl border border-zinc-200 bg-white p-4 space-y-3">
                         <div className="text-sm font-bold text-zinc-800">Dati e-bike</div>

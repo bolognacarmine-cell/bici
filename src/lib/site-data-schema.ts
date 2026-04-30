@@ -48,6 +48,18 @@ const PromotionSchema = z
     description: z.string().optional(),
     code: z.string().optional(),
     image: z.string().optional(),
+    images: z.array(z.string().min(1)).optional(),
+    extensions: z
+      .array(
+        z.object({
+          label: z.string().min(1),
+          value: z.string().min(1),
+        })
+      )
+      .optional(),
+    priceEur: z.number().positive().optional(),
+    offerActive: z.boolean().optional(),
+    offerPriceEur: z.number().positive().optional(),
     banner: z.string().optional(),
     startsAt: z.string().optional(),
     endsAt: z.string().optional(),
@@ -84,6 +96,22 @@ const PromotionSchema = z
         message: 'Se la promo è su categoria, la categoria è obbligatoria.',
       })
     }
+    if (val.offerActive) {
+      if (typeof val.offerPriceEur !== 'number') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['offerPriceEur'],
+          message: 'Se l’offerta è attiva, il prezzo offerta è obbligatorio.',
+        })
+      }
+      if (typeof val.priceEur === 'number' && typeof val.offerPriceEur === 'number' && val.offerPriceEur >= val.priceEur) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['offerPriceEur'],
+          message: 'Il prezzo offerta deve essere inferiore al prezzo base.',
+        })
+      }
+    }
   })
 
 const ProductSchema = z
@@ -99,8 +127,10 @@ const ProductSchema = z
     sku: z.string().min(1).optional(),
     slug: z.string().optional(),
 
-    price: z.string().min(1),
+    price: z.string().optional(),
+    priceEur: z.number().positive().optional(),
     salePrice: z.string().optional(),
+    salePriceEur: z.number().positive().optional(),
 
     description: z.string().optional(),
     fullDescription: z.string().optional(),
@@ -110,8 +140,17 @@ const ProductSchema = z
     weightKg: z.number().positive().optional(),
     stockQty: z.number().int().nonnegative().optional(),
 
-    image: z.string().min(1),
+    image: z.string().optional(),
+    images: z.array(z.string().min(1)).optional(),
     gallery: z.array(z.string()).optional(),
+    extensions: z
+      .array(
+        z.object({
+          label: z.string().min(1),
+          value: z.string().min(1),
+        })
+      )
+      .optional(),
 
     ebike: EbikeSchema.optional(),
 
@@ -121,29 +160,46 @@ const ProductSchema = z
   })
   .passthrough()
   .superRefine((val, ctx) => {
-    const price = Number.parseFloat(val.price)
-    if (!Number.isFinite(price) || price <= 0) {
+    const priceFromString = Number.parseFloat(String(val.price ?? '').replace(',', '.'))
+    const resolvedPrice =
+      typeof val.priceEur === 'number' ? val.priceEur : Number.isFinite(priceFromString) ? priceFromString : Number.NaN
+    if (!Number.isFinite(resolvedPrice) || resolvedPrice <= 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ['price'],
+        path: ['priceEur'],
         message: 'Il prezzo deve essere maggiore di zero.',
       })
     }
-    if (val.salePrice) {
-      const sale = Number.parseFloat(val.salePrice)
-      if (!Number.isFinite(sale) || sale <= 0) {
+    const saleFromString = Number.parseFloat(String(val.salePrice ?? '').replace(',', '.'))
+    const resolvedSale =
+      typeof val.salePriceEur === 'number'
+        ? val.salePriceEur
+        : Number.isFinite(saleFromString)
+          ? saleFromString
+          : Number.NaN
+    if (val.salePrice || typeof val.salePriceEur === 'number') {
+      if (!Number.isFinite(resolvedSale) || resolvedSale <= 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ['salePrice'],
+          path: ['salePriceEur'],
           message: 'Il prezzo scontato deve essere maggiore di zero.',
         })
-      } else if (Number.isFinite(price) && sale > price) {
+      } else if (Number.isFinite(resolvedPrice) && resolvedSale > resolvedPrice) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ['salePrice'],
+          path: ['salePriceEur'],
           message: 'Il prezzo scontato non può superare il prezzo base.',
         })
       }
+    }
+    const hasPrimaryImage =
+      (typeof val.image === 'string' && val.image.trim().length > 0) || (Array.isArray(val.images) && val.images.length > 0)
+    if (!hasPrimaryImage) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['images'],
+        message: "L'immagine principale è obbligatoria.",
+      })
     }
     const isEbike = val.category.startsWith('ebike_')
     if (isEbike) {

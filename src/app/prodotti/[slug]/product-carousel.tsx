@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 
 type ProductCarouselProps = {
   images: string[]
@@ -15,6 +15,7 @@ export function ProductCarousel({ images, productName }: ProductCarouselProps) {
   }, [images])
 
   const [index, setIndex] = useState(0)
+  const startXRef = useRef<number | null>(null)
 
   const goTo = useCallback(
     (next: number) => {
@@ -40,6 +41,24 @@ export function ProductCarousel({ images, productName }: ProductCarouselProps) {
       onKeyDown={(e) => {
         if (e.key === 'ArrowLeft') prev()
         if (e.key === 'ArrowRight') next()
+      }}
+      onPointerDown={(e) => {
+        if (safeImages.length <= 1) return
+        if (e.pointerType === 'mouse' && e.button !== 0) return
+        startXRef.current = e.clientX
+      }}
+      onPointerUp={(e) => {
+        if (safeImages.length <= 1) return
+        const startX = startXRef.current
+        startXRef.current = null
+        if (typeof startX !== 'number') return
+        const dx = e.clientX - startX
+        if (Math.abs(dx) < 35) return
+        if (dx < 0) next()
+        else prev()
+      }}
+      onPointerCancel={() => {
+        startXRef.current = null
       }}
     >
       <div className="relative aspect-square rounded-2xl overflow-hidden bg-white/3 border border-white/10">

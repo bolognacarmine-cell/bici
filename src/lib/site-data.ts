@@ -20,6 +20,24 @@ function normalizeSiteData(input: SiteData): SiteData {
   const products = Array.isArray(input.products) ? [...input.products] : []
   const promotions = Array.isArray(input.promotions) ? [...input.promotions] : []
 
+  for (const p of products) {
+    const image = typeof (p as any).image === 'string' ? String((p as any).image).trim() : ''
+    const images = Array.isArray((p as any).images) ? ((p as any).images as any[]).map(String).filter((x) => x.trim()) : []
+    const nextImages = images.length > 0 ? images : image ? [image] : []
+    ;(p as any).images = nextImages.length > 0 ? nextImages : undefined
+    ;(p as any).image = nextImages[0] ?? image ?? undefined
+  }
+
+  for (const promo of promotions) {
+    const image = typeof (promo as any).image === 'string' ? String((promo as any).image).trim() : ''
+    const images = Array.isArray((promo as any).images)
+      ? ((promo as any).images as any[]).map(String).filter((x) => x.trim())
+      : []
+    const nextImages = images.length > 0 ? images : image ? [image] : []
+    ;(promo as any).images = nextImages.length > 0 ? nextImages : undefined
+    ;(promo as any).image = nextImages[0] ?? image ?? undefined
+  }
+
   const skuSeen = new Set<string>()
   for (let index = 0; index < products.length; index += 1) {
     const p = products[index]

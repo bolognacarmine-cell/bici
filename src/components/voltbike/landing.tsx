@@ -22,6 +22,7 @@ import { Navbar } from '@/components/navbar'
 import { TiltCard } from '@/components/tilt-card'
 import { CursorGlow } from '@/components/voltbike/cursor-glow'
 import { MagneticButton } from '@/components/voltbike/magnetic-button'
+import { MediaCarousel } from '@/components/media-carousel'
 import initialData from '@/data.json'
 import { SiteDataSchema } from '@/lib/site-data-schema'
 
@@ -50,10 +51,20 @@ export function VoltbikeLanding() {
     if (typeof window === 'undefined') return true
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches
   }, [])
+  const euro = useMemo(() => new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }), [])
 
   const services = ((data as any).services ?? []) as Array<any>
   const tech = ((data as any).technology ?? []) as Array<any>
   const gallery = ((data as any).gallery ?? []) as Array<any>
+  const repairs = useMemo(() => {
+    const list: Array<any> = []
+    for (const s of services) list.push({ ...s, _kind: 'service' })
+    for (const t of tech) {
+      const id = typeof t?.id === 'string' ? t.id : `tech-${String(t?.title ?? '').toLowerCase().replace(/\s+/g, '-')}`
+      list.push({ ...t, id, category: t?.category ?? 'Riparazioni', _kind: 'tech' })
+    }
+    return list
+  }, [services, tech])
   const visiblePromotions = (((data as any).promotions ?? []) as Array<any>).filter((p) => {
     if (p?.showOnHome === false) return false
     const status = String(p?.status ?? 'draft')
@@ -213,8 +224,8 @@ export function VoltbikeLanding() {
                 </p>
 
                 <div className="hero-cta mt-10 flex flex-col sm:flex-row gap-4">
-                  <MagneticButton href="#servizi" className="btn-primary px-7 py-4 font-bold">
-                    Scopri i servizi
+                  <MagneticButton href="#riparazioni" className="btn-primary px-7 py-4 font-bold">
+                    Scopri le riparazioni
                     <ArrowRight className="w-5 h-5" />
                   </MagneticButton>
                   <MagneticButton href="#contatti" className="btn-secondary px-7 py-4 font-bold border border-white/12">
@@ -297,9 +308,6 @@ export function VoltbikeLanding() {
             </div>
           </div>
 
-          <div className="mt-16 text-white/55 text-xs tracking-widest uppercase font-semibold">
-            Scorri per esplorare · <span className="text-white/80">UI premium, animazioni fluide, feel futuristico</span>
-          </div>
         </div>
       </section>
 
@@ -349,9 +357,7 @@ export function VoltbikeLanding() {
               <h2 className="mt-3 font-display font-extrabold tracking-tight text-4xl md:text-6xl">
                 Offerte <span className="text-gradient">in corso</span>
               </h2>
-              <p className="mt-4 text-white/65 max-w-2xl">
-                Aggiornate dal pannello admin: gestisci titolo, descrizione e immagine in un attimo.
-              </p>
+              <p className="mt-4 text-white/65 max-w-2xl">Offerte disponibili in questo periodo.</p>
             </motion.div>
 
             <div className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -364,27 +370,71 @@ export function VoltbikeLanding() {
                   transition={{ duration: 0.7, delay: idx * 0.05, ease: [0.16, 1, 0.3, 1] }}
                   className="group glass border border-white/12 rounded-[32px] overflow-hidden hover:border-white/20 transition-colors"
                 >
-                  <div className="relative aspect-[16/10] bg-white/3">
-                    <img
-                      src={p.image || '/bici1.jpg'}
+                  <div className="relative aspect-[16/10] bg-white/3 overflow-hidden">
+                    <MediaCarousel
+                      images={
+                        Array.isArray((p as any).images) && (p as any).images.length > 0
+                          ? ((p as any).images as any[]).map(String).filter(Boolean)
+                          : p.image
+                            ? [String(p.image)]
+                            : ['/bici1.jpg']
+                      }
                       alt={p.title || 'Promozione'}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                      style={{ objectPosition: '50% 40%' }}
+                      sizes="(max-width: 768px) 92vw, 46vw"
+                      className="absolute inset-0"
+                      imageClassName="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                      objectPosition="50% 40%"
                     />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,8,0.06)_0%,rgba(5,6,8,0.62)_72%,rgba(5,6,8,0.80)_100%)]" />
+                    <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,8,0.06)_0%,rgba(5,6,8,0.62)_72%,rgba(5,6,8,0.80)_100%)]" />
                   </div>
                   <div className="p-7 md:p-8">
                     <div className="text-white text-2xl font-extrabold tracking-tight font-display">
                       {p.title || 'Promozione'}
                     </div>
+                    {(() => {
+                      const price = typeof (p as any).priceEur === 'number' ? euro.format(Number((p as any).priceEur)) : null
+                      const offerActive = Boolean((p as any).offerActive)
+                      const offerPrice =
+                        typeof (p as any).offerPriceEur === 'number' ? euro.format(Number((p as any).offerPriceEur)) : null
+                      if (!price && !offerPrice) return null
+                      return (
+                        <div className="mt-4 flex items-center gap-3">
+                          {offerActive && offerPrice ? (
+                            <>
+                              {price && <div className="text-white/50 line-through font-semibold">{price}</div>}
+                              <div className="px-3 py-2 rounded-2xl bg-[rgba(163,255,0,0.10)] border border-[rgba(163,255,0,0.25)] text-white font-extrabold">
+                                {offerPrice}
+                              </div>
+                            </>
+                          ) : (
+                            <div className="px-3 py-2 rounded-2xl bg-white/5 border border-white/10 text-white font-extrabold">
+                              {price ?? offerPrice}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })()}
                     <div className="mt-3 text-white/70 leading-relaxed">{p.description || ''}</div>
+                    {Array.isArray((p as any).extensions) && (p as any).extensions.length > 0 && (
+                      <div className="mt-5 grid grid-cols-1 gap-2">
+                        {((p as any).extensions as any[]).map((ext, extIdx) => (
+                          <div
+                            key={`${ext?.label ?? 'ext'}-${extIdx}`}
+                            className="flex items-start justify-between gap-4 rounded-2xl bg-white/4 border border-white/10 px-4 py-3"
+                          >
+                            <div className="text-white/75 font-semibold">{String(ext?.label ?? '')}</div>
+                            <div className="text-white/60 font-semibold text-right">{String(ext?.value ?? '')}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     <div className="mt-6 flex flex-col sm:flex-row gap-3">
                       <MagneticButton href="#contatti" className="btn-primary px-6 py-4 font-bold flex-1">
                         Richiedi info
                         <ArrowRight className="w-5 h-5" />
                       </MagneticButton>
-                      <MagneticButton href="#servizi" className="btn-secondary px-6 py-4 font-bold border border-white/12">
-                        Vedi servizi
+                      <MagneticButton href="#riparazioni" className="btn-secondary px-6 py-4 font-bold border border-white/12">
+                        Riparazioni
                         <Play className="w-5 h-5" />
                       </MagneticButton>
                     </div>
@@ -409,11 +459,9 @@ export function VoltbikeLanding() {
             >
               <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Prodotti</div>
               <h2 className="mt-3 font-display font-extrabold tracking-tight text-4xl md:text-6xl">
-                Ricambi & <span className="text-gradient">accessori</span>
+                Catalogo, <span className="text-gradient">ricambi</span> e accessori
               </h2>
-              <p className="mt-4 text-white/65 max-w-2xl">
-                Una selezione gestita dal pannello admin. Nessun e-commerce: solo vetrina premium e richiesta rapida.
-              </p>
+              <p className="mt-4 text-white/65 max-w-2xl">Disponibilità e dettagli su richiesta.</p>
             </motion.div>
 
             <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -431,13 +479,21 @@ export function VoltbikeLanding() {
                     className="block relative aspect-square rounded-2xl overflow-hidden bg-white/3 border border-white/10"
                     aria-label={`Apri dettagli: ${String(p?.name || 'Prodotto')}`}
                   >
-                    <img
-                      src={p.image || '/bici1.jpg'}
+                    <MediaCarousel
+                      images={
+                        Array.isArray((p as any).images) && (p as any).images.length > 0
+                          ? ((p as any).images as any[]).map(String).filter(Boolean)
+                          : p.image
+                            ? [String(p.image)]
+                            : ['/bici1.jpg']
+                      }
                       alt={p.name || 'Prodotto'}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
-                      style={{ objectPosition: '50% 50%' }}
+                      sizes="(max-width: 768px) 92vw, (max-width: 1024px) 46vw, 22vw"
+                      className="absolute inset-0"
+                      imageClassName="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                      objectPosition="50% 50%"
                     />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,8,0.00)_40%,rgba(5,6,8,0.72)_100%)]" />
+                    <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,8,0.00)_40%,rgba(5,6,8,0.72)_100%)]" />
                   </Link>
                   <div className="mt-5 flex items-start justify-between gap-3">
                     <Link
@@ -446,9 +502,44 @@ export function VoltbikeLanding() {
                     >
                       {p.name || 'Prodotto'}
                     </Link>
-                    <div className="text-white/80 font-bold">{p.price || ''}</div>
+                    {(() => {
+                      const base =
+                        typeof (p as any).priceEur === 'number'
+                          ? euro.format(Number((p as any).priceEur))
+                          : p.price
+                            ? String(p.price)
+                            : null
+                      const sale =
+                        typeof (p as any).salePriceEur === 'number'
+                          ? euro.format(Number((p as any).salePriceEur))
+                          : (p as any).salePrice
+                            ? String((p as any).salePrice)
+                            : null
+                      if (!base && !sale) return null
+                      return sale ? (
+                        <div className="text-right">
+                          {base && <div className="text-white/45 text-xs line-through font-semibold">{base}</div>}
+                          <div className="text-white font-extrabold">{sale}</div>
+                        </div>
+                      ) : (
+                        <div className="text-white/80 font-bold">{base}</div>
+                      )
+                    })()}
                   </div>
                   <div className="mt-2 text-white/65 text-sm leading-relaxed line-clamp-3">{p.description || ''}</div>
+                  {Array.isArray((p as any).extensions) && (p as any).extensions.length > 0 && (
+                    <div className="mt-4 grid grid-cols-1 gap-2">
+                      {((p as any).extensions as any[]).slice(0, 3).map((ext, extIdx) => (
+                        <div
+                          key={`${ext?.label ?? 'ext'}-${extIdx}`}
+                          className="flex items-start justify-between gap-4 rounded-2xl bg-white/4 border border-white/10 px-4 py-3"
+                        >
+                          <div className="text-white/75 font-semibold text-sm">{String(ext?.label ?? '')}</div>
+                          <div className="text-white/55 font-semibold text-sm text-right">{String(ext?.value ?? '')}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   {Array.isArray(p.sizes) && p.sizes.length > 0 && (
                     <div className="mt-4 flex flex-wrap gap-2">
                       {p.sizes.slice(0, 6).map((s: any) => (
@@ -474,9 +565,12 @@ export function VoltbikeLanding() {
         </section>
       )}
 
-      <section id="servizi" data-hscroll className="relative overflow-hidden">
+      <section id="riparazioni" data-hscroll className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(900px_540px_at_10%_30%,rgba(0,245,255,0.10),transparent_60%),radial-gradient(900px_540px_at_90%_40%,rgba(163,255,0,0.08),transparent_60%)]" />
         <div className="relative z-10">
+          <div id="servizi" className="sr-only" />
+          <div id="officina" className="sr-only" />
+          <div id="tecnologia" className="sr-only" />
           <div className="container mx-auto px-6 pt-24 md:pt-28">
             <motion.div
               variants={reveal}
@@ -486,21 +580,20 @@ export function VoltbikeLanding() {
               transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
               className="max-w-3xl"
             >
-              <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Servizi</div>
+              <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Riparazioni</div>
               <h2 className="mt-3 font-display font-extrabold tracking-tight text-4xl md:text-6xl">
-                Officina per ogni <span className="text-gradient">necessità</span>
+                Riparazioni e <span className="text-gradient">manutenzione</span>
               </h2>
               <p className="mt-4 text-white/65 max-w-2xl">
-                Interventi di manutenzione e riparazione su bici muscolari, elettriche e a pedalata assistita. Accessori,
-                ricambi e possibilità di ordinare componenti specifici.
+                Interventi su bici muscolari e a pedalata assistita: diagnosi, messa a punto e ricambistica su richiesta.
               </p>
             </motion.div>
           </div>
 
           <div className="mt-12 h-[74vh] md:h-[76vh]">
             <div data-track className="h-full flex gap-6 md:gap-8 px-6 md:px-20">
-              {services.map((s) => (
-                <div key={s.id} className="h-full w-[82vw] sm:w-[68vw] md:w-[640px] flex-none">
+              {repairs.map((s) => (
+                <div key={String(s.id ?? s.title)} className="h-full w-[82vw] sm:w-[68vw] md:w-[640px] flex-none">
                   <TiltCard className="h-full">
                     <div className="relative h-full rounded-[32px] overflow-hidden border border-white/12 bg-white/2">
                       <Image
@@ -514,7 +607,9 @@ export function VoltbikeLanding() {
                       <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-between">
                         <div className="flex items-start justify-between gap-4">
                           <div>
-                            <div className="text-white/65 text-xs tracking-widest uppercase font-semibold">{s.category}</div>
+                            <div className="text-white/65 text-xs tracking-widest uppercase font-semibold">
+                              {String(s.category ?? 'Riparazioni')}
+                            </div>
                             <div className="mt-2 text-white text-3xl md:text-4xl font-extrabold tracking-tight font-display">
                               {s.title}
                             </div>
@@ -661,136 +756,6 @@ export function VoltbikeLanding() {
                 <div className="mt-3 text-white/65 leading-relaxed">{f.desc}</div>
               </motion.div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="officina" className="py-24 md:py-32">
-        <div className="container mx-auto px-6">
-          <motion.div
-            variants={reveal}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: '-120px' }}
-            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-            className="max-w-4xl"
-          >
-            <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Officina</div>
-            <h2 className="mt-3 font-display font-extrabold tracking-tight text-4xl md:text-6xl">
-              {(data as any).workshop.title.split('/')[0].trim()}{' '}
-              <span className="text-gradient">/</span>{' '}
-              {(data as any).workshop.title.split('/')[1]?.trim()}
-            </h2>
-            <p className="mt-4 text-white/65 max-w-2xl">
-              {(data as any).workshop.subtitle}
-            </p>
-          </motion.div>
-
-          <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {((data as any).workshop.cards as any[]).map((c, idx) => (
-              <motion.div
-                key={c.title}
-                initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
-                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                viewport={{ once: true, margin: '-120px' }}
-                transition={{ duration: 0.7, delay: idx * 0.05, ease: [0.16, 1, 0.3, 1] }}
-                className="group glass border border-white/12 rounded-[32px] overflow-hidden hover:border-white/20 transition-colors"
-              >
-                <div className="relative aspect-[16/11] bg-white/3">
-                  <Image
-                    src={c.image}
-                    alt={c.title}
-                    fill
-                    sizes="(max-width: 768px) 92vw, (max-width: 1024px) 46vw, 30vw"
-                    className="object-cover img-op transition-transform duration-700 group-hover:scale-[1.03]"
-                    style={{
-                      ['--op-mobile' as any]: c.objectPositionMobile,
-                      ['--op-desktop' as any]: c.objectPositionDesktop,
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,8,0.06)_0%,rgba(5,6,8,0.62)_70%,rgba(5,6,8,0.78)_100%)]" />
-                </div>
-                <div className="p-7 md:p-8">
-                  <div className="text-white text-2xl font-extrabold tracking-tight font-display">{c.title}</div>
-                  <div className="mt-3 text-white/70 leading-relaxed">{c.desc}</div>
-                  <div className="mt-6 inline-flex items-center gap-2 text-white/65 text-sm font-semibold">
-                    <Sparkles className="w-4 h-4 text-[rgb(0,245,255)]" />
-                    Qualità verificata · interventi puliti
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="tecnologia" data-hscroll className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.02),transparent_30%,rgba(255,255,255,0.02))]" />
-        <div className="relative z-10">
-          <div className="container mx-auto px-6 pt-24 md:pt-28">
-            <motion.div
-              variants={reveal}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: '-120px' }}
-              transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-              className="max-w-3xl"
-            >
-              <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Officina</div>
-              <h2 className="mt-3 font-display font-extrabold tracking-tight text-4xl md:text-6xl">
-                Manutenzione. Riparazioni. <span className="text-gradient">Ricambi.</span>
-              </h2>
-              <p className="mt-4 text-white/65 max-w-2xl">
-                Interventi su bici muscolari, elettriche e a pedalata assistita: dalla diagnosi alla messa a punto, fino alla ricambistica su ordinazione.
-              </p>
-            </motion.div>
-          </div>
-
-          <div className="mt-12 h-[72vh] md:h-[74vh]">
-            <div data-track className="h-full flex gap-6 md:gap-8 px-6 md:px-20">
-              {tech.map((t: any) => (
-                <div key={t.title} className="h-full w-[86vw] sm:w-[70vw] md:w-[720px] flex-none">
-                  <div className="relative h-full rounded-[32px] overflow-hidden border border-white/12 bg-white/2">
-                    <Image
-                      src={toImageUrl(t.image, 'landscape_16_9') ?? '/bici1.jpg'}
-                      alt={t.title}
-                      fill
-                      sizes="(max-width: 768px) 86vw, 720px"
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,8,0.18)_0%,rgba(5,6,8,0.88)_74%)]" />
-                    <div className="absolute inset-0 p-7 md:p-10 flex flex-col justify-end">
-                      <div className="text-white/65 text-xs tracking-widest uppercase font-semibold">VincenzoBike · Officina</div>
-                      <div className="mt-3 text-white text-3xl md:text-4xl font-extrabold tracking-tight font-display">
-                        {t.title}
-                      </div>
-                      <div className="mt-4 text-white/70 leading-relaxed max-w-xl">{t.desc}</div>
-                      <div className="mt-7 flex flex-wrap gap-2">
-                        {[
-                          'Diagnosi e-bike',
-                          'Freni e dischi',
-                          'Trasmissione',
-                          'Ruote e gomme',
-                        ].map((tag) => (
-                          <div
-                            key={tag}
-                            className="px-3 py-2 rounded-full bg-white/5 border border-white/10 text-white/70 text-xs font-semibold"
-                          >
-                            {tag}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="container mx-auto px-6 pb-10">
-            <div className="text-white/50 text-xs">
-              Questa sezione usa scroll orizzontale guidato dallo scroll verticale (pin + scrub).
-            </div>
           </div>
         </div>
       </section>
@@ -1024,8 +989,9 @@ export function VoltbikeLanding() {
                 <div className="text-white font-bold">Esplora</div>
                 <div className="mt-4 flex flex-col gap-3 text-white/65 font-semibold">
                   {[
-                    { label: 'Servizi', id: 'servizi' },
-                    { label: 'Officina', id: 'tecnologia' },
+                    { label: 'Riparazioni', id: 'riparazioni' },
+                    { label: 'Catalogo', id: 'prodotti' },
+                    { label: 'Gallery', id: 'gallery' },
                     { label: 'Contatti', id: 'contatti' },
                   ].map((l) => (
                     <a key={l.id} href={`#${l.id}`} className="hover:text-white transition-colors">
@@ -1064,9 +1030,6 @@ export function VoltbikeLanding() {
           <div className="mt-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-white/45 text-xs">
             <div>© {new Date().getFullYear()} VincenzoBike. Tutti i diritti riservati.</div>
             <div className="flex items-center gap-4">
-              <a href="/admin" className="hover:text-white/70 transition-colors">
-                Admin
-              </a>
               {(data as any).footer.social.map((s: any) => (
                 <a key={s.label} href={s.href} className="hover:text-white/70 transition-colors">
                   {s.label}

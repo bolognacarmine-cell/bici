@@ -75,7 +75,20 @@ function buildProductJsonLd(args: { product: Product; images: string[]; brandNam
 
   const buildOffer = (input: any) => {
     const status = String(input?.status ?? (product as any).status ?? 'available')
-    const price = String(input?.salePrice ?? input?.price ?? (product as any).salePrice ?? (product as any).price ?? '').trim()
+    const numeric =
+      typeof input?.salePriceEur === 'number'
+        ? input.salePriceEur
+        : typeof input?.priceEur === 'number'
+          ? input.priceEur
+          : typeof (product as any).salePriceEur === 'number'
+            ? (product as any).salePriceEur
+            : typeof (product as any).priceEur === 'number'
+              ? (product as any).priceEur
+              : null
+    const price =
+      typeof numeric === 'number'
+        ? String(numeric)
+        : String(input?.salePrice ?? input?.price ?? (product as any).salePrice ?? (product as any).price ?? '').trim()
     const skuValue = String(input?.sku ?? sku).trim()
     return {
       '@type': 'Offer',
@@ -173,8 +186,15 @@ export default async function ProdottoPage({ params }: { params: Promise<{ slug:
   const brand = String((product as any).brand || siteBrand || '').trim()
   const sku = String((product as any).sku || '').trim()
   const status = String((product as any).status || 'available')
-  const price = String((product as any).price || '').trim()
-  const salePrice = String((product as any).salePrice || '').trim()
+  const euro = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' })
+  const price =
+    typeof (product as any).priceEur === 'number'
+      ? euro.format(Number((product as any).priceEur))
+      : String((product as any).price || '').trim()
+  const salePrice =
+    typeof (product as any).salePriceEur === 'number'
+      ? euro.format(Number((product as any).salePriceEur))
+      : String((product as any).salePrice || '').trim()
   const description = String(product.fullDescription || product.description || '').trim()
 
   const jsonLd = buildProductJsonLd({ product, images, brandName: brand || null })
@@ -216,14 +236,12 @@ export default async function ProdottoPage({ params }: { params: Promise<{ slug:
                   <div className={salePrice ? 'text-white/55 text-lg font-bold line-through' : 'text-white text-3xl font-extrabold'}>
                     {price || '—'}
                   </div>
-                  <div className="text-white/55 text-xs font-semibold">EUR</div>
                 </div>
                 {salePrice && (
                   <div className="mt-3">
                     <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Prezzo scontato</div>
                     <div className="mt-2 flex items-baseline gap-2">
                       <div className="text-white text-3xl font-extrabold">{salePrice}</div>
-                      <div className="text-white/55 text-xs font-semibold">EUR</div>
                     </div>
                   </div>
                 )}
@@ -264,8 +282,8 @@ export default async function ProdottoPage({ params }: { params: Promise<{ slug:
               >
                 Richiedi disponibilità
               </Link>
-              <Link href="/#servizi" className="tap-target btn-secondary px-6 py-4 font-bold border border-white/12 flex-1 text-center">
-                Vedi servizi
+              <Link href="/#riparazioni" className="tap-target btn-secondary px-6 py-4 font-bold border border-white/12 flex-1 text-center">
+                Riparazioni
               </Link>
             </div>
           </section>
