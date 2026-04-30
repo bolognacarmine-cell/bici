@@ -133,10 +133,12 @@ export default function AdminClientPage() {
   }
 
   const updatePromotion = (index: number, field: string, value: any) => {
-    if (!data) return
-    const newPromotions = [...(data.promotions ?? [])]
-    newPromotions[index] = { ...newPromotions[index], [field]: value }
-    setData({ ...data, promotions: newPromotions })
+    setData((prev) => {
+      if (!prev) return prev
+      const newPromotions = [...(prev.promotions ?? [])]
+      newPromotions[index] = { ...newPromotions[index], [field]: value }
+      return { ...prev, promotions: newPromotions }
+    })
   }
 
   const addProduct = () => {
@@ -162,10 +164,12 @@ export default function AdminClientPage() {
   }
 
   const updateProduct = (index: number, field: string, value: any) => {
-    if (!data) return
-    const newProducts = [...(data.products ?? [])]
-    newProducts[index] = { ...newProducts[index], [field]: value }
-    setData({ ...data, products: newProducts })
+    setData((prev) => {
+      if (!prev) return prev
+      const newProducts = [...(prev.products ?? [])]
+      newProducts[index] = { ...newProducts[index], [field]: value }
+      return { ...prev, products: newProducts }
+    })
   }
 
   if (!data) {
