@@ -53,6 +53,27 @@ export function VoltbikeLanding() {
   }, [])
   const euro = useMemo(() => new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }), [])
 
+  const getImageUrls = (entity: any, fallback: string) => {
+    const raw = entity?.images
+    const urls: string[] = []
+    if (Array.isArray(raw)) {
+      for (const entry of raw) {
+        if (typeof entry === 'string') {
+          const u = entry.trim()
+          if (u) urls.push(u)
+          continue
+        }
+        if (entry && typeof entry === 'object') {
+          const u = String((entry as any).url ?? '').trim()
+          if (u) urls.push(u)
+        }
+      }
+    }
+    if (urls.length > 0) return urls
+    const img = typeof entity?.image === 'string' ? entity.image.trim() : ''
+    return img ? [img] : [fallback]
+  }
+
   const services = ((data as any).services ?? []) as Array<any>
   const tech = ((data as any).technology ?? []) as Array<any>
   const gallery = ((data as any).gallery ?? []) as Array<any>
@@ -372,13 +393,7 @@ export function VoltbikeLanding() {
                 >
                   <div className="relative aspect-[16/10] bg-white/3 overflow-hidden">
                     <MediaCarousel
-                      images={
-                        Array.isArray((p as any).images) && (p as any).images.length > 0
-                          ? ((p as any).images as any[]).map(String).filter(Boolean)
-                          : p.image
-                            ? [String(p.image)]
-                            : ['/bici1.jpg']
-                      }
+                      images={getImageUrls(p, '/bici1.jpg')}
                       alt={p.title || 'Promozione'}
                       sizes="(max-width: 768px) 92vw, 46vw"
                       className="absolute inset-0"
@@ -480,13 +495,7 @@ export function VoltbikeLanding() {
                     aria-label={`Apri dettagli: ${String(p?.name || 'Prodotto')}`}
                   >
                     <MediaCarousel
-                      images={
-                        Array.isArray((p as any).images) && (p as any).images.length > 0
-                          ? ((p as any).images as any[]).map(String).filter(Boolean)
-                          : p.image
-                            ? [String(p.image)]
-                            : ['/bici1.jpg']
-                      }
+                      images={getImageUrls(p, '/bici1.jpg')}
                       alt={p.name || 'Prodotto'}
                       sizes="(max-width: 768px) 92vw, (max-width: 1024px) 46vw, 22vw"
                       className="absolute inset-0"

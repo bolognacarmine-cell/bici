@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Plus, Trash2, Image as ImageIcon } from 'lucide-react'
 import { SiteDataSchema, type SiteData } from '@/lib/site-data-schema'
 import type { Product, Promotion } from '@/lib/site-data-schema'
+import { MediaCarousel } from '@/components/media-carousel'
 
 const CATEGORY_OPTIONS = [
   { value: 'city', label: 'City' },
@@ -246,24 +247,58 @@ export default function AdminClientPage() {
                     <div className="md:col-span-1">
                       {(() => {
                         const raw = (promo as any).images
-                        const images: string[] = Array.isArray(raw)
-                          ? raw.map(String).filter(Boolean)
-                          : (promo as any).image
-                            ? [String((promo as any).image)]
-                            : []
-                        const primary = images[0] || String((promo as any).image || '/bici1.jpg')
+                        const items: Array<{ url: string; label?: string; alt?: string }> = []
+                        if (Array.isArray(raw)) {
+                          for (const entry of raw) {
+                            if (typeof entry === 'string') {
+                              const url = entry.trim()
+                              if (!url) continue
+                              items.push({ url })
+                              continue
+                            }
+                            if (entry && typeof entry === 'object') {
+                              const url = String((entry as any).url ?? '').trim()
+                              if (!url) continue
+                              const label = String((entry as any).label ?? '').trim()
+                              const alt = String((entry as any).alt ?? '').trim()
+                              items.push({ url, ...(label ? { label } : {}), ...(alt ? { alt } : {}) })
+                            }
+                          }
+                        } else if ((promo as any).image) {
+                          items.push({ url: String((promo as any).image).trim() })
+                        }
+                        if (items.length === 0) items.push({ url: '/bici1.jpg' })
 
-                        const setImages = (next: string[]) => {
-                          const cleaned = next.map(String).map((x) => x.trim()).filter(Boolean)
-                          updatePromotion(idx, 'images', cleaned.length > 0 ? cleaned : undefined)
-                          updatePromotion(idx, 'image', cleaned[0] ?? undefined)
+                        const setItems = (next: Array<{ url: string; label?: string; alt?: string }>) => {
+                          const cleaned = next
+                            .map((x) => ({
+                              url: String(x.url ?? '').trim(),
+                              label: String(x.label ?? '').trim(),
+                              alt: String(x.alt ?? '').trim(),
+                            }))
+                            .filter((x) => x.url.length > 0)
+
+                          const shouldUseObjects = cleaned.some((x) => x.label.length > 0 || x.alt.length > 0)
+                          const toStore = shouldUseObjects
+                            ? cleaned.map((x) => ({ url: x.url, ...(x.label ? { label: x.label } : {}), ...(x.alt ? { alt: x.alt } : {}) }))
+                            : cleaned.map((x) => x.url)
+
+                          updatePromotion(idx, 'images', toStore.length > 0 ? toStore : undefined)
+                          updatePromotion(idx, 'image', cleaned[0]?.url ?? undefined)
                         }
 
                         return (
                           <div>
                             <div className="aspect-video bg-zinc-200 rounded-lg overflow-hidden flex items-center justify-center relative">
-                              <img src={primary} alt="Preview" className="w-full h-full object-cover" />
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
+                              <MediaCarousel
+                                images={items.map((x) => x.url).filter(Boolean)}
+                                alt={String((promo as any).title || 'Promozione')}
+                                sizes="(max-width: 768px) 92vw, 320px"
+                                className="absolute inset-0"
+                                imageClassName="object-cover"
+                                objectPosition="50% 45%"
+                              />
+                              <div className="pointer-events-none absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                                 <ImageIcon className="text-white" />
                               </div>
                             </div>
@@ -273,67 +308,91 @@ export default function AdminClientPage() {
                                 <label className="block text-xs font-bold text-zinc-500 uppercase">Immagini</label>
                                 <button
                                   type="button"
-                                  onClick={() => setImages([...images, ''])}
+                                  onClick={() => setItems([...items, { url: '', label: '', alt: '' }])}
                                   className="text-xs font-bold text-[#e67e22] hover:text-[#d35400]"
                                 >
                                   + Aggiungi
                                 </button>
                               </div>
                               <div className="mt-2 space-y-2">
-                                {(images.length > 0 ? images : ['']).map((url, imageIndex) => (
-                                  <div key={imageIndex} className="grid grid-cols-[1fr_auto] gap-2 items-center">
+                                {items.map((it, imageIndex) => (
+                                  <div key={imageIndex} className="grid grid-cols-1 gap-2">
                                     <input
                                       type="text"
                                       placeholder="URL immagine"
-                                      value={String(url ?? '')}
+                                      value={String(it.url ?? '')}
                                       onChange={(e) => {
-                                        const next = [...(images.length > 0 ? images : [''])]
-                                        next[imageIndex] = e.target.value
-                                        setImages(next)
+                                        const next = [...items]
+                                        next[imageIndex] = { ...next[imageIndex], url: e.target.value }
+                                        setItems(next)
                                       }}
                                       className="w-full px-3 py-2 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
                                     />
-                                    <div className="flex items-center gap-1">
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          if (imageIndex === 0) return
-                                          const next = [...images]
-                                          ;[next[imageIndex - 1], next[imageIndex]] = [next[imageIndex], next[imageIndex - 1]]
-                                          setImages(next)
+                                    <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2 items-center">
+                                      <input
+                                        type="text"
+                                        placeholder="Etichetta (opz.)"
+                                        value={String(it.label ?? '')}
+                                        onChange={(e) => {
+                                          const next = [...items]
+                                          next[imageIndex] = { ...next[imageIndex], label: e.target.value }
+                                          setItems(next)
                                         }}
-                                        disabled={imageIndex === 0 || images.length <= 1}
-                                        className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
-                                        title="Sposta su"
-                                      >
-                                        ↑
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          if (imageIndex >= images.length - 1) return
-                                          const next = [...images]
-                                          ;[next[imageIndex + 1], next[imageIndex]] = [next[imageIndex], next[imageIndex + 1]]
-                                          setImages(next)
+                                        className="w-full px-3 py-2 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                                      />
+                                      <input
+                                        type="text"
+                                        placeholder="Alt (opz.)"
+                                        value={String(it.alt ?? '')}
+                                        onChange={(e) => {
+                                          const next = [...items]
+                                          next[imageIndex] = { ...next[imageIndex], alt: e.target.value }
+                                          setItems(next)
                                         }}
-                                        disabled={imageIndex >= images.length - 1 || images.length <= 1}
-                                        className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
-                                        title="Sposta giù"
-                                      >
-                                        ↓
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          const next = [...(images.length > 0 ? images : [''])]
-                                          next.splice(imageIndex, 1)
-                                          setImages(next)
-                                        }}
-                                        className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-red-600"
-                                        title="Rimuovi"
-                                      >
-                                        ×
-                                      </button>
+                                        className="w-full px-3 py-2 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                                      />
+                                      <div className="flex items-center gap-1">
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            if (imageIndex === 0) return
+                                            const next = [...items]
+                                            ;[next[imageIndex - 1], next[imageIndex]] = [next[imageIndex], next[imageIndex - 1]]
+                                            setItems(next)
+                                          }}
+                                          disabled={imageIndex === 0 || items.length <= 1}
+                                          className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
+                                          title="Sposta su"
+                                        >
+                                          ↑
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            if (imageIndex >= items.length - 1) return
+                                            const next = [...items]
+                                            ;[next[imageIndex + 1], next[imageIndex]] = [next[imageIndex], next[imageIndex + 1]]
+                                            setItems(next)
+                                          }}
+                                          disabled={imageIndex >= items.length - 1 || items.length <= 1}
+                                          className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
+                                          title="Sposta giù"
+                                        >
+                                          ↓
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            const next = [...items]
+                                            next.splice(imageIndex, 1)
+                                            setItems(next.length > 0 ? next : [{ url: '' }])
+                                          }}
+                                          className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-red-600"
+                                          title="Rimuovi"
+                                        >
+                                          ×
+                                        </button>
+                                      </div>
                                     </div>
                                   </div>
                                 ))}
@@ -640,24 +699,58 @@ export default function AdminClientPage() {
                   <div className="space-y-4">
                     {(() => {
                       const raw = (product as any).images
-                      const images: string[] = Array.isArray(raw)
-                        ? raw.map(String).filter(Boolean)
-                        : (product as any).image
-                          ? [String((product as any).image)]
-                          : []
-                      const primary = images[0] || String((product as any).image || '/bici1.jpg')
+                      const items: Array<{ url: string; label?: string; alt?: string }> = []
+                      if (Array.isArray(raw)) {
+                        for (const entry of raw) {
+                          if (typeof entry === 'string') {
+                            const url = entry.trim()
+                            if (!url) continue
+                            items.push({ url })
+                            continue
+                          }
+                          if (entry && typeof entry === 'object') {
+                            const url = String((entry as any).url ?? '').trim()
+                            if (!url) continue
+                            const label = String((entry as any).label ?? '').trim()
+                            const alt = String((entry as any).alt ?? '').trim()
+                            items.push({ url, ...(label ? { label } : {}), ...(alt ? { alt } : {}) })
+                          }
+                        }
+                      } else if ((product as any).image) {
+                        items.push({ url: String((product as any).image).trim() })
+                      }
+                      if (items.length === 0) items.push({ url: '/bici1.jpg' })
 
-                      const setImages = (next: string[]) => {
-                        const cleaned = next.map(String).map((x) => x.trim()).filter(Boolean)
-                        updateProduct(idx, 'images', cleaned.length > 0 ? cleaned : undefined)
-                        updateProduct(idx, 'image', cleaned[0] ?? undefined)
+                      const setItems = (next: Array<{ url: string; label?: string; alt?: string }>) => {
+                        const cleaned = next
+                          .map((x) => ({
+                            url: String(x.url ?? '').trim(),
+                            label: String(x.label ?? '').trim(),
+                            alt: String(x.alt ?? '').trim(),
+                          }))
+                          .filter((x) => x.url.length > 0)
+
+                        const shouldUseObjects = cleaned.some((x) => x.label.length > 0 || x.alt.length > 0)
+                        const toStore = shouldUseObjects
+                          ? cleaned.map((x) => ({ url: x.url, ...(x.label ? { label: x.label } : {}), ...(x.alt ? { alt: x.alt } : {}) }))
+                          : cleaned.map((x) => x.url)
+
+                        updateProduct(idx, 'images', toStore.length > 0 ? toStore : undefined)
+                        updateProduct(idx, 'image', cleaned[0]?.url ?? undefined)
                       }
 
                       return (
                         <div>
                           <div className="aspect-square bg-zinc-200 rounded-lg overflow-hidden flex items-center justify-center relative">
-                            <img src={primary} alt="Preview" className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
+                            <MediaCarousel
+                              images={items.map((x) => x.url).filter(Boolean)}
+                              alt={String((product as any).name || 'Prodotto')}
+                              sizes="(max-width: 768px) 92vw, 520px"
+                              className="absolute inset-0"
+                              imageClassName="object-cover"
+                              objectPosition="50% 50%"
+                            />
+                            <div className="pointer-events-none absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                               <ImageIcon className="text-white" />
                             </div>
                           </div>
@@ -667,67 +760,91 @@ export default function AdminClientPage() {
                               <label className="block text-xs font-bold text-zinc-500 uppercase">Immagini</label>
                               <button
                                 type="button"
-                                onClick={() => setImages([...images, ''])}
+                                onClick={() => setItems([...items, { url: '', label: '', alt: '' }])}
                                 className="text-xs font-bold text-[#e67e22] hover:text-[#d35400]"
                               >
                                 + Aggiungi
                               </button>
                             </div>
                             <div className="mt-2 space-y-2">
-                              {(images.length > 0 ? images : ['']).map((url, imageIndex) => (
-                                <div key={imageIndex} className="grid grid-cols-[1fr_auto] gap-2 items-center">
+                              {items.map((it, imageIndex) => (
+                                <div key={imageIndex} className="grid grid-cols-1 gap-2">
                                   <input
                                     type="text"
                                     placeholder="URL immagine"
-                                    value={String(url ?? '')}
+                                    value={String(it.url ?? '')}
                                     onChange={(e) => {
-                                      const next = [...(images.length > 0 ? images : [''])]
-                                      next[imageIndex] = e.target.value
-                                      setImages(next)
+                                      const next = [...items]
+                                      next[imageIndex] = { ...next[imageIndex], url: e.target.value }
+                                      setItems(next)
                                     }}
                                     className="w-full px-3 py-2 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
                                   />
-                                  <div className="flex items-center gap-1">
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        if (imageIndex === 0) return
-                                        const next = [...images]
-                                        ;[next[imageIndex - 1], next[imageIndex]] = [next[imageIndex], next[imageIndex - 1]]
-                                        setImages(next)
+                                  <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2 items-center">
+                                    <input
+                                      type="text"
+                                      placeholder="Etichetta (opz.)"
+                                      value={String(it.label ?? '')}
+                                      onChange={(e) => {
+                                        const next = [...items]
+                                        next[imageIndex] = { ...next[imageIndex], label: e.target.value }
+                                        setItems(next)
                                       }}
-                                      disabled={imageIndex === 0 || images.length <= 1}
-                                      className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
-                                      title="Sposta su"
-                                    >
-                                      ↑
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        if (imageIndex >= images.length - 1) return
-                                        const next = [...images]
-                                        ;[next[imageIndex + 1], next[imageIndex]] = [next[imageIndex], next[imageIndex + 1]]
-                                        setImages(next)
+                                      className="w-full px-3 py-2 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                                    />
+                                    <input
+                                      type="text"
+                                      placeholder="Alt (opz.)"
+                                      value={String(it.alt ?? '')}
+                                      onChange={(e) => {
+                                        const next = [...items]
+                                        next[imageIndex] = { ...next[imageIndex], alt: e.target.value }
+                                        setItems(next)
                                       }}
-                                      disabled={imageIndex >= images.length - 1 || images.length <= 1}
-                                      className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
-                                      title="Sposta giù"
-                                    >
-                                      ↓
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        const next = [...(images.length > 0 ? images : [''])]
-                                        next.splice(imageIndex, 1)
-                                        setImages(next)
-                                      }}
-                                      className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-red-600"
-                                      title="Rimuovi"
-                                    >
-                                      ×
-                                    </button>
+                                      className="w-full px-3 py-2 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                                    />
+                                    <div className="flex items-center gap-1">
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          if (imageIndex === 0) return
+                                          const next = [...items]
+                                          ;[next[imageIndex - 1], next[imageIndex]] = [next[imageIndex], next[imageIndex - 1]]
+                                          setItems(next)
+                                        }}
+                                        disabled={imageIndex === 0 || items.length <= 1}
+                                        className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
+                                        title="Sposta su"
+                                      >
+                                        ↑
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          if (imageIndex >= items.length - 1) return
+                                          const next = [...items]
+                                          ;[next[imageIndex + 1], next[imageIndex]] = [next[imageIndex], next[imageIndex + 1]]
+                                          setItems(next)
+                                        }}
+                                        disabled={imageIndex >= items.length - 1 || items.length <= 1}
+                                        className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
+                                        title="Sposta giù"
+                                      >
+                                        ↓
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const next = [...items]
+                                          next.splice(imageIndex, 1)
+                                          setItems(next.length > 0 ? next : [{ url: '' }])
+                                        }}
+                                        className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-red-600"
+                                        title="Rimuovi"
+                                      >
+                                        ×
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
                               ))}

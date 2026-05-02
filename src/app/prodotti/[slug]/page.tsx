@@ -36,7 +36,20 @@ function toAbsoluteUrl(input: string) {
 
 function buildImages(product: Product) {
   const extra = (product as any).images
-  const fromImages = Array.isArray(extra) ? extra.map(String).filter(Boolean) : []
+  const fromImages: string[] = []
+  if (Array.isArray(extra)) {
+    for (const entry of extra) {
+      if (typeof entry === 'string') {
+        const u = entry.trim()
+        if (u) fromImages.push(u)
+        continue
+      }
+      if (entry && typeof entry === 'object') {
+        const u = String((entry as any).url ?? '').trim()
+        if (u) fromImages.push(u)
+      }
+    }
+  }
   const fromGallery = Array.isArray(product.gallery) ? product.gallery.map(String).filter(Boolean) : []
   const all = [String(product.image || '').trim(), ...fromImages, ...fromGallery].filter(Boolean)
   const seen = new Set<string>()

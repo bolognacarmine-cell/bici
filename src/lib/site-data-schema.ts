@@ -34,6 +34,14 @@ const PromotionScopeSchema = z.enum(['general', 'category', 'product'])
 const PromotionDiscountTypeSchema = z.enum(['percent', 'amount'])
 const PromotionStatusSchema = z.enum(['draft', 'active', 'scheduled', 'expired'])
 
+const ImageItemSchema = z.object({
+  url: z.string().min(1),
+  label: z.string().optional(),
+  alt: z.string().optional(),
+})
+
+const ImagesFieldSchema = z.array(z.union([z.string().min(1), ImageItemSchema]))
+
 const PromotionSchema = z
   .object({
     title: z.string().min(1),
@@ -48,7 +56,7 @@ const PromotionSchema = z
     description: z.string().optional(),
     code: z.string().optional(),
     image: z.string().optional(),
-    images: z.array(z.string().min(1)).optional(),
+    images: ImagesFieldSchema.optional(),
     extensions: z
       .array(
         z.object({
@@ -141,7 +149,7 @@ const ProductSchema = z
     stockQty: z.number().int().nonnegative().optional(),
 
     image: z.string().optional(),
-    images: z.array(z.string().min(1)).optional(),
+    images: ImagesFieldSchema.optional(),
     gallery: z.array(z.string()).optional(),
     extensions: z
       .array(

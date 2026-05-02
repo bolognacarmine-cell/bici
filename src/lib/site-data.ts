@@ -20,23 +20,41 @@ function normalizeSiteData(input: SiteData): SiteData {
   const products = Array.isArray(input.products) ? [...input.products] : []
   const promotions = Array.isArray(input.promotions) ? [...input.promotions] : []
 
-  for (const p of products) {
-    const image = typeof (p as any).image === 'string' ? String((p as any).image).trim() : ''
-    const images = Array.isArray((p as any).images) ? ((p as any).images as any[]).map(String).filter((x) => x.trim()) : []
-    const nextImages = images.length > 0 ? images : image ? [image] : []
-    ;(p as any).images = nextImages.length > 0 ? nextImages : undefined
-    ;(p as any).image = nextImages[0] ?? image ?? undefined
+  const normalizeImages = (owner: any) => {
+    const fallback = typeof owner?.image === 'string' ? String(owner.image).trim() : ''
+    const raw = owner?.images
+    const cleaned: any[] = []
+
+    if (Array.isArray(raw)) {
+      for (const entry of raw) {
+        if (typeof entry === 'string') {
+          const url = entry.trim()
+          if (!url) continue
+          cleaned.push(url)
+          continue
+        }
+        if (entry && typeof entry === 'object') {
+          const url = String((entry as any).url ?? '').trim()
+          if (!url) continue
+          const label = String((entry as any).label ?? '').trim()
+          const alt = String((entry as any).alt ?? '').trim()
+          cleaned.push({
+            url,
+            ...(label ? { label } : {}),
+            ...(alt ? { alt } : {}),
+          })
+        }
+      }
+    }
+
+    const hasAny = cleaned.length > 0
+    const firstUrl = hasAny ? (typeof cleaned[0] === 'string' ? cleaned[0] : String((cleaned[0] as any).url)) : fallback
+    owner.images = hasAny ? cleaned : fallback ? [fallback] : undefined
+    owner.image = firstUrl || undefined
   }
 
-  for (const promo of promotions) {
-    const image = typeof (promo as any).image === 'string' ? String((promo as any).image).trim() : ''
-    const images = Array.isArray((promo as any).images)
-      ? ((promo as any).images as any[]).map(String).filter((x) => x.trim())
-      : []
-    const nextImages = images.length > 0 ? images : image ? [image] : []
-    ;(promo as any).images = nextImages.length > 0 ? nextImages : undefined
-    ;(promo as any).image = nextImages[0] ?? image ?? undefined
-  }
+  for (const p of products) normalizeImages(p as any)
+  for (const promo of promotions) normalizeImages(promo as any)
 
   const skuSeen = new Set<string>()
   for (let index = 0; index < products.length; index += 1) {
