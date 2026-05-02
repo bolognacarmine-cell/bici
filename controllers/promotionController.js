@@ -38,10 +38,6 @@ function parseBool(input, fallback) {
 
 export async function uploadPromotionImages(req, res) {
   try {
-    if (!process.env.DATABASE_URL) {
-      return res.status(500).json({ success: false, error: 'DATABASE_URL is required' })
-    }
-
     const files = Array.isArray(req.files) ? req.files : []
     if (files.length === 0) {
       return res.status(400).json({ success: false, error: 'Nessun file ricevuto (field name: files).' })
@@ -83,7 +79,11 @@ export async function uploadPromotionImages(req, res) {
           height: typeof result.height === 'number' ? result.height : null,
           bytes: typeof result.bytes === 'number' ? result.bytes : null,
         })
-      } catch (_e) {
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : ''
+        if (msg.endsWith(' is required')) {
+          return res.status(500).json({ success: false, error: msg })
+        }
         errors.push({ file: name, error: 'Errore upload.' })
       }
     }

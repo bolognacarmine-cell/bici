@@ -170,14 +170,24 @@ export default function AdminClientPage() {
         fd.append('files', file, file.name || 'image')
 
         const res = await fetch(`${apiBase}/api/promotions/upload-images`, { method: 'POST', body: fd })
-        const json = await res.json().catch(() => null)
+        const contentType = res.headers.get('content-type') || ''
+        const body = contentType.includes('application/json') ? await res.json().catch(() => null) : await res.text().catch(() => '')
         if (!res.ok) {
-          const msg = json && typeof json === 'object' && 'error' in json ? String((json as any).error) : 'Errore upload.'
+          const msg =
+            typeof body === 'object' && body && 'error' in body
+              ? String((body as any).error)
+              : typeof body === 'string' && body.trim()
+                ? body.trim()
+                : 'Errore upload.'
           throw new Error(msg)
         }
 
-        const uploaded = Array.isArray(json?.uploaded) ? (json.uploaded[0] as UploadedImage | undefined) : undefined
-        if (!uploaded?.secure_url || !uploaded?.public_id) throw new Error('Upload incompleto.')
+        const uploaded = Array.isArray((body as any)?.uploaded) ? ((body as any).uploaded[0] as UploadedImage | undefined) : undefined
+        if (!uploaded?.secure_url || !uploaded?.public_id) {
+          const firstError =
+            Array.isArray((body as any)?.errors) && (body as any).errors.length > 0 ? String((body as any).errors[0]?.error ?? '') : ''
+          throw new Error(firstError || 'Upload incompleto.')
+        }
 
         setCreateImages((prev) =>
           prev.map((x) =>
@@ -338,23 +348,6 @@ export default function AdminClientPage() {
     }
   }
 
-  const addPromotion = () => {
-    if (!data) return
-    const newPromotion = {
-      title: '',
-      scope: 'general',
-      status: 'draft',
-      discountType: 'percent',
-      discountValue: 10,
-      description: '',
-      image: '/bici1.jpg',
-      images: ['/bici1.jpg'],
-      offerActive: false,
-    } satisfies Promotion
-    const newPromotions: Promotion[] = [...(data.promotions ?? []), newPromotion]
-    setData({ ...data, promotions: newPromotions })
-  }
-
   const removePromotion = (index: number) => {
     if (!data) return
     const newPromotions = (data.promotions ?? []).filter((_, i) => i !== index)
@@ -453,13 +446,7 @@ export default function AdminClientPage() {
         <div className="space-y-12 pb-20">
           <section className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
             <div className="flex justify-between items-center mb-6 border-b pb-4">
-              <h2 className="text-xl font-bold text-zinc-800">Promozioni in corso</h2>
-              <button
-                onClick={addPromotion}
-                className="flex items-center gap-2 px-3 py-1 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors text-sm font-bold"
-              >
-                <Plus size={16} /> Aggiungi Promozione
-              </button>
+              <h2 className="text-xl font-bold text-zinc-800">Promozioni</h2>
             </div>
 
             <div className="mb-8 rounded-2xl border border-zinc-200 bg-white p-5">
@@ -644,6 +631,7 @@ export default function AdminClientPage() {
               </div>
             </div>
 
+            <div className="mb-5 text-sm font-bold text-zinc-800">Promozioni esistenti</div>
             <div className="space-y-6">
               {data.promotions?.map((promo, idx) => (
                 <div key={idx} className="p-6 border border-zinc-100 rounded-xl bg-zinc-50 relative group">
