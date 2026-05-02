@@ -348,10 +348,21 @@ export default function AdminClientPage() {
     }
   }
 
-  const removePromotion = (index: number) => {
+  const deleteExistingPromotion = async (index: number) => {
     if (!data) return
-    const newPromotions = (data.promotions ?? []).filter((_, i) => i !== index)
-    setData({ ...data, promotions: newPromotions })
+    setSaving(true)
+    try {
+      const nextPromotions = (data.promotions ?? []).filter((_, i) => i !== index)
+      const nextData = { ...data, promotions: nextPromotions }
+      setData(nextData)
+      await updateData(nextData)
+      setMessage('Promozione eliminata.')
+      setTimeout(() => setMessage(''), 3000)
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : 'Errore durante l’eliminazione.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const updatePromotion = (index: number, field: string, value: any) => {
@@ -636,7 +647,8 @@ export default function AdminClientPage() {
               {data.promotions?.map((promo, idx) => (
                 <div key={idx} className="p-6 border border-zinc-100 rounded-xl bg-zinc-50 relative group">
                   <button
-                    onClick={() => removePromotion(idx)}
+                    onClick={() => deleteExistingPromotion(idx)}
+                    disabled={saving}
                     className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-red-500 transition-colors"
                   >
                     <Trash2 size={18} />

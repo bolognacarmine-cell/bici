@@ -93,8 +93,15 @@ export async function POST(req: Request) {
 
       await client.query('COMMIT')
       return NextResponse.json({ success: true, promotion, images: imgsRes.rows }, { status: 201 })
-    } catch {
+    } catch (e) {
       await client.query('ROLLBACK')
+      const code = e && typeof e === 'object' && 'code' in e ? String((e as any).code) : ''
+      if (code === '42P01') {
+        return NextResponse.json(
+          { success: false, error: 'Tabelle promotions/promotion_images mancanti. Esegui lo script sql/promotions.sql.' },
+          { status: 500 }
+        )
+      }
       return NextResponse.json({ success: false, error: 'Errore interno.' }, { status: 500 })
     } finally {
       client.release()
@@ -107,4 +114,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: 'Errore interno.' }, { status: 500 })
   }
 }
-
