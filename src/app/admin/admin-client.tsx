@@ -348,30 +348,20 @@ export default function AdminClientPage() {
     }
   }
 
-  const deleteExistingPromotion = async (index: number) => {
+  const clearAllPromotions = async () => {
     if (!data) return
     setSaving(true)
     try {
-      const nextPromotions = (data.promotions ?? []).filter((_, i) => i !== index)
-      const nextData = { ...data, promotions: nextPromotions }
+      const nextData = { ...data, promotions: [] }
       setData(nextData)
       await updateData(nextData)
-      setMessage('Promozione eliminata.')
+      setMessage('Promozioni eliminate.')
       setTimeout(() => setMessage(''), 3000)
     } catch (e) {
       setMessage(e instanceof Error ? e.message : 'Errore durante l’eliminazione.')
     } finally {
       setSaving(false)
     }
-  }
-
-  const updatePromotion = (index: number, field: string, value: any) => {
-    setData((prev) => {
-      if (!prev) return prev
-      const newPromotions = [...(prev.promotions ?? [])]
-      newPromotions[index] = { ...newPromotions[index], [field]: value }
-      return { ...prev, promotions: newPromotions }
-    })
   }
 
   const addProduct = () => {
@@ -466,14 +456,24 @@ export default function AdminClientPage() {
                   <div className="text-sm font-bold text-zinc-800">Aggiungi promozione</div>
                   <div className="text-xs text-zinc-500">Trascina, seleziona o incolla immagini</div>
                 </div>
-                <button
-                  type="button"
-                  onClick={submitCreatePromotion}
-                  disabled={creating}
-                  className="px-4 py-2 rounded-lg bg-[#e67e22] text-white font-bold hover:bg-[#d35400] disabled:opacity-50"
-                >
-                  {creating ? 'Creazione...' : 'Crea promozione'}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={clearAllPromotions}
+                    disabled={saving || creating}
+                    className="px-4 py-2 rounded-lg bg-white border border-zinc-200 text-red-700 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                  >
+                    Elimina promozioni
+                  </button>
+                  <button
+                    type="button"
+                    onClick={submitCreatePromotion}
+                    disabled={creating}
+                    className="px-4 py-2 rounded-lg bg-[#e67e22] text-white font-bold hover:bg-[#d35400] disabled:opacity-50"
+                  >
+                    {creating ? 'Creazione...' : 'Crea promozione'}
+                  </button>
+                </div>
               </div>
 
               {createStatus && (
@@ -640,449 +640,6 @@ export default function AdminClientPage() {
                   </div>
                 )}
               </div>
-            </div>
-
-            <div className="mb-5 text-sm font-bold text-zinc-800">Promozioni esistenti</div>
-            <div className="space-y-6">
-              {data.promotions?.map((promo, idx) => (
-                <div key={idx} className="p-6 border border-zinc-100 rounded-xl bg-zinc-50 relative group">
-                  <button
-                    onClick={() => deleteExistingPromotion(idx)}
-                    disabled={saving}
-                    className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-red-500 transition-colors"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="md:col-span-1">
-                      {(() => {
-                        const raw = (promo as any).images
-                        const items: Array<{ url: string; label?: string; alt?: string }> = []
-                        if (Array.isArray(raw)) {
-                          for (const entry of raw) {
-                            if (typeof entry === 'string') {
-                              const url = entry.trim()
-                              if (!url) continue
-                              items.push({ url })
-                              continue
-                            }
-                            if (entry && typeof entry === 'object') {
-                              const url = String((entry as any).url ?? '').trim()
-                              if (!url) continue
-                              const label = String((entry as any).label ?? '').trim()
-                              const alt = String((entry as any).alt ?? '').trim()
-                              items.push({ url, ...(label ? { label } : {}), ...(alt ? { alt } : {}) })
-                            }
-                          }
-                        } else if ((promo as any).image) {
-                          items.push({ url: String((promo as any).image).trim() })
-                        }
-                        if (items.length === 0) items.push({ url: '/bici1.jpg' })
-
-                        const setItems = (next: Array<{ url: string; label?: string; alt?: string }>) => {
-                          const cleaned = next
-                            .map((x) => ({
-                              url: String(x.url ?? '').trim(),
-                              label: String(x.label ?? '').trim(),
-                              alt: String(x.alt ?? '').trim(),
-                            }))
-                            .filter((x) => x.url.length > 0)
-
-                          const shouldUseObjects = cleaned.some((x) => x.label.length > 0 || x.alt.length > 0)
-                          const toStore = shouldUseObjects
-                            ? cleaned.map((x) => ({ url: x.url, ...(x.label ? { label: x.label } : {}), ...(x.alt ? { alt: x.alt } : {}) }))
-                            : cleaned.map((x) => x.url)
-
-                          updatePromotion(idx, 'images', toStore.length > 0 ? toStore : undefined)
-                          updatePromotion(idx, 'image', cleaned[0]?.url ?? undefined)
-                        }
-
-                        return (
-                          <div>
-                            <div className="aspect-video bg-zinc-200 rounded-lg overflow-hidden flex items-center justify-center relative">
-                              <MediaCarousel
-                                images={items.map((x) => x.url).filter(Boolean)}
-                                alt={String((promo as any).title || 'Promozione')}
-                                sizes="(max-width: 768px) 92vw, 320px"
-                                className="absolute inset-0"
-                                imageClassName="object-cover"
-                                objectPosition="50% 45%"
-                              />
-                              <div className="pointer-events-none absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                                <ImageIcon className="text-white" />
-                              </div>
-                            </div>
-
-                            <div className="mt-3">
-                              <div className="flex items-center justify-between">
-                                <label className="block text-xs font-bold text-zinc-500 uppercase">Immagini</label>
-                                <button
-                                  type="button"
-                                  onClick={() => setItems([...items, { url: '', label: '', alt: '' }])}
-                                  className="text-xs font-bold text-[#e67e22] hover:text-[#d35400]"
-                                >
-                                  + Aggiungi
-                                </button>
-                              </div>
-                              <div className="mt-2 space-y-2">
-                                {items.map((it, imageIndex) => (
-                                  <div key={imageIndex} className="grid grid-cols-1 gap-2">
-                                    <input
-                                      type="text"
-                                      placeholder="URL immagine"
-                                      value={String(it.url ?? '')}
-                                      onChange={(e) => {
-                                        const next = [...items]
-                                        next[imageIndex] = { ...next[imageIndex], url: e.target.value }
-                                        setItems(next)
-                                      }}
-                                      className="w-full px-3 py-2 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
-                                    />
-                                    <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2 items-center">
-                                      <input
-                                        type="text"
-                                        placeholder="Etichetta (opz.)"
-                                        value={String(it.label ?? '')}
-                                        onChange={(e) => {
-                                          const next = [...items]
-                                          next[imageIndex] = { ...next[imageIndex], label: e.target.value }
-                                          setItems(next)
-                                        }}
-                                        className="w-full px-3 py-2 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
-                                      />
-                                      <input
-                                        type="text"
-                                        placeholder="Alt (opz.)"
-                                        value={String(it.alt ?? '')}
-                                        onChange={(e) => {
-                                          const next = [...items]
-                                          next[imageIndex] = { ...next[imageIndex], alt: e.target.value }
-                                          setItems(next)
-                                        }}
-                                        className="w-full px-3 py-2 text-xs border border-zinc-200 rounded outline-none bg-white text-zinc-900 placeholder-zinc-400"
-                                      />
-                                      <div className="flex items-center gap-1">
-                                        <button
-                                          type="button"
-                                          onClick={() => {
-                                            if (imageIndex === 0) return
-                                            const next = [...items]
-                                            ;[next[imageIndex - 1], next[imageIndex]] = [next[imageIndex], next[imageIndex - 1]]
-                                            setItems(next)
-                                          }}
-                                          disabled={imageIndex === 0 || items.length <= 1}
-                                          className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
-                                          title="Sposta su"
-                                        >
-                                          ↑
-                                        </button>
-                                        <button
-                                          type="button"
-                                          onClick={() => {
-                                            if (imageIndex >= items.length - 1) return
-                                            const next = [...items]
-                                            ;[next[imageIndex + 1], next[imageIndex]] = [next[imageIndex], next[imageIndex + 1]]
-                                            setItems(next)
-                                          }}
-                                          disabled={imageIndex >= items.length - 1 || items.length <= 1}
-                                          className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
-                                          title="Sposta giù"
-                                        >
-                                          ↓
-                                        </button>
-                                        <button
-                                          type="button"
-                                          onClick={() => {
-                                            const next = [...items]
-                                            next.splice(imageIndex, 1)
-                                            setItems(next.length > 0 ? next : [{ url: '' }])
-                                          }}
-                                          className="h-9 w-9 rounded-lg border border-zinc-200 bg-white text-red-600"
-                                          title="Rimuovi"
-                                        >
-                                          ×
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        )
-                      })()}
-                    </div>
-                    <div className="md:col-span-2 space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Tipo promo</label>
-                          <select
-                            value={(promo as any).scope ?? 'general'}
-                            onChange={(e) => updatePromotion(idx, 'scope', e.target.value)}
-                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
-                          >
-                            {PROMO_SCOPE_OPTIONS.map((o) => (
-                              <option key={o.value} value={o.value}>
-                                {o.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Stato</label>
-                          <select
-                            value={(promo as any).status ?? 'draft'}
-                            onChange={(e) => updatePromotion(idx, 'status', e.target.value)}
-                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
-                          >
-                            {PROMO_STATUS_OPTIONS.map((o) => (
-                              <option key={o.value} value={o.value}>
-                                {o.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Sconto</label>
-                          <div className="grid grid-cols-3 gap-2">
-                            <select
-                              value={(promo as any).discountType ?? 'percent'}
-                              onChange={(e) => updatePromotion(idx, 'discountType', e.target.value)}
-                              className="col-span-1 px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
-                            >
-                              {PROMO_DISCOUNT_TYPE_OPTIONS.map((o) => (
-                                <option key={o.value} value={o.value}>
-                                  {o.label}
-                                </option>
-                              ))}
-                            </select>
-                            <input
-                              className="col-span-2 px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
-                              type="number"
-                              step="0.01"
-                              value={Number((promo as any).discountValue ?? 10)}
-                              onChange={(e) => updatePromotion(idx, 'discountValue', Number(e.target.value))}
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo (€)</label>
-                          <input
-                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
-                            type="number"
-                            step="0.01"
-                            value={typeof (promo as any).priceEur === 'number' ? Number((promo as any).priceEur) : ''}
-                            onChange={(e) =>
-                              updatePromotion(
-                                idx,
-                                'priceEur',
-                                e.target.value === '' ? undefined : Number(e.target.value)
-                              )
-                            }
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Offerta attiva</label>
-                          <select
-                            value={String(Boolean((promo as any).offerActive))}
-                            onChange={(e) => updatePromotion(idx, 'offerActive', e.target.value === 'true')}
-                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
-                          >
-                            <option value="false">No</option>
-                            <option value="true">Sì</option>
-                          </select>
-                        </div>
-                        {Boolean((promo as any).offerActive) && (
-                          <div>
-                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo offerta (€)</label>
-                            <input
-                              className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
-                              type="number"
-                              step="0.01"
-                              value={typeof (promo as any).offerPriceEur === 'number' ? Number((promo as any).offerPriceEur) : ''}
-                              onChange={(e) =>
-                                updatePromotion(
-                                  idx,
-                                  'offerPriceEur',
-                                  e.target.value === '' ? undefined : Number(e.target.value)
-                                )
-                              }
-                            />
-                          </div>
-                        )}
-                        {((promo as any).scope ?? 'general') === 'product' && (
-                          <div>
-                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prodotto</label>
-                            <select
-                              value={(promo as any).productSku ?? ''}
-                              onChange={(e) => updatePromotion(idx, 'productSku', e.target.value === '' ? undefined : e.target.value)}
-                              className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
-                            >
-                              <option value="">Seleziona…</option>
-                              {(data.products ?? []).map((p: any) => (
-                                <option key={String(p.sku)} value={String(p.sku)}>
-                                  {p.name} ({p.sku})
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        )}
-                        {((promo as any).scope ?? 'general') === 'category' && (
-                          <div>
-                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Categoria</label>
-                            <select
-                              value={(promo as any).category ?? 'city'}
-                              onChange={(e) => updatePromotion(idx, 'category', e.target.value)}
-                              className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
-                            >
-                              {CATEGORY_OPTIONS.map((o) => (
-                                <option key={o.value} value={o.value}>
-                                  {o.label}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Titolo Promo</label>
-                        <input
-                          type="text"
-                          value={promo.title}
-                          onChange={(e) => updatePromotion(idx, 'title', e.target.value)}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none bg-white text-zinc-900 placeholder-zinc-400"
-                        />
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Inizio</label>
-                          <input
-                            type="date"
-                            value={String((promo as any).startsAt ?? '')}
-                            onChange={(e) => updatePromotion(idx, 'startsAt', e.target.value)}
-                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Fine</label>
-                          <input
-                            type="date"
-                            value={String((promo as any).endsAt ?? '')}
-                            onChange={(e) => updatePromotion(idx, 'endsAt', e.target.value)}
-                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
-                          />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Codice</label>
-                          <input
-                            type="text"
-                            value={String((promo as any).code ?? '')}
-                            onChange={(e) => updatePromotion(idx, 'code', e.target.value)}
-                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Mostra in home</label>
-                          <select
-                            value={String(Boolean((promo as any).showOnHome))}
-                            onChange={(e) => updatePromotion(idx, 'showOnHome', e.target.value === 'true')}
-                            className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
-                          >
-                            <option value="false">No</option>
-                            <option value="true">Sì</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Descrizione</label>
-                        <textarea
-                          value={String((promo as any).description ?? '')}
-                          onChange={(e) => updatePromotion(idx, 'description', e.target.value)}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none h-20 bg-white text-zinc-900 placeholder-zinc-400"
-                        />
-                      </div>
-                      {(() => {
-                        const raw = (promo as any).extensions
-                        const extensions: Array<{ label: string; value: string }> = Array.isArray(raw)
-                          ? raw
-                              .map((x: any) => ({
-                                label: String(x?.label ?? '').trim(),
-                                value: String(x?.value ?? '').trim(),
-                              }))
-                              .filter((x: any) => x.label || x.value)
-                          : []
-
-                        const setExtensions = (next: Array<{ label: string; value: string }>) => {
-                          const cleaned = next
-                            .map((x) => ({ label: String(x.label ?? '').trim(), value: String(x.value ?? '').trim() }))
-                            .filter((x) => x.label && x.value)
-                          updatePromotion(idx, 'extensions', cleaned.length > 0 ? cleaned : undefined)
-                        }
-
-                        return (
-                          <div>
-                            <div className="flex items-center justify-between">
-                              <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Dettagli</label>
-                              <button
-                                type="button"
-                                onClick={() => setExtensions([...extensions, { label: '', value: '' }])}
-                                className="text-xs font-bold text-[#e67e22] hover:text-[#d35400]"
-                              >
-                                + Aggiungi
-                              </button>
-                            </div>
-                            <div className="space-y-2">
-                              {(extensions.length > 0 ? extensions : []).map((ext, extIndex) => (
-                                <div key={extIndex} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2">
-                                  <input
-                                    type="text"
-                                    placeholder="Etichetta"
-                                    value={ext.label}
-                                    onChange={(e) => {
-                                      const next = [...extensions]
-                                      next[extIndex] = { ...next[extIndex], label: e.target.value }
-                                      setExtensions(next)
-                                    }}
-                                    className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
-                                  />
-                                  <input
-                                    type="text"
-                                    placeholder="Valore"
-                                    value={ext.value}
-                                    onChange={(e) => {
-                                      const next = [...extensions]
-                                      next[extIndex] = { ...next[extIndex], value: e.target.value }
-                                      setExtensions(next)
-                                    }}
-                                    className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
-                                  />
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const next = [...extensions]
-                                      next.splice(extIndex, 1)
-                                      setExtensions(next)
-                                    }}
-                                    className="h-11 px-4 rounded-lg border border-zinc-200 bg-white text-red-600 font-bold"
-                                  >
-                                    Rimuovi
-                                  </button>
-                                </div>
-                              ))}
-                              {extensions.length === 0 && <div className="text-xs text-zinc-500">Nessun dettaglio.</div>}
-                            </div>
-                          </div>
-                        )
-                      })()}
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {(!data.promotions || data.promotions.length === 0) && (
-                <p className="text-center text-zinc-400 py-8 italic">Nessuna promozione attiva</p>
-              )}
             </div>
           </section>
 
