@@ -101,6 +101,24 @@ export default function AdminClientPage() {
   const [creating, setCreating] = useState(false)
   const [promoExpandedIndex, setPromoExpandedIndex] = useState<number | null>(null)
   const [promoSelectedIndexes, setPromoSelectedIndexes] = useState<number[]>([])
+  const [promoEditIndex, setPromoEditIndex] = useState<number | null>(null)
+  const [promoEditTitle, setPromoEditTitle] = useState('')
+  const [promoEditDescription, setPromoEditDescription] = useState('')
+  const [promoEditScope, setPromoEditScope] = useState<Promotion['scope']>('general')
+  const [promoEditStatus, setPromoEditStatus] = useState<Promotion['status']>('draft')
+  const [promoEditDiscountType, setPromoEditDiscountType] = useState<Promotion['discountType']>('percent')
+  const [promoEditDiscountValueInput, setPromoEditDiscountValueInput] = useState('10')
+  const [promoEditShowOnHome, setPromoEditShowOnHome] = useState(true)
+  const [promoEditCategory, setPromoEditCategory] = useState<Promotion['category'] | ''>('')
+  const [promoEditProductSku, setPromoEditProductSku] = useState('')
+  const [promoEditStartsAt, setPromoEditStartsAt] = useState('')
+  const [promoEditEndsAt, setPromoEditEndsAt] = useState('')
+  const [promoEditPriceInput, setPromoEditPriceInput] = useState('')
+  const [promoEditOfferActive, setPromoEditOfferActive] = useState(false)
+  const [promoEditOfferPriceInput, setPromoEditOfferPriceInput] = useState('')
+  const [promoEditCtaText, setPromoEditCtaText] = useState('')
+  const [promoEditCtaHref, setPromoEditCtaHref] = useState('')
+  const [promoEditMessage, setPromoEditMessage] = useState('')
 
   const parsePriceEur = (input: string) => {
     const raw = String(input || '').trim()
@@ -370,6 +388,8 @@ export default function AdminClientPage() {
       await updateData(nextData)
       setPromoExpandedIndex(null)
       setPromoSelectedIndexes([])
+      setPromoEditIndex(null)
+      setPromoEditMessage('')
       setMessage('Promozioni eliminate.')
       setTimeout(() => setMessage(''), 3000)
     } catch (e) {
@@ -405,6 +425,8 @@ export default function AdminClientPage() {
       await updateData(nextData)
       setPromoExpandedIndex(null)
       setPromoSelectedIndexes([])
+      setPromoEditIndex(null)
+      setPromoEditMessage('')
       setMessage('Promozione eliminata.')
       setTimeout(() => setMessage(''), 3000)
     } catch (e) {
@@ -432,10 +454,140 @@ export default function AdminClientPage() {
       await updateData(nextData)
       setPromoExpandedIndex(null)
       setPromoSelectedIndexes([])
+      setPromoEditIndex(null)
+      setPromoEditMessage('')
       setMessage('Promozioni eliminate.')
       setTimeout(() => setMessage(''), 3000)
     } catch (e) {
       setMessage(e instanceof Error ? e.message : 'Errore durante l’eliminazione.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const startEditPromotion = (idx: number) => {
+    if (!data) return
+    const promos = data.promotions ?? []
+    const promo = promos[idx]
+    if (!promo) return
+
+    setPromoExpandedIndex(idx)
+    setPromoEditIndex(idx)
+    setPromoEditMessage('')
+    setPromoEditTitle(String(promo.title ?? ''))
+    setPromoEditDescription(String(promo.description ?? ''))
+    setPromoEditScope(promo.scope ?? 'general')
+    setPromoEditStatus(promo.status ?? 'draft')
+    setPromoEditDiscountType(promo.discountType ?? 'percent')
+    setPromoEditDiscountValueInput(String(typeof promo.discountValue === 'number' ? promo.discountValue : 10))
+    setPromoEditShowOnHome(promo.showOnHome !== false)
+    setPromoEditCategory(promo.category ?? '')
+    setPromoEditProductSku(String(promo.productSku ?? ''))
+    setPromoEditStartsAt(String(promo.startsAt ?? ''))
+    setPromoEditEndsAt(String(promo.endsAt ?? ''))
+    setPromoEditPriceInput(typeof promo.priceEur === 'number' ? euro.format(promo.priceEur) : '')
+    setPromoEditOfferActive(Boolean(promo.offerActive))
+    setPromoEditOfferPriceInput(typeof promo.offerPriceEur === 'number' ? euro.format(promo.offerPriceEur) : '')
+    setPromoEditCtaText(String(promo.ctaText ?? ''))
+    setPromoEditCtaHref(String(promo.ctaHref ?? ''))
+  }
+
+  const cancelEditPromotion = () => {
+    setPromoEditIndex(null)
+    setPromoEditMessage('')
+  }
+
+  const saveEditPromotion = async () => {
+    if (!data) return
+    if (promoEditIndex === null) return
+    const promos = data.promotions ?? []
+    const promo = promos[promoEditIndex]
+    if (!promo) return
+
+    const title = promoEditTitle.trim()
+    if (!title) {
+      setPromoEditMessage('Titolo obbligatorio.')
+      return
+    }
+
+    const rawDiscount = String(promoEditDiscountValueInput || '').trim()
+    if (!rawDiscount) {
+      setPromoEditMessage('Valore sconto obbligatorio.')
+      return
+    }
+    const discountNormalized = rawDiscount.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '')
+    const discountValue = Number.parseFloat(discountNormalized)
+    if (!Number.isFinite(discountValue) || discountValue <= 0) {
+      setPromoEditMessage('Valore sconto non valido.')
+      return
+    }
+    if (promoEditDiscountType === 'percent' && (discountValue < 1 || discountValue > 100)) {
+      setPromoEditMessage('Per le promo percentuali il valore deve essere tra 1 e 100.')
+      return
+    }
+
+    if (promoEditScope === 'category' && !String(promoEditCategory || '').trim()) {
+      setPromoEditMessage('Se la promo è su categoria, la categoria è obbligatoria.')
+      return
+    }
+    if (promoEditScope === 'product' && !promoEditProductSku.trim()) {
+      setPromoEditMessage('Se la promo è su prodotto, lo SKU prodotto è obbligatorio.')
+      return
+    }
+
+    const priceRaw = promoEditPriceInput.trim()
+    const priceEur = priceRaw ? parsePriceEur(priceRaw) : null
+    if (priceRaw && priceEur === null) {
+      setPromoEditMessage('Prezzo non valido.')
+      return
+    }
+
+    const offerPriceRaw = promoEditOfferPriceInput.trim()
+    const offerPriceEur = offerPriceRaw ? parsePriceEur(offerPriceRaw) : null
+    if (promoEditOfferActive) {
+      if (!offerPriceRaw || offerPriceEur === null) {
+        setPromoEditMessage('Se l’offerta è attiva, il prezzo offerta è obbligatorio.')
+        return
+      }
+      if (typeof priceEur === 'number' && typeof offerPriceEur === 'number' && offerPriceEur >= priceEur) {
+        setPromoEditMessage('Il prezzo offerta deve essere inferiore al prezzo base.')
+        return
+      }
+    }
+
+    const nextPromo: Promotion = {
+      ...promo,
+      title,
+      description: promoEditDescription.trim() || undefined,
+      scope: promoEditScope,
+      status: promoEditStatus,
+      discountType: promoEditDiscountType,
+      discountValue,
+      showOnHome: promoEditShowOnHome,
+      category: promoEditScope === 'category' ? (promoEditCategory || undefined) : undefined,
+      productSku: promoEditScope === 'product' ? (promoEditProductSku.trim() || undefined) : undefined,
+      startsAt: promoEditStartsAt.trim() || undefined,
+      endsAt: promoEditEndsAt.trim() || undefined,
+      priceEur: typeof priceEur === 'number' ? priceEur : undefined,
+      offerActive: promoEditOfferActive ? true : false,
+      offerPriceEur: promoEditOfferActive && typeof offerPriceEur === 'number' ? offerPriceEur : undefined,
+      ctaText: promoEditCtaText.trim() || undefined,
+      ctaHref: promoEditCtaHref.trim() || undefined,
+    }
+
+    setSaving(true)
+    try {
+      const nextPromos = promos.map((p, i) => (i === promoEditIndex ? nextPromo : p))
+      const nextData = { ...data, promotions: nextPromos }
+      const parsed = SiteDataSchema.parse(nextData)
+      setData(parsed)
+      await updateData(parsed)
+      setPromoEditIndex(null)
+      setPromoEditMessage('')
+      setMessage('Promozione aggiornata.')
+      setTimeout(() => setMessage(''), 3000)
+    } catch (e) {
+      setPromoEditMessage(e instanceof Error ? e.message : 'Errore durante il salvataggio.')
     } finally {
       setSaving(false)
     }
@@ -775,6 +927,7 @@ export default function AdminClientPage() {
 
                     const isSelected = promoSelectedIndexes.includes(idx)
                     const isExpanded = promoExpandedIndex === idx
+                    const isEditing = promoEditIndex === idx
                     const discountLabel =
                       promo.discountType === 'amount' ? euro.format(promo.discountValue) : `${promo.discountValue}%`
 
@@ -803,6 +956,14 @@ export default function AdminClientPage() {
                                   {promo.description ? <div className="mt-2 text-sm text-zinc-700 line-clamp-2">{promo.description}</div> : null}
                                 </div>
                                 <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => (isEditing ? cancelEditPromotion() : startEditPromotion(idx))}
+                                    disabled={saving || creating}
+                                    className="h-10 px-4 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                                  >
+                                    {isEditing ? 'Annulla' : 'Modifica'}
+                                  </button>
                                   <button
                                     type="button"
                                     onClick={() => setPromoExpandedIndex((prev) => (prev === idx ? null : idx))}
@@ -839,44 +1000,279 @@ export default function AdminClientPage() {
                                     )}
                                   </div>
 
-                                  <div className="space-y-3 text-sm text-zinc-700">
-                                    <div className="grid grid-cols-1 gap-2">
-                                      <div>
-                                        <div className="text-xs font-bold text-zinc-500 uppercase">Sconto</div>
-                                        <div className="font-semibold">{discountLabel}</div>
+                                  {isEditing ? (
+                                    <div className="space-y-3 text-sm text-zinc-700">
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div className="sm:col-span-2">
+                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Titolo</label>
+                                          <input
+                                            value={promoEditTitle}
+                                            onChange={(e) => setPromoEditTitle(e.target.value)}
+                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                          />
+                                        </div>
+
+                                        <div className="sm:col-span-2">
+                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Descrizione</label>
+                                          <textarea
+                                            value={promoEditDescription}
+                                            onChange={(e) => setPromoEditDescription(e.target.value)}
+                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 h-20"
+                                          />
+                                        </div>
+
+                                        <div>
+                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Stato</label>
+                                          <select
+                                            value={promoEditStatus}
+                                            onChange={(e) => setPromoEditStatus(e.target.value as Promotion['status'])}
+                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                          >
+                                            {PROMO_STATUS_OPTIONS.map((o) => (
+                                              <option key={o.value} value={o.value}>
+                                                {o.label}
+                                              </option>
+                                            ))}
+                                          </select>
+                                        </div>
+
+                                        <div>
+                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Scope</label>
+                                          <select
+                                            value={promoEditScope}
+                                            onChange={(e) => setPromoEditScope(e.target.value as Promotion['scope'])}
+                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                          >
+                                            {PROMO_SCOPE_OPTIONS.map((o) => (
+                                              <option key={o.value} value={o.value}>
+                                                {o.label}
+                                              </option>
+                                            ))}
+                                          </select>
+                                        </div>
+
+                                        {promoEditScope === 'category' ? (
+                                          <div className="sm:col-span-2">
+                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Categoria</label>
+                                            <select
+                                              value={promoEditCategory}
+                                              onChange={(e) => setPromoEditCategory(e.target.value as Promotion['category'])}
+                                              className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            >
+                                              <option value="">Seleziona…</option>
+                                              {CATEGORY_OPTIONS.map((o) => (
+                                                <option key={o.value} value={o.value}>
+                                                  {o.label}
+                                                </option>
+                                              ))}
+                                            </select>
+                                          </div>
+                                        ) : null}
+
+                                        {promoEditScope === 'product' ? (
+                                          <div className="sm:col-span-2">
+                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">SKU prodotto</label>
+                                            <input
+                                              value={promoEditProductSku}
+                                              onChange={(e) => setPromoEditProductSku(e.target.value)}
+                                              className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                              list={`promo-sku-${idx}`}
+                                            />
+                                            <datalist id={`promo-sku-${idx}`}>
+                                              {(data.products ?? [])
+                                                .map((p) => (p.sku ?? '').trim())
+                                                .filter(Boolean)
+                                                .map((sku) => (
+                                                  <option key={sku} value={sku} />
+                                                ))}
+                                            </datalist>
+                                          </div>
+                                        ) : null}
+
+                                        <div>
+                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Tipo sconto</label>
+                                          <select
+                                            value={promoEditDiscountType}
+                                            onChange={(e) => setPromoEditDiscountType(e.target.value as Promotion['discountType'])}
+                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                          >
+                                            {PROMO_DISCOUNT_TYPE_OPTIONS.map((o) => (
+                                              <option key={o.value} value={o.value}>
+                                                {o.label}
+                                              </option>
+                                            ))}
+                                          </select>
+                                        </div>
+
+                                        <div>
+                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Valore sconto</label>
+                                          <input
+                                            value={promoEditDiscountValueInput}
+                                            onChange={(e) => setPromoEditDiscountValueInput(e.target.value)}
+                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            inputMode="decimal"
+                                          />
+                                        </div>
+
+                                        <div>
+                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Mostra in home</label>
+                                          <select
+                                            value={String(promoEditShowOnHome)}
+                                            onChange={(e) => setPromoEditShowOnHome(e.target.value === 'true')}
+                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                          >
+                                            <option value="true">Sì</option>
+                                            <option value="false">No</option>
+                                          </select>
+                                        </div>
+
+                                        <div>
+                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo</label>
+                                          <input
+                                            value={promoEditPriceInput}
+                                            onChange={(e) => setPromoEditPriceInput(e.target.value)}
+                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            placeholder="Es. 12500,00 €"
+                                            inputMode="decimal"
+                                          />
+                                        </div>
+
+                                        <div>
+                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Offerta attiva</label>
+                                          <select
+                                            value={String(promoEditOfferActive)}
+                                            onChange={(e) => setPromoEditOfferActive(e.target.value === 'true')}
+                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                          >
+                                            <option value="false">No</option>
+                                            <option value="true">Sì</option>
+                                          </select>
+                                        </div>
+
+                                        <div>
+                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo offerta</label>
+                                          <input
+                                            value={promoEditOfferPriceInput}
+                                            onChange={(e) => setPromoEditOfferPriceInput(e.target.value)}
+                                            disabled={!promoEditOfferActive}
+                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 disabled:opacity-50"
+                                            placeholder="Es. 9900,00 €"
+                                            inputMode="decimal"
+                                          />
+                                        </div>
+
+                                        <div>
+                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Inizio (opz.)</label>
+                                          <input
+                                            value={promoEditStartsAt}
+                                            onChange={(e) => setPromoEditStartsAt(e.target.value)}
+                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            placeholder="Es. 2026-05-03T10:00:00Z"
+                                          />
+                                        </div>
+
+                                        <div>
+                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Fine (opz.)</label>
+                                          <input
+                                            value={promoEditEndsAt}
+                                            onChange={(e) => setPromoEditEndsAt(e.target.value)}
+                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            placeholder="Es. 2026-05-20T10:00:00Z"
+                                          />
+                                        </div>
+
+                                        <div>
+                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">CTA testo (opz.)</label>
+                                          <input
+                                            value={promoEditCtaText}
+                                            onChange={(e) => setPromoEditCtaText(e.target.value)}
+                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                          />
+                                        </div>
+
+                                        <div>
+                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">CTA link (opz.)</label>
+                                          <input
+                                            value={promoEditCtaHref}
+                                            onChange={(e) => setPromoEditCtaHref(e.target.value)}
+                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                          />
+                                        </div>
                                       </div>
-                                      {promo.scope === 'category' && promo.category ? (
-                                        <div>
-                                          <div className="text-xs font-bold text-zinc-500 uppercase">Categoria</div>
-                                          <div className="font-semibold">{promo.category}</div>
+
+                                      {promoEditMessage ? (
+                                        <div
+                                          className={`rounded-xl px-4 py-3 text-sm font-semibold ${promoEditMessage.includes('Errore') ? 'bg-red-100 text-red-800' : 'bg-red-100 text-red-800'}`}
+                                        >
+                                          {promoEditMessage}
                                         </div>
                                       ) : null}
-                                      {promo.scope === 'product' && promo.productSku ? (
-                                        <div>
-                                          <div className="text-xs font-bold text-zinc-500 uppercase">SKU prodotto</div>
-                                          <div className="font-semibold">{promo.productSku}</div>
-                                        </div>
-                                      ) : null}
-                                      {typeof promo.priceEur === 'number' ? (
-                                        <div>
-                                          <div className="text-xs font-bold text-zinc-500 uppercase">Prezzo</div>
-                                          <div className="font-semibold">{euro.format(promo.priceEur)}</div>
-                                        </div>
-                                      ) : null}
-                                      {promo.ctaHref ? (
-                                        <div>
-                                          <div className="text-xs font-bold text-zinc-500 uppercase">Link CTA</div>
-                                          <div className="font-semibold break-all">{promo.ctaHref}</div>
-                                        </div>
-                                      ) : null}
-                                      {promo.internalNote ? (
-                                        <div>
-                                          <div className="text-xs font-bold text-zinc-500 uppercase">Nota interna</div>
-                                          <div className="font-semibold">{promo.internalNote}</div>
-                                        </div>
-                                      ) : null}
+
+                                      <div className="flex items-center gap-2">
+                                        <button
+                                          type="button"
+                                          onClick={saveEditPromotion}
+                                          disabled={saving || creating}
+                                          className="h-10 px-4 rounded-lg bg-[#e67e22] text-white font-bold hover:bg-[#d35400] disabled:opacity-50"
+                                        >
+                                          Salva modifica
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={cancelEditPromotion}
+                                          disabled={saving || creating}
+                                          className="h-10 px-4 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                                        >
+                                          Annulla
+                                        </button>
+                                      </div>
                                     </div>
-                                  </div>
+                                  ) : (
+                                    <div className="space-y-3 text-sm text-zinc-700">
+                                      <div className="grid grid-cols-1 gap-2">
+                                        <div>
+                                          <div className="text-xs font-bold text-zinc-500 uppercase">Sconto</div>
+                                          <div className="font-semibold">{discountLabel}</div>
+                                        </div>
+                                        {promo.scope === 'category' && promo.category ? (
+                                          <div>
+                                            <div className="text-xs font-bold text-zinc-500 uppercase">Categoria</div>
+                                            <div className="font-semibold">{promo.category}</div>
+                                          </div>
+                                        ) : null}
+                                        {promo.scope === 'product' && promo.productSku ? (
+                                          <div>
+                                            <div className="text-xs font-bold text-zinc-500 uppercase">SKU prodotto</div>
+                                            <div className="font-semibold">{promo.productSku}</div>
+                                          </div>
+                                        ) : null}
+                                        {typeof promo.priceEur === 'number' ? (
+                                          <div>
+                                            <div className="text-xs font-bold text-zinc-500 uppercase">Prezzo</div>
+                                            <div className="font-semibold">{euro.format(promo.priceEur)}</div>
+                                          </div>
+                                        ) : null}
+                                        {promo.offerActive && typeof promo.offerPriceEur === 'number' ? (
+                                          <div>
+                                            <div className="text-xs font-bold text-zinc-500 uppercase">Prezzo offerta</div>
+                                            <div className="font-semibold">{euro.format(promo.offerPriceEur)}</div>
+                                          </div>
+                                        ) : null}
+                                        {promo.ctaHref ? (
+                                          <div>
+                                            <div className="text-xs font-bold text-zinc-500 uppercase">Link CTA</div>
+                                            <div className="font-semibold break-all">{promo.ctaHref}</div>
+                                          </div>
+                                        ) : null}
+                                        {promo.internalNote ? (
+                                          <div>
+                                            <div className="text-xs font-bold text-zinc-500 uppercase">Nota interna</div>
+                                            <div className="font-semibold">{promo.internalNote}</div>
+                                          </div>
+                                        ) : null}
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               ) : null}
                             </div>
