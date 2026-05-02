@@ -1,11 +1,8 @@
 import { NextResponse } from 'next/server'
 import { getPgPool } from '@/lib/db'
+import { ensurePromotionsTables, normalizePgSchema } from '@/lib/promotions-db'
 
 export const dynamic = 'force-dynamic'
-
-function isNumericId(value: string) {
-  return /^[0-9]+$/.test(String(value || '').trim())
-}
 
 function parsePriceEur(input: unknown) {
   if (input === null || input === undefined || input === '') return null
@@ -40,13 +37,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Carica almeno una immagine.' }, { status: 400 })
     }
 
+    const schema = normalizePgSchema(process.env.PG_SCHEMA)
+    const promotions = `"${schema}"."promotions"`
+    const promotionImages = `"${schema}"."promotion_images"`
+
     const pool = getPgPool()
     const client = await pool.connect()
     try {
       await client.query('BEGIN')
+      await ensurePromotionsTables(client, schema)
       const promoRes = await client.query(
         `
-          INSERT INTO promotions (title, description, price_eur, is_active)
+          INSERT INTO ${promotions} (title, description, price_eur, is_active)
           VALUES ($1,$2,$3,$4)
           RETURNING id, title, description, price_eur, is_active, created_at, updated_at
         `,
@@ -82,7 +84,7 @@ export async function POST(req: Request) {
 
       const imgsRes = await client.query(
         `
-          INSERT INTO promotion_images
+          INSERT INTO ${promotionImages}
             (promotion_id, public_id, secure_url, mime_type, format, width, height, bytes, sort_order)
           VALUES
             ${values.join(',')}
@@ -99,6 +101,18 @@ export async function POST(req: Request) {
       if (code === '42P01') {
         return NextResponse.json(
           { success: false, error: 'Tabelle promotions/promotion_images mancanti. Esegui lo script sql/promotions.sql.' },
+          { status: 500 }
+        )
+      }
+      if (code === '42501') {
+        return NextResponse.json(
+          { success: false, error: 'Permessi insufficienti per creare/leggere le tabelle promozioni nel DB.' },
+          { status: 500 }
+        )
+      }
+      if (code === '3F000') {
+        return NextResponse.json(
+          { success: false, error: 'Schema Postgres non valido. Imposta PG_SCHEMA (default: public).' },
           { status: 500 }
         )
       }

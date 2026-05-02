@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { deleteByPublicId } from '@/lib/cloudinary-server'
 import { getPgPool } from '@/lib/db'
+import { ensurePromotionsTables, normalizePgSchema } from '@/lib/promotions-db'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,13 +20,17 @@ export async function DELETE(_req: Request, ctx: { params: Promise<{ id: string 
       return NextResponse.json({ success: true }, { status: 200 })
     }
 
+    const schema = normalizePgSchema(process.env.PG_SCHEMA)
+    const promotionImages = `"${schema}"."promotion_images"`
+
     const pool = getPgPool()
-    const { rows } = await pool.query('SELECT id, public_id FROM promotion_images WHERE id = $1', [value])
+    await ensurePromotionsTables(pool, schema)
+    const { rows } = await pool.query(`SELECT id, public_id FROM ${promotionImages} WHERE id = $1`, [value])
     const row = rows[0]
     if (!row) return NextResponse.json({ success: false, error: 'Immagine non trovata.' }, { status: 404 })
 
     await deleteByPublicId(row.public_id)
-    await pool.query('DELETE FROM promotion_images WHERE id = $1', [value])
+    await pool.query(`DELETE FROM ${promotionImages} WHERE id = $1`, [value])
     return NextResponse.json({ success: true }, { status: 200 })
   } catch (e) {
     const msg = e instanceof Error ? e.message : ''
@@ -38,4 +43,3 @@ export async function DELETE(_req: Request, ctx: { params: Promise<{ id: string 
     return NextResponse.json({ success: false, error: 'Errore interno.' }, { status: 500 })
   }
 }
-
