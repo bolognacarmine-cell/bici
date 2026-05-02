@@ -1,5 +1,6 @@
 import express from 'express'
 import carouselRoutes from './routes/carouselRoutes.js'
+import promotionRoutes from './routes/promotionRoutes.js'
 
 const app = express()
 
@@ -9,6 +10,7 @@ app.use(express.urlencoded({ extended: true }))
 
 app.get('/healthz', (_req, res) => res.status(200).send('ok'))
 app.use(carouselRoutes)
+app.use(promotionRoutes)
 
 app.use((err, _req, res, _next) => {
   const status = typeof err?.statusCode === 'number' ? err.statusCode : err?.code === 'LIMIT_FILE_SIZE' ? 400 : 500

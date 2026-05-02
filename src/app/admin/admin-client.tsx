@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { updateData } from './actions'
 import Link from 'next/link'
 import { Plus, Trash2, Image as ImageIcon } from 'lucide-react'
@@ -63,6 +63,234 @@ export default function AdminClientPage() {
   const [data, setData] = useState<SiteData | null>(null)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
+  const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || '').replace(/\/+$/, '')
+  const euro = useMemo(() => new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }), [])
+  const pasteRef = useRef<HTMLDivElement | null>(null)
+
+  type UploadedImage = {
+    original_name?: string
+    original_bytes?: number
+    public_id: string
+    secure_url: string
+    mime_type: string
+    format: string | null
+    width: number | null
+    height: number | null
+    bytes: number | null
+  }
+
+  type PendingImage = {
+    id: string
+    fileName: string
+    size: number
+    mime: string
+    previewUrl: string
+    status: 'pending' | 'uploading' | 'uploaded' | 'error'
+    error?: string
+    uploaded?: UploadedImage
+    label?: string
+    alt?: string
+  }
+
+  const [createTitle, setCreateTitle] = useState('')
+  const [createDescription, setCreateDescription] = useState('')
+  const [createPriceInput, setCreatePriceInput] = useState('')
+  const [createIsActive, setCreateIsActive] = useState(true)
+  const [createImages, setCreateImages] = useState<PendingImage[]>([])
+  const [createStatus, setCreateStatus] = useState<string>('')
+  const [creating, setCreating] = useState(false)
+
+  const parsePriceEur = (input: string) => {
+    const raw = String(input || '').trim()
+    if (!raw) return null
+    const normalized = raw.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '')
+    const n = Number.parseFloat(normalized)
+    if (!Number.isFinite(n)) return null
+    return Math.round(n * 100) / 100
+  }
+
+  const isAllowedMime = (mime: string) => {
+    const m = String(mime || '').toLowerCase()
+    if (m === 'image/jfif') return true
+    return m === 'image/jpeg' || m === 'image/png' || m === 'image/webp' || m === 'image/avif'
+  }
+
+  const addLocalFiles = async (files: File[]) => {
+    const next: PendingImage[] = []
+    for (const f of files) {
+      const mime = String(f.type || '').toLowerCase()
+      const size = typeof (f as any).size === 'number' ? (f as any).size : 0
+      if (!isAllowedMime(mime)) {
+        next.push({
+          id: crypto.randomUUID(),
+          fileName: f.name || 'clipboard-image',
+          size,
+          mime,
+          previewUrl: '',
+          status: 'error',
+          error: 'Tipo file non supportato.',
+        })
+        continue
+      }
+      if (size > 10 * 1024 * 1024) {
+        next.push({
+          id: crypto.randomUUID(),
+          fileName: f.name || 'clipboard-image',
+          size,
+          mime,
+          previewUrl: '',
+          status: 'error',
+          error: 'File troppo grande (max 10MB).',
+        })
+        continue
+      }
+
+      const previewUrl = URL.createObjectURL(f)
+      next.push({
+        id: crypto.randomUUID(),
+        fileName: f.name || 'clipboard-image',
+        size,
+        mime,
+        previewUrl,
+        status: 'pending',
+      })
+    }
+
+    setCreateImages((prev) => [...prev, ...next])
+
+    for (const item of next) {
+      if (item.status !== 'pending') continue
+      try {
+        setCreateImages((prev) => prev.map((x) => (x.id === item.id ? { ...x, status: 'uploading' } : x)))
+
+        const file = files.find((f) => (f.name || 'clipboard-image') === item.fileName && (f as any).size === item.size)
+        if (!file) throw new Error('File non trovato.')
+
+        const fd = new FormData()
+        fd.append('files', file, file.name || 'image')
+
+        const res = await fetch(`${apiBase}/api/promotions/upload-images`, { method: 'POST', body: fd })
+        const json = await res.json().catch(() => null)
+        if (!res.ok) {
+          const msg = json && typeof json === 'object' && 'error' in json ? String((json as any).error) : 'Errore upload.'
+          throw new Error(msg)
+        }
+
+        const uploaded = Array.isArray(json?.uploaded) ? (json.uploaded[0] as UploadedImage | undefined) : undefined
+        if (!uploaded?.secure_url || !uploaded?.public_id) throw new Error('Upload incompleto.')
+
+        setCreateImages((prev) =>
+          prev.map((x) =>
+            x.id === item.id ? { ...x, status: 'uploaded', uploaded, previewUrl: uploaded.secure_url } : x
+          )
+        )
+      } catch (e) {
+        setCreateImages((prev) =>
+          prev.map((x) => (x.id === item.id ? { ...x, status: 'error', error: e instanceof Error ? e.message : 'Errore upload.' } : x))
+        )
+      }
+    }
+  }
+
+  const removeCreateImage = async (id: string) => {
+    const target = createImages.find((x) => x.id === id)
+    setCreateImages((prev) => prev.filter((x) => x.id !== id))
+    if (target?.uploaded?.public_id) {
+      await fetch(`${apiBase}/api/promotions/image/${encodeURIComponent(target.uploaded.public_id)}`, { method: 'DELETE' }).catch(() => {})
+    }
+  }
+
+  const moveCreateImage = (id: string, dir: -1 | 1) => {
+    setCreateImages((prev) => {
+      const idx = prev.findIndex((x) => x.id === id)
+      if (idx < 0) return prev
+      const nextIdx = idx + dir
+      if (nextIdx < 0 || nextIdx >= prev.length) return prev
+      const copy = [...prev]
+      const tmp = copy[idx]
+      copy[idx] = copy[nextIdx]
+      copy[nextIdx] = tmp
+      return copy
+    })
+  }
+
+  const submitCreatePromotion = async () => {
+    if (!data) return
+    setCreateStatus('')
+
+    const title = createTitle.trim()
+    if (!title) {
+      setCreateStatus('Titolo obbligatorio.')
+      return
+    }
+
+    const price = parsePriceEur(createPriceInput)
+    if (price === null) {
+      setCreateStatus('Prezzo non valido.')
+      return
+    }
+
+    const images = createImages.filter((x) => x.status === 'uploaded' && x.uploaded)
+    if (images.length === 0) {
+      setCreateStatus('Carica almeno una immagine valida.')
+      return
+    }
+
+    setCreating(true)
+    try {
+      const payload = {
+        title,
+        description: createDescription.trim(),
+        price_eur: price,
+        is_active: createIsActive,
+        images: images.map((x, i) => ({
+          ...x.uploaded,
+          sort_order: i,
+        })),
+      }
+
+      const res = await fetch(`${apiBase}/api/promotions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      const json = await res.json().catch(() => null)
+      if (!res.ok) {
+        const msg = json && typeof json === 'object' && 'error' in json ? String((json as any).error) : 'Errore salvataggio.'
+        throw new Error(msg)
+      }
+
+      const firstUrl = images[0].uploaded!.secure_url
+      const sitePromotion = {
+        title,
+        scope: 'general',
+        status: createIsActive ? 'active' : 'draft',
+        discountType: 'percent',
+        discountValue: 10,
+        description: createDescription.trim(),
+        image: firstUrl,
+        images: images.map((x) => ({ url: x.uploaded!.secure_url, alt: title })),
+        priceEur: price,
+        offerActive: false,
+        showOnHome: true,
+      } satisfies Promotion
+
+      const nextData = { ...data, promotions: [...(data.promotions ?? []), sitePromotion] }
+      await updateData(nextData)
+      setData(nextData)
+
+      setCreateTitle('')
+      setCreateDescription('')
+      setCreatePriceInput('')
+      setCreateIsActive(true)
+      setCreateImages([])
+      setCreateStatus('Promozione creata e salvata.')
+    } catch (e) {
+      setCreateStatus(e instanceof Error ? e.message : 'Errore salvataggio.')
+    } finally {
+      setCreating(false)
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -232,6 +460,188 @@ export default function AdminClientPage() {
               >
                 <Plus size={16} /> Aggiungi Promozione
               </button>
+            </div>
+
+            <div className="mb-8 rounded-2xl border border-zinc-200 bg-white p-5">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-sm font-bold text-zinc-800">Aggiungi promozione</div>
+                  <div className="text-xs text-zinc-500">Trascina, seleziona o incolla immagini</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={submitCreatePromotion}
+                  disabled={creating}
+                  className="px-4 py-2 rounded-lg bg-[#e67e22] text-white font-bold hover:bg-[#d35400] disabled:opacity-50"
+                >
+                  {creating ? 'Creazione...' : 'Crea promozione'}
+                </button>
+              </div>
+
+              {createStatus && (
+                <div
+                  className={`mt-4 rounded-xl px-4 py-3 text-sm font-semibold ${createStatus.includes('creata') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+                >
+                  {createStatus}
+                </div>
+              )}
+
+              <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Titolo promozione</label>
+                  <input
+                    value={createTitle}
+                    onChange={(e) => setCreateTitle(e.target.value)}
+                    className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                    placeholder="Es. Promo Primavera"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Attiva</label>
+                  <select
+                    value={String(createIsActive)}
+                    onChange={(e) => setCreateIsActive(e.target.value === 'true')}
+                    className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                  >
+                    <option value="true">Sì</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Descrizione</label>
+                  <textarea
+                    value={createDescription}
+                    onChange={(e) => setCreateDescription(e.target.value)}
+                    className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none h-20 bg-white text-zinc-900 placeholder-zinc-400"
+                    placeholder="Testo breve della promozione"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo in euro</label>
+                  <input
+                    value={createPriceInput}
+                    onChange={(e) => setCreatePriceInput(e.target.value)}
+                    onBlur={() => {
+                      const n = parsePriceEur(createPriceInput)
+                      if (typeof n === 'number') setCreatePriceInput(euro.format(n))
+                    }}
+                    className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                    placeholder="Es. 12500,00 €"
+                    inputMode="decimal"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-5">
+                <div
+                  ref={pasteRef}
+                  onDragOver={(e) => {
+                    e.preventDefault()
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    const list = e.dataTransfer?.files ? Array.from(e.dataTransfer.files) : []
+                    if (list.length > 0) addLocalFiles(list)
+                  }}
+                  onPaste={(e) => {
+                    const items = e.clipboardData?.items ? Array.from(e.clipboardData.items) : []
+                    const files: File[] = []
+                    for (const it of items) {
+                      if (it.kind !== 'file') continue
+                      if (!String(it.type || '').startsWith('image/')) continue
+                      const f = it.getAsFile()
+                      if (!f) continue
+                      const ext = f.type === 'image/png' ? 'png' : f.type === 'image/webp' ? 'webp' : 'jpg'
+                      const named = new File([f], `clipboard-${Date.now()}.${ext}`, { type: f.type })
+                      files.push(named)
+                    }
+                    if (files.length > 0) {
+                      e.preventDefault()
+                      addLocalFiles(files)
+                    }
+                  }}
+                  className="rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 px-4 py-4"
+                >
+                  <div className="flex flex-col md:flex-row md:items-center gap-3 justify-between">
+                    <div className="text-sm font-semibold text-zinc-700">Trascina, seleziona o incolla immagini</div>
+                    <label className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 cursor-pointer">
+                      Seleziona file
+                      <input
+                        type="file"
+                        accept=".jpg,.jpeg,.jfif,.png,.webp,.avif,image/jpeg,image/png,image/webp,image/avif"
+                        multiple
+                        className="hidden"
+                        onChange={(e) => {
+                          const list = e.target.files ? Array.from(e.target.files) : []
+                          ;(e.target as any).value = ''
+                          if (list.length > 0) addLocalFiles(list)
+                        }}
+                      />
+                    </label>
+                  </div>
+                  <div className="mt-2 text-xs text-zinc-500">CTRL+V per incollare direttamente qui.</div>
+                </div>
+
+                {createImages.length > 0 && (
+                  <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {createImages.map((img, idx) => (
+                      <div key={img.id} className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
+                        <div className="relative aspect-square bg-zinc-100">
+                          {img.previewUrl ? (
+                            <img src={img.previewUrl} alt={img.fileName} className="absolute inset-0 h-full w-full object-cover" />
+                          ) : (
+                            <div className="absolute inset-0 grid place-items-center text-xs text-zinc-500">Nessuna preview</div>
+                          )}
+                          <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-black/65 text-white text-xs font-bold">
+                            {idx + 1}
+                          </div>
+                        </div>
+                        <div className="p-2">
+                          <div className="text-[11px] font-semibold text-zinc-700 truncate">{img.fileName}</div>
+                          <div className="mt-1 text-[11px] text-zinc-500">
+                            {img.status === 'uploading'
+                              ? 'Upload...'
+                              : img.status === 'uploaded'
+                                ? 'Caricata'
+                                : img.status === 'error'
+                                  ? img.error || 'Errore'
+                                  : 'In attesa'}
+                          </div>
+                          <div className="mt-2 flex items-center justify-between gap-1">
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => moveCreateImage(img.id, -1)}
+                                disabled={idx === 0}
+                                className="h-8 w-8 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
+                                title="Sposta su"
+                              >
+                                ↑
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => moveCreateImage(img.id, 1)}
+                                disabled={idx === createImages.length - 1}
+                                className="h-8 w-8 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
+                                title="Sposta giù"
+                              >
+                                ↓
+                              </button>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeCreateImage(img.id)}
+                              className="h-8 px-3 rounded-lg border border-zinc-200 bg-white text-red-600 font-bold"
+                            >
+                              Elimina
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="space-y-6">
