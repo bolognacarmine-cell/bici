@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { twMerge } from 'tailwind-merge'
 
 type Props = {
   images: string[]
@@ -37,7 +38,7 @@ export function MediaCarousel({
 
   return (
     <div
-      className={`group relative ${className}`}
+      className={twMerge('group relative', className)}
       tabIndex={hasMany ? 0 : -1}
       aria-roledescription={hasMany ? 'carousel' : undefined}
       aria-label={hasMany ? 'Galleria immagini' : undefined}
@@ -107,4 +108,3 @@ export function MediaCarousel({
     </div>
   )
 }
-
