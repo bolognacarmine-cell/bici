@@ -240,9 +240,16 @@ export default function AdminClientPage() {
       return
     }
 
+    const hasUploading = createImages.some((x) => x.status === 'pending' || x.status === 'uploading')
+    if (hasUploading) {
+      setCreateStatus('Attendi il completamento del caricamento immagini.')
+      return
+    }
+
     const images = createImages.filter((x) => x.status === 'uploaded' && x.uploaded)
     if (images.length === 0) {
-      setCreateStatus('Carica almeno una immagine valida.')
+      const firstErr = createImages.find((x) => x.status === 'error' && x.error)?.error
+      setCreateStatus(firstErr || 'Carica almeno una immagine valida.')
       return
     }
 
