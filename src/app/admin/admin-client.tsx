@@ -99,6 +99,8 @@ export default function AdminClientPage() {
   const [createImages, setCreateImages] = useState<PendingImage[]>([])
   const [createStatus, setCreateStatus] = useState<string>('')
   const [creating, setCreating] = useState(false)
+  const [promoExpandedIndex, setPromoExpandedIndex] = useState<number | null>(null)
+  const [promoSelectedIndexes, setPromoSelectedIndexes] = useState<number[]>([])
 
   const parsePriceEur = (input: string) => {
     const raw = String(input || '').trim()
@@ -357,11 +359,79 @@ export default function AdminClientPage() {
 
   const clearAllPromotions = async () => {
     if (!data) return
+    const promos = data.promotions ?? []
+    if (promos.length === 0) return
+    const ok = window.confirm('Eliminare tutte le promozioni?')
+    if (!ok) return
     setSaving(true)
     try {
       const nextData = { ...data, promotions: [] }
       setData(nextData)
       await updateData(nextData)
+      setPromoExpandedIndex(null)
+      setPromoSelectedIndexes([])
+      setMessage('Promozioni eliminate.')
+      setTimeout(() => setMessage(''), 3000)
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : 'Errore durante l’eliminazione.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const togglePromoSelected = (idx: number) => {
+    setPromoSelectedIndexes((prev) => (prev.includes(idx) ? prev.filter((x) => x !== idx) : [...prev, idx].sort((a, b) => a - b)))
+  }
+
+  const toggleSelectAllPromos = () => {
+    const promos = data?.promotions ?? []
+    if (promos.length === 0) return
+    setPromoSelectedIndexes((prev) => (prev.length === promos.length ? [] : promos.map((_, i) => i)))
+  }
+
+  const deletePromotionAtIndex = async (idx: number) => {
+    if (!data) return
+    const promos = data.promotions ?? []
+    if (idx < 0 || idx >= promos.length) return
+    const title = String(promos[idx]?.title ?? '').trim()
+    const ok = window.confirm(`Eliminare la promozione${title ? ` “${title}”` : ''}?`)
+    if (!ok) return
+
+    setSaving(true)
+    try {
+      const nextPromos = promos.filter((_, i) => i !== idx)
+      const nextData = { ...data, promotions: nextPromos }
+      setData(nextData)
+      await updateData(nextData)
+      setPromoExpandedIndex(null)
+      setPromoSelectedIndexes([])
+      setMessage('Promozione eliminata.')
+      setTimeout(() => setMessage(''), 3000)
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : 'Errore durante l’eliminazione.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const deleteSelectedPromotions = async () => {
+    if (!data) return
+    const promos = data.promotions ?? []
+    if (promos.length === 0) return
+    const selected = promoSelectedIndexes.filter((i) => i >= 0 && i < promos.length)
+    if (selected.length === 0) return
+    const ok = window.confirm(`Eliminare ${selected.length} promozion${selected.length === 1 ? 'e' : 'i'} selezionat${selected.length === 1 ? 'a' : 'e'}?`)
+    if (!ok) return
+
+    const toDelete = new Set(selected)
+    setSaving(true)
+    try {
+      const nextPromos = promos.filter((_, i) => !toDelete.has(i))
+      const nextData = { ...data, promotions: nextPromos }
+      setData(nextData)
+      await updateData(nextData)
+      setPromoExpandedIndex(null)
+      setPromoSelectedIndexes([])
       setMessage('Promozioni eliminate.')
       setTimeout(() => setMessage(''), 3000)
     } catch (e) {
@@ -647,6 +717,176 @@ export default function AdminClientPage() {
                   </div>
                 )}
               </div>
+            </div>
+
+            <div className="mt-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
+                <div>
+                  <div className="text-sm font-bold text-zinc-800">Elenco promozioni</div>
+                  <div className="text-xs text-zinc-500">{(data.promotions ?? []).length} totali</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={toggleSelectAllPromos}
+                    disabled={saving || creating || (data.promotions ?? []).length === 0}
+                    className="px-4 py-2 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                  >
+                    {promoSelectedIndexes.length === (data.promotions ?? []).length && (data.promotions ?? []).length > 0 ? 'Deseleziona tutte' : 'Seleziona tutte'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={deleteSelectedPromotions}
+                    disabled={saving || creating || promoSelectedIndexes.length === 0}
+                    className="px-4 py-2 rounded-lg bg-white border border-zinc-200 text-red-700 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                  >
+                    Elimina selezionate
+                  </button>
+                </div>
+              </div>
+
+              {(data.promotions ?? []).length === 0 ? (
+                <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4 text-sm text-zinc-600">Nessuna promozione salvata.</div>
+              ) : (
+                <div className="space-y-3">
+                  {(data.promotions ?? []).map((promo, idx) => {
+                    const raw = promo.images
+                    const items: Array<{ url: string; label?: string; alt?: string }> = []
+                    if (Array.isArray(raw)) {
+                      for (const entry of raw) {
+                        if (typeof entry === 'string') {
+                          const url = entry.trim()
+                          if (!url) continue
+                          items.push({ url })
+                          continue
+                        }
+                        if (entry && typeof entry === 'object') {
+                          const url = String(entry.url ?? '').trim()
+                          if (!url) continue
+                          const label = String(entry.label ?? '').trim()
+                          const alt = String(entry.alt ?? '').trim()
+                          items.push({ url, ...(label ? { label } : {}), ...(alt ? { alt } : {}) })
+                        }
+                      }
+                    } else if (promo.image) {
+                      const url = String(promo.image ?? '').trim()
+                      if (url) items.push({ url })
+                    }
+
+                    const isSelected = promoSelectedIndexes.includes(idx)
+                    const isExpanded = promoExpandedIndex === idx
+                    const discountLabel =
+                      promo.discountType === 'amount' ? euro.format(promo.discountValue) : `${promo.discountValue}%`
+
+                    return (
+                      <div key={`${promo.title}-${idx}`} className="rounded-2xl border border-zinc-200 bg-white overflow-hidden">
+                        <div className="p-4">
+                          <div className="flex items-start gap-3">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => togglePromoSelected(idx)}
+                              disabled={saving || creating}
+                              className="mt-1 h-4 w-4"
+                              aria-label={`Seleziona promozione ${promo.title}`}
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-col md:flex-row md:items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                  <div className="font-bold text-zinc-800 truncate">{promo.title}</div>
+                                  <div className="mt-1 text-xs text-zinc-500">
+                                    {promo.status} • {promo.scope} • {discountLabel}
+                                    {promo.showOnHome === false ? ' • nascosta in home' : ''}
+                                    {promo.startsAt ? ` • dal ${promo.startsAt}` : ''}
+                                    {promo.endsAt ? ` • fino al ${promo.endsAt}` : ''}
+                                  </div>
+                                  {promo.description ? <div className="mt-2 text-sm text-zinc-700 line-clamp-2">{promo.description}</div> : null}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => setPromoExpandedIndex((prev) => (prev === idx ? null : idx))}
+                                    disabled={saving || creating}
+                                    className="h-10 px-4 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                                  >
+                                    {isExpanded ? 'Chiudi' : 'Apri'}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => deletePromotionAtIndex(idx)}
+                                    disabled={saving || creating}
+                                    className="h-10 px-4 rounded-lg bg-white border border-zinc-200 text-red-700 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                                  >
+                                    Elimina
+                                  </button>
+                                </div>
+                              </div>
+
+                              {isExpanded ? (
+                                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+                                  <div className="aspect-square bg-zinc-200 rounded-lg overflow-hidden relative">
+                                    {items.length > 0 ? (
+                                      <MediaCarousel
+                                        images={items.map((x) => x.url).filter(Boolean)}
+                                        alt={promo.title}
+                                        sizes="(max-width: 768px) 92vw, 520px"
+                                        className="absolute inset-0"
+                                        imageClassName="object-cover"
+                                        objectPosition="50% 50%"
+                                      />
+                                    ) : (
+                                      <div className="absolute inset-0 grid place-items-center text-sm text-zinc-600">Nessuna immagine</div>
+                                    )}
+                                  </div>
+
+                                  <div className="space-y-3 text-sm text-zinc-700">
+                                    <div className="grid grid-cols-1 gap-2">
+                                      <div>
+                                        <div className="text-xs font-bold text-zinc-500 uppercase">Sconto</div>
+                                        <div className="font-semibold">{discountLabel}</div>
+                                      </div>
+                                      {promo.scope === 'category' && promo.category ? (
+                                        <div>
+                                          <div className="text-xs font-bold text-zinc-500 uppercase">Categoria</div>
+                                          <div className="font-semibold">{promo.category}</div>
+                                        </div>
+                                      ) : null}
+                                      {promo.scope === 'product' && promo.productSku ? (
+                                        <div>
+                                          <div className="text-xs font-bold text-zinc-500 uppercase">SKU prodotto</div>
+                                          <div className="font-semibold">{promo.productSku}</div>
+                                        </div>
+                                      ) : null}
+                                      {typeof promo.priceEur === 'number' ? (
+                                        <div>
+                                          <div className="text-xs font-bold text-zinc-500 uppercase">Prezzo</div>
+                                          <div className="font-semibold">{euro.format(promo.priceEur)}</div>
+                                        </div>
+                                      ) : null}
+                                      {promo.ctaHref ? (
+                                        <div>
+                                          <div className="text-xs font-bold text-zinc-500 uppercase">Link CTA</div>
+                                          <div className="font-semibold break-all">{promo.ctaHref}</div>
+                                        </div>
+                                      ) : null}
+                                      {promo.internalNote ? (
+                                        <div>
+                                          <div className="text-xs font-bold text-zinc-500 uppercase">Nota interna</div>
+                                          <div className="font-semibold">{promo.internalNote}</div>
+                                        </div>
+                                      ) : null}
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : null}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           </section>
 
