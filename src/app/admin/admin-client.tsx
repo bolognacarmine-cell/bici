@@ -94,6 +94,7 @@ export default function AdminClientPage() {
   const [promoEditCtaText, setPromoEditCtaText] = useState('')
   const [promoEditCtaHref, setPromoEditCtaHref] = useState('')
   const [promoEditMessage, setPromoEditMessage] = useState('')
+  const [productSelectedIndexes, setProductSelectedIndexes] = useState<number[]>([])
 
   const parsePriceEur = (input: string) => {
     const raw = String(input || '').trim()
@@ -482,6 +483,89 @@ export default function AdminClientPage() {
       setTimeout(() => setMessage(''), 3000)
     } catch (e) {
       setPromoEditMessage(e instanceof Error ? e.message : 'Errore durante il salvataggio.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const toggleProductSelected = (idx: number) => {
+    setProductSelectedIndexes((prev) => (prev.includes(idx) ? prev.filter((x) => x !== idx) : [...prev, idx].sort((a, b) => a - b)))
+  }
+
+  const toggleSelectAllProducts = () => {
+    const products = data?.products ?? []
+    if (products.length === 0) return
+    setProductSelectedIndexes((prev) => (prev.length === products.length ? [] : products.map((_, i) => i)))
+  }
+
+  const deleteProductAtIndex = async (idx: number) => {
+    if (!data) return
+    const products = data.products ?? []
+    if (idx < 0 || idx >= products.length) return
+    const name = String(products[idx]?.name ?? '').trim()
+    if (!confirmDelete(`eliminare il prodotto${name ? ` “${name}”` : ''}`)) return
+
+    setSaving(true)
+    try {
+      const nextProducts = products.filter((_, i) => i !== idx)
+      const nextData = { ...data, products: nextProducts }
+      setData(nextData)
+      await persistSiteData(nextData)
+      setProductSelectedIndexes([])
+      setMessage('Prodotto eliminato.')
+      setTimeout(() => setMessage(''), 3000)
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : 'Errore durante l’eliminazione.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const deleteSelectedProducts = async () => {
+    if (!data) return
+    const products = data.products ?? []
+    if (products.length === 0) return
+    const selected = productSelectedIndexes.filter((i) => i >= 0 && i < products.length)
+    if (selected.length === 0) return
+    if (
+      !confirmDelete(
+        `eliminare ${selected.length} prodott${selected.length === 1 ? 'o' : 'i'} selezionat${selected.length === 1 ? 'o' : 'i'}`
+      )
+    )
+      return
+
+    const toDelete = new Set(selected)
+    setSaving(true)
+    try {
+      const nextProducts = products.filter((_, i) => !toDelete.has(i))
+      const nextData = { ...data, products: nextProducts }
+      setData(nextData)
+      await persistSiteData(nextData)
+      setProductSelectedIndexes([])
+      setMessage('Prodotti eliminati.')
+      setTimeout(() => setMessage(''), 3000)
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : 'Errore durante l’eliminazione.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const clearAllProducts = async () => {
+    if (!data) return
+    const products = data.products ?? []
+    if (products.length === 0) return
+    if (!confirmDelete('eliminare tutti i prodotti del catalogo')) return
+    setSaving(true)
+    try {
+      const nextData = { ...data, products: [] }
+      setData(nextData)
+      await persistSiteData(nextData)
+      setProductSelectedIndexes([])
+      setMessage('Catalogo prodotti eliminato.')
+      setTimeout(() => setMessage(''), 3000)
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : 'Errore durante l’eliminazione.')
     } finally {
       setSaving(false)
     }
@@ -1100,11 +1184,56 @@ export default function AdminClientPage() {
               </div>
             </div>
 
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6">
+              <div>
+                <div className="text-sm font-bold text-zinc-800">Elenco catalogo</div>
+                <div className="text-xs text-zinc-500">{(data.products ?? []).length} prodotti</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={toggleSelectAllProducts}
+                  disabled={saving || (data.products ?? []).length === 0}
+                  className="px-4 py-2 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                >
+                  {productSelectedIndexes.length === (data.products ?? []).length && (data.products ?? []).length > 0
+                    ? 'Deseleziona tutti'
+                    : 'Seleziona tutti'}
+                </button>
+                <button
+                  type="button"
+                  onClick={deleteSelectedProducts}
+                  disabled={saving || productSelectedIndexes.length === 0}
+                  className="px-4 py-2 rounded-lg bg-white border border-zinc-200 text-red-700 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                >
+                  Elimina selezionati
+                </button>
+                <button
+                  type="button"
+                  onClick={clearAllProducts}
+                  disabled={saving || (data.products ?? []).length === 0}
+                  className="px-4 py-2 rounded-lg bg-white border border-zinc-200 text-red-700 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                >
+                  Elimina tutti
+                </button>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {data.products?.map((product, idx) => (
                 <div key={idx} className="p-6 border border-zinc-100 rounded-xl bg-zinc-50 relative group">
+                  <div className="absolute top-4 left-4">
+                    <input
+                      type="checkbox"
+                      checked={productSelectedIndexes.includes(idx)}
+                      onChange={() => toggleProductSelected(idx)}
+                      disabled={saving}
+                      className="h-4 w-4"
+                      aria-label={`Seleziona prodotto ${String(product.name ?? '')}`}
+                    />
+                  </div>
                   <button
-                    onClick={() => removeProduct(idx)}
+                    onClick={() => deleteProductAtIndex(idx)}
                     className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-red-500 transition-colors"
                   >
                     <Trash2 size={18} />
