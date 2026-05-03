@@ -15,6 +15,31 @@ function availabilityLabel(status: string) {
   return 'Disponibilità non specificata'
 }
 
+function genderLabel(value: string) {
+  if (value === 'uomo') return 'Uomo'
+  if (value === 'donna') return 'Donna'
+  if (value === 'unisex') return 'Unisex'
+  return value
+}
+
+function categoryLabel(value: string) {
+  const v = String(value || '').trim()
+  if (!v) return '—'
+  if (v === 'city') return 'City'
+  if (v === 'mtb') return 'MTB'
+  if (v === 'trekking') return 'Trekking'
+  if (v === 'gravel') return 'Gravel'
+  if (v === 'road') return 'Corsa'
+  if (v === 'junior') return 'Junior'
+  if (v === 'ebike_city') return 'E-bike City'
+  if (v === 'ebike_trekking') return 'E-bike Trekking'
+  if (v === 'ebike_emtb') return 'E-MTB'
+  if (v === 'ebike_cargo') return 'E-bike Cargo'
+  if (v === 'accessory') return 'Accessori'
+  if (v === 'spare_part') return 'Ricambi'
+  return v
+}
+
 function availabilitySchema(status: string) {
   if (status === 'available') return 'https://schema.org/InStock'
   if (status === 'preorder') return 'https://schema.org/PreOrder'
@@ -199,6 +224,8 @@ export default async function ProdottoPage({ params }: { params: Promise<{ slug:
   const brand = String((product as any).brand || siteBrand || '').trim()
   const sku = String((product as any).sku || '').trim()
   const status = String((product as any).status || 'available')
+  const category = String((product as any).category || '').trim()
+  const gender = String((product as any).gender || '').trim()
   const euro = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' })
   const price =
     typeof (product as any).priceEur === 'number'
@@ -209,6 +236,7 @@ export default async function ProdottoPage({ params }: { params: Promise<{ slug:
       ? euro.format(Number((product as any).salePriceEur))
       : String((product as any).salePrice || '').trim()
   const description = String(product.fullDescription || product.description || '').trim()
+  const sizes = Array.isArray((product as any).sizes) ? ((product as any).sizes as string[]).map(String).filter(Boolean) : []
 
   const jsonLd = buildProductJsonLd({ product, images, brandName: brand || null })
 
@@ -237,9 +265,29 @@ export default async function ProdottoPage({ params }: { params: Promise<{ slug:
                   SKU: {sku || '—'}
                 </div>
                 <div className="px-3 py-2 rounded-full bg-white/5 border border-white/10 text-white/80 text-xs font-semibold">
+                  {categoryLabel(category)}
+                </div>
+                {gender && (
+                  <div className="px-3 py-2 rounded-full bg-white/5 border border-white/10 text-white/80 text-xs font-semibold">
+                    {genderLabel(gender)}
+                  </div>
+                )}
+                <div className="px-3 py-2 rounded-full bg-white/5 border border-white/10 text-white/80 text-xs font-semibold">
                   {availabilityLabel(status)}
                 </div>
               </div>
+              {sizes.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {sizes.slice(0, 10).map((s) => (
+                    <div
+                      key={s}
+                      className="px-3 py-2 rounded-full bg-white/5 border border-white/10 text-white/80 text-xs font-semibold"
+                    >
+                      {s}
+                    </div>
+                  ))}
+                </div>
+              )}
             </header>
 
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">

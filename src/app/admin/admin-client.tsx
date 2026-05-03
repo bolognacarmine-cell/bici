@@ -1674,6 +1674,16 @@ export default function AdminClientPage() {
                         className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
                       />
                     </div>
+                    <div>
+                      <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Dettagli (testo)</label>
+                      <textarea
+                        value={String((product as any).fullDescription ?? '')}
+                        onChange={(e) => updateProduct(idx, 'fullDescription', e.target.value === '' ? undefined : e.target.value)}
+                        disabled={saving || productEditIndex !== idx}
+                        className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400 h-28"
+                        placeholder="Dettagli completi del prodotto (materiali, componenti, note, utilizzo...)"
+                      />
+                    </div>
                     {(() => {
                       const raw = (product as any).extensions
                       const extensions: Array<{ label: string; value: string }> = Array.isArray(raw)
@@ -1695,7 +1705,7 @@ export default function AdminClientPage() {
                       return (
                         <div>
                           <div className="flex items-center justify-between">
-                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Dettagli</label>
+                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Specifiche</label>
                             <button
                               type="button"
                               onClick={() => setExtensions([...extensions, { label: '', value: '' }])}

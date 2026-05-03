@@ -568,7 +568,29 @@ export function VoltbikeLanding() {
                       )
                     })()}
                   </div>
-                  <div className="mt-2 text-white/65 text-sm leading-relaxed line-clamp-3">{p.description || ''}</div>
+                  {(() => {
+                    const brand = String((p as any).brand ?? '').trim()
+                    const gender = String((p as any).gender ?? '').trim()
+                    if (!brand && !gender) return null
+                    const genderLabel = gender === 'uomo' ? 'Uomo' : gender === 'donna' ? 'Donna' : gender === 'unisex' ? 'Unisex' : gender
+                    return (
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        {brand && (
+                          <div className="px-3 py-2 rounded-full bg-white/5 border border-white/10 text-white/75 text-xs font-semibold">
+                            {brand}
+                          </div>
+                        )}
+                        {genderLabel && (
+                          <div className="px-3 py-2 rounded-full bg-white/5 border border-white/10 text-white/75 text-xs font-semibold">
+                            {genderLabel}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })()}
+                  <div className="mt-3 text-white/65 text-sm leading-relaxed line-clamp-3">
+                    {String((p as any).fullDescription || p.description || '').trim()}
+                  </div>
                   {Array.isArray((p as any).extensions) && (p as any).extensions.length > 0 && (
                     <div className="mt-4 grid grid-cols-1 gap-2">
                       {((p as any).extensions as any[]).slice(0, 3).map((ext, extIdx) => (
@@ -595,10 +617,22 @@ export function VoltbikeLanding() {
                     </div>
                   )}
                   <div className="mt-5">
-                    <MagneticButton href="#contatti" className="btn-secondary w-full px-5 py-4 font-bold border border-white/12">
-                      Richiedi disponibilità
-                      <ArrowRight className="w-5 h-5" />
-                    </MagneticButton>
+                    <div className="grid grid-cols-1 gap-3">
+                      {(() => {
+                        const key = String((p as any).slug || (p as any).sku || '').trim()
+                        const href = key ? `/prodotti/${encodeURIComponent(key)}` : '#contatti'
+                        return (
+                          <MagneticButton href={href} className="btn-primary w-full px-5 py-4 font-bold">
+                            Dettagli
+                            <ArrowRight className="w-5 h-5" />
+                          </MagneticButton>
+                        )
+                      })()}
+                      <MagneticButton href="#contatti" className="btn-secondary w-full px-5 py-4 font-bold border border-white/12">
+                        Richiedi disponibilità
+                        <ArrowRight className="w-5 h-5" />
+                      </MagneticButton>
+                    </div>
                   </div>
                 </motion.div>
               ))}
