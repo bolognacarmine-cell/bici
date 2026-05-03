@@ -237,6 +237,13 @@ export default async function ProdottoPage({ params }: { params: Promise<{ slug:
       : String((product as any).salePrice || '').trim()
   const description = String(product.fullDescription || product.description || '').trim()
   const sizes = Array.isArray((product as any).sizes) ? ((product as any).sizes as string[]).map(String).filter(Boolean) : []
+  const ebike =
+    category.startsWith('ebike_') && (product as any).ebike && typeof (product as any).ebike === 'object' ? ((product as any).ebike as any) : null
+  const ebikeBatteryWh = ebike && typeof ebike.batteryWh === 'number' ? ebike.batteryWh : null
+  const ebikeRangeKm = ebike && typeof ebike.rangeKm === 'number' ? ebike.rangeKm : null
+  const ebikeMotorW = ebike && typeof ebike.motorW === 'number' ? ebike.motorW : null
+  const ebikeTorqueNm = ebike && typeof ebike.torqueNm === 'number' ? ebike.torqueNm : null
+  const ebikeChargeTimeH = ebike && typeof ebike.chargeTimeH === 'number' ? ebike.chargeTimeH : null
 
   const jsonLd = buildProductJsonLd({ product, images, brandName: brand || null })
 
@@ -335,6 +342,44 @@ export default async function ProdottoPage({ params }: { params: Promise<{ slug:
               <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Descrizione</div>
               <div className="mt-3 text-white/80 leading-relaxed">{description || 'Dettagli in arrivo.'}</div>
             </div>
+
+            {ebike && (
+              <div className="mt-7">
+                <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">E-bike</div>
+                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {ebikeBatteryWh !== null && (
+                    <div className="rounded-2xl bg-white/4 border border-white/10 p-4">
+                      <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Batteria</div>
+                      <div className="mt-2 text-white text-lg font-extrabold">{ebikeBatteryWh} Wh</div>
+                    </div>
+                  )}
+                  {ebikeRangeKm !== null && (
+                    <div className="rounded-2xl bg-white/4 border border-white/10 p-4">
+                      <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Autonomia</div>
+                      <div className="mt-2 text-white text-lg font-extrabold">{ebikeRangeKm} km</div>
+                    </div>
+                  )}
+                  {ebikeMotorW !== null && (
+                    <div className="rounded-2xl bg-white/4 border border-white/10 p-4">
+                      <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Motore</div>
+                      <div className="mt-2 text-white text-lg font-extrabold">{ebikeMotorW} W</div>
+                    </div>
+                  )}
+                  {ebikeTorqueNm !== null && (
+                    <div className="rounded-2xl bg-white/4 border border-white/10 p-4">
+                      <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Coppia</div>
+                      <div className="mt-2 text-white text-lg font-extrabold">{ebikeTorqueNm} Nm</div>
+                    </div>
+                  )}
+                  {ebikeChargeTimeH !== null && (
+                    <div className="rounded-2xl bg-white/4 border border-white/10 p-4">
+                      <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Tempo di ricarica</div>
+                      <div className="mt-2 text-white text-lg font-extrabold">{ebikeChargeTimeH} h</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
               <Link
