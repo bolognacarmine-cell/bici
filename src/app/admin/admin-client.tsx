@@ -672,8 +672,6 @@ export default function AdminClientPage() {
       price: '',
       description: '',
       brand: '',
-      image: '/bici1.jpg',
-      images: ['/bici1.jpg'],
     } satisfies Product
     const newProducts: Product[] = [...(data.products ?? []), newProduct]
     setData({ ...data, products: newProducts })
