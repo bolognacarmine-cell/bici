@@ -285,7 +285,7 @@
         "Ricambi",
         "Ordini"
       ],
-      "image": "/2.png"
+      "image": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Bicycle_repair_tools%2C_Bicycle_Kitchen%2C_Los_Angeles.jpg"
     }
   ],
   "models": [
@@ -356,17 +356,17 @@
     {
       "title": "Diagnosi e regolazioni",
       "desc": "Controlli mirati e regolazioni per componenti e trasmissione, con attenzione alla sicurezza.",
-      "image": "/3.png"
+      "image": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Workbench_of_a_bicycle_dealer.jpg"
     },
     {
       "title": "Ruote e pneumatici",
       "desc": "Interventi su forature, camere d’aria e gomme: gonfiaggio e controlli disponibili anche in officina.",
-      "image": "/4.png"
+      "image": "https://upload.wikimedia.org/wikipedia/commons/9/97/Bicycle_repair_shop_-_bike_parts_on_work_bench.jpg"
     },
     {
       "title": "Ricambi su ordinazione",
       "desc": "Possibilità di ordinare ricambistica specifica per ogni necessità, oltre ad accessori e gadget.",
-      "image": "/5.png"
+      "image": "https://upload.wikimedia.org/wikipedia/commons/9/91/Bicycle_repair_shop.jpg"
     }
   ],
   "gallery": [
