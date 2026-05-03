@@ -39,14 +39,14 @@ export const Navbar = () => {
       <div className="container mx-auto px-6 flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white/8 border border-white/20 neon-ring shadow-[0_0_30px_rgba(0,245,255,0.18)] group-hover:scale-[1.04] transition-transform duration-300">
+          <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-white/8 border border-white/20 neon-ring shadow-[0_0_30px_rgba(0,245,255,0.18)] group-hover:scale-[1.04] transition-transform duration-300">
             {logoOk ? (
               <img
                 src="/logo-vincenzobike.png?v=3"
                 alt="VincenzoBike"
                 width={44}
                 height={44}
-                className="h-10 w-10 object-contain opacity-100 drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]"
+                className="h-10 w-10 object-contain rounded-full opacity-100 drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]"
                 onError={() => setLogoOk(false)}
               />
             ) : (
