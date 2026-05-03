@@ -119,6 +119,7 @@ export default function AdminClientPage() {
   const [promoEditCtaText, setPromoEditCtaText] = useState('')
   const [promoEditCtaHref, setPromoEditCtaHref] = useState('')
   const [promoEditMessage, setPromoEditMessage] = useState('')
+  const [productImageUploads, setProductImageUploads] = useState<Record<string, PendingImage[]>>({})
 
   const parsePriceEur = (input: string) => {
     const raw = String(input || '').trim()
@@ -227,6 +228,162 @@ export default function AdminClientPage() {
     setCreateImages((prev) => prev.filter((x) => x.id !== id))
     if (target?.uploaded?.public_id) {
       await fetch(`${apiBase}/api/promotions/image/${encodeURIComponent(target.uploaded.public_id)}`, { method: 'DELETE' }).catch(() => {})
+    }
+  }
+
+  const removeProductUploadItem = (productIndex: number, id: string) => {
+    const key = String(productIndex)
+    setProductImageUploads((prev) => {
+      const list = prev[key] ?? []
+      const next = list.filter((x) => x.id !== id)
+      const copy = { ...prev }
+      if (next.length === 0) delete copy[key]
+      else copy[key] = next
+      return copy
+    })
+  }
+
+  const appendProductImageUrl = (productIndex: number, url: string, fileName: string) => {
+    const cleanUrl = String(url ?? '').trim()
+    if (!cleanUrl) return
+    setData((prev) => {
+      if (!prev) return prev
+      const products = [...(prev.products ?? [])]
+      const product = products[productIndex]
+      if (!product) return prev
+
+      const raw = (product as any).images
+      if (Array.isArray(raw) && raw.every((x) => typeof x === 'string')) {
+        const urls = raw.map((x) => String(x).trim()).filter(Boolean)
+        const nextUrls = [...urls, cleanUrl]
+        products[productIndex] = { ...product, images: nextUrls, image: nextUrls[0] }
+        return { ...prev, products }
+      }
+
+      const items: Array<{ url: string; label?: string; alt?: string }> = []
+      if (Array.isArray(raw)) {
+        for (const entry of raw) {
+          if (typeof entry === 'string') {
+            const u = entry.trim()
+            if (u) items.push({ url: u })
+            continue
+          }
+          if (entry && typeof entry === 'object') {
+            const u = String((entry as any).url ?? '').trim()
+            if (!u) continue
+            const label = String((entry as any).label ?? '').trim()
+            const alt = String((entry as any).alt ?? '').trim()
+            items.push({ url: u, ...(label ? { label } : {}), ...(alt ? { alt } : {}) })
+          }
+        }
+      } else if ((product as any).image) {
+        const u = String((product as any).image ?? '').trim()
+        if (u) items.push({ url: u })
+      }
+
+      const alt = String((product as any).name ?? '').trim() || fileName
+      items.push({ url: cleanUrl, ...(alt ? { alt } : {}) })
+      products[productIndex] = { ...product, images: items, image: items[0]?.url ?? (product as any).image }
+      return { ...prev, products }
+    })
+  }
+
+  const addProductLocalFiles = async (productIndex: number, files: File[]) => {
+    const key = String(productIndex)
+    const next: PendingImage[] = []
+    for (const f of files) {
+      const mime = String(f.type || '').toLowerCase()
+      const size = typeof (f as any).size === 'number' ? (f as any).size : 0
+      if (!isAllowedMime(mime)) {
+        next.push({
+          id: crypto.randomUUID(),
+          fileName: f.name || 'image',
+          size,
+          mime,
+          previewUrl: '',
+          status: 'error',
+          error: 'Tipo file non supportato.',
+        })
+        continue
+      }
+      if (size > 10 * 1024 * 1024) {
+        next.push({
+          id: crypto.randomUUID(),
+          fileName: f.name || 'image',
+          size,
+          mime,
+          previewUrl: '',
+          status: 'error',
+          error: 'File troppo grande (max 10MB).',
+        })
+        continue
+      }
+
+      const previewUrl = URL.createObjectURL(f)
+      next.push({
+        id: crypto.randomUUID(),
+        fileName: f.name || 'image',
+        size,
+        mime,
+        previewUrl,
+        status: 'pending',
+      })
+    }
+
+    setProductImageUploads((prev) => ({ ...prev, [key]: [...(prev[key] ?? []), ...next] }))
+
+    for (const item of next) {
+      if (item.status !== 'pending') continue
+      try {
+        setProductImageUploads((prev) => {
+          const list = prev[key] ?? []
+          return { ...prev, [key]: list.map((x) => (x.id === item.id ? { ...x, status: 'uploading' } : x)) }
+        })
+
+        const file = files.find((f) => (f.name || 'image') === item.fileName && (f as any).size === item.size)
+        if (!file) throw new Error('File non trovato.')
+
+        const fd = new FormData()
+        fd.append('files', file, file.name || 'image')
+
+        const res = await fetch(`${apiBase}/api/promotions/upload-images`, { method: 'POST', body: fd })
+        const contentType = res.headers.get('content-type') || ''
+        const body = contentType.includes('application/json') ? await res.json().catch(() => null) : await res.text().catch(() => '')
+        if (!res.ok) {
+          const msg =
+            typeof body === 'object' && body && 'error' in body
+              ? String((body as any).error)
+              : typeof body === 'string' && body.trim()
+                ? body.trim()
+                : 'Errore upload.'
+          throw new Error(msg)
+        }
+
+        const uploaded = Array.isArray((body as any)?.uploaded) ? ((body as any).uploaded[0] as UploadedImage | undefined) : undefined
+        if (!uploaded?.secure_url || !uploaded?.public_id) {
+          const firstError =
+            Array.isArray((body as any)?.errors) && (body as any).errors.length > 0 ? String((body as any).errors[0]?.error ?? '') : ''
+          throw new Error(firstError || 'Upload incompleto.')
+        }
+
+        setProductImageUploads((prev) => {
+          const list = prev[key] ?? []
+          return {
+            ...prev,
+            [key]: list.map((x) => (x.id === item.id ? { ...x, status: 'uploaded', uploaded, previewUrl: uploaded.secure_url } : x)),
+          }
+        })
+
+        appendProductImageUrl(productIndex, uploaded.secure_url, item.fileName)
+      } catch (e) {
+        setProductImageUploads((prev) => {
+          const list = prev[key] ?? []
+          return {
+            ...prev,
+            [key]: list.map((x) => (x.id === item.id ? { ...x, status: 'error', error: e instanceof Error ? e.message : 'Errore upload.' } : x)),
+          }
+        })
+      }
     }
   }
 
@@ -1376,6 +1533,76 @@ export default function AdminClientPage() {
                                 + Aggiungi
                               </button>
                             </div>
+
+                            {String((product as any).category ?? '') === 'spare_part' && (
+                              <div className="mt-3 rounded-xl border border-zinc-200 bg-white p-3">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                                  <div>
+                                    <div className="text-xs font-bold text-zinc-800">Carica immagini ricambio</div>
+                                    <div className="text-[11px] text-zinc-500">JPG/JFIF, PNG, WEBP, AVIF (max 10MB)</div>
+                                  </div>
+                                  <label className="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 cursor-pointer text-sm">
+                                    Seleziona file
+                                    <input
+                                      type="file"
+                                      accept=".jpg,.jpeg,.jfif,.png,.webp,.avif,image/jpeg,image/png,image/webp,image/avif"
+                                      multiple
+                                      className="hidden"
+                                      onChange={(e) => {
+                                        const list = e.target.files ? Array.from(e.target.files) : []
+                                        ;(e.target as any).value = ''
+                                        if (list.length > 0) addProductLocalFiles(idx, list)
+                                      }}
+                                    />
+                                  </label>
+                                </div>
+
+                                {(productImageUploads[String(idx)] ?? []).length > 0 && (
+                                  <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                    {(productImageUploads[String(idx)] ?? []).map((img, uploadIndex) => (
+                                      <div key={img.id} className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
+                                        <div className="relative aspect-square bg-zinc-100">
+                                          {img.previewUrl ? (
+                                            <img
+                                              src={img.previewUrl}
+                                              alt={img.fileName}
+                                              className="absolute inset-0 h-full w-full object-cover"
+                                            />
+                                          ) : (
+                                            <div className="absolute inset-0 grid place-items-center text-xs text-zinc-500">Nessuna preview</div>
+                                          )}
+                                          <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-black/65 text-white text-xs font-bold">
+                                            {uploadIndex + 1}
+                                          </div>
+                                        </div>
+                                        <div className="p-2">
+                                          <div className="text-[11px] font-semibold text-zinc-700 truncate">{img.fileName}</div>
+                                          <div className="mt-1 text-[11px] text-zinc-500">
+                                            {img.status === 'uploading'
+                                              ? 'Upload...'
+                                              : img.status === 'uploaded'
+                                                ? 'Caricata'
+                                                : img.status === 'error'
+                                                  ? img.error || 'Errore'
+                                                  : 'In attesa'}
+                                          </div>
+                                          <div className="mt-2 flex items-center justify-end">
+                                            <button
+                                              type="button"
+                                              onClick={() => removeProductUploadItem(idx, img.id)}
+                                              className="h-8 px-3 rounded-lg border border-zinc-200 bg-white text-red-600 font-bold"
+                                            >
+                                              Rimuovi
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
                             <div className="mt-2 space-y-2">
                               {items.map((it, imageIndex) => (
                                 <div key={imageIndex} className="grid grid-cols-1 gap-2">

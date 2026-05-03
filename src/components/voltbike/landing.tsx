@@ -52,6 +52,21 @@ export function VoltbikeLanding() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches
   }, [])
   const euro = useMemo(() => new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }), [])
+  const dateFmt = useMemo(() => new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' }), [])
+  const dateTimeFmt = useMemo(
+    () => new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+    []
+  )
+
+  const formatPromoDate = (input: unknown) => {
+    const raw = String(input ?? '').trim()
+    if (!raw) return null
+    const ms = Date.parse(raw)
+    if (!Number.isFinite(ms)) return null
+    const d = new Date(ms)
+    const hasTime = raw.includes('T') || raw.includes(':')
+    return hasTime ? dateTimeFmt.format(d) : dateFmt.format(d)
+  }
 
   const getImageUrls = (entity: any, fallback: string) => {
     const raw = entity?.images
@@ -102,7 +117,18 @@ export function VoltbikeLanding() {
   })
   const visibleProducts = (((data as any).products ?? []) as Array<any>).filter((p) => {
     const status = String(p?.status ?? 'available')
-    return status !== 'discontinued'
+    if (status === 'discontinued') return false
+
+    const category = String(p?.category ?? '')
+    if (category === 'spare_part') {
+      const sizes = Array.isArray(p?.sizes) ? (p.sizes as Array<any>).map(String).map((s) => s.trim()).filter(Boolean) : []
+      const hasSizes = sizes.length > 0
+      const priceEur = typeof p?.priceEur === 'number' ? p.priceEur : Number.NaN
+      const hasPriceEur = Number.isFinite(priceEur) && priceEur > 0
+      return hasSizes && hasPriceEur
+    }
+
+    return true
   })
   const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     (data as any).footer?.address ?? ''
@@ -428,6 +454,13 @@ export function VoltbikeLanding() {
                           )}
                         </div>
                       )
+                    })()}
+                    {(() => {
+                      const starts = formatPromoDate((p as any).startsAt)
+                      const ends = formatPromoDate((p as any).endsAt)
+                      if (!starts && !ends) return null
+                      const label = starts && ends ? `Dal ${starts} al ${ends}` : starts ? `Dal ${starts}` : `Fino al ${ends}`
+                      return <div className="mt-3 text-white/55 text-sm font-semibold">{label}</div>
                     })()}
                     <div className="mt-3 text-white/70 leading-relaxed">{p.description || ''}</div>
                     {Array.isArray((p as any).extensions) && (p as any).extensions.length > 0 && (
