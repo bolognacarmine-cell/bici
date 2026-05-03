@@ -140,7 +140,13 @@ export async function readSiteData(): Promise<SiteData> {
   const pool = getPgPool()
   const res = await pool.query('SELECT data FROM site_data WHERE id=$1 LIMIT 1', ['default'])
   if (res.rowCount && res.rows[0]?.data) {
-    return normalizeSiteData(SiteDataSchema.parse(res.rows[0].data))
+    const fromDb = normalizeSiteData(SiteDataSchema.parse(res.rows[0].data))
+    const seed = await readSiteDataFromFile()
+    return {
+      ...fromDb,
+      services: (seed as any).services ?? (fromDb as any).services,
+      technology: (seed as any).technology ?? (fromDb as any).technology,
+    } as any
   }
 
   const seed = await readSiteDataFromFile()
