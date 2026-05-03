@@ -95,6 +95,9 @@ export default function AdminClientPage() {
   const [promoEditCtaHref, setPromoEditCtaHref] = useState('')
   const [promoEditMessage, setPromoEditMessage] = useState('')
   const [productSelectedIndexes, setProductSelectedIndexes] = useState<number[]>([])
+  const [productEditIndex, setProductEditIndex] = useState<number | null>(null)
+  const [productEditBackup, setProductEditBackup] = useState<string>('')
+  const [productEditMessage, setProductEditMessage] = useState('')
 
   const parsePriceEur = (input: string) => {
     const raw = String(input || '').trim()
@@ -566,6 +569,71 @@ export default function AdminClientPage() {
       setTimeout(() => setMessage(''), 3000)
     } catch (e) {
       setMessage(e instanceof Error ? e.message : 'Errore durante l’eliminazione.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const startEditProduct = (idx: number) => {
+    if (!data) return
+    const products = data.products ?? []
+    const product = products[idx]
+    if (!product) return
+    setProductEditIndex(idx)
+    setProductEditMessage('')
+    setProductEditBackup(JSON.stringify(product))
+  }
+
+  const cancelEditProduct = () => {
+    if (!data) return
+    if (productEditIndex === null) return
+    if (!productEditBackup) {
+      setProductEditIndex(null)
+      setProductEditMessage('')
+      return
+    }
+    try {
+      const restored = JSON.parse(productEditBackup)
+      const products = [...(data.products ?? [])]
+      if (!products[productEditIndex]) {
+        setProductEditIndex(null)
+        setProductEditMessage('')
+        return
+      }
+      products[productEditIndex] = restored
+      setData({ ...data, products })
+    } catch {
+      // ignore restore errors
+    } finally {
+      setProductEditIndex(null)
+      setProductEditMessage('')
+      setProductEditBackup('')
+    }
+  }
+
+  const saveEditProduct = async () => {
+    if (!data) return
+    if (productEditIndex === null) return
+    setSaving(true)
+    try {
+      const parsed = SiteDataSchema.parse(data)
+      await persistSiteData(parsed)
+      setProductEditIndex(null)
+      setProductEditMessage('')
+      setProductEditBackup('')
+      setMessage('Prodotto aggiornato.')
+      fetch('/api/site-data', { cache: 'no-store' })
+        .then(async (res) => {
+          const contentType = res.headers.get('content-type') || ''
+          const isJson = contentType.includes('application/json')
+          const body = isJson ? await res.json() : await res.text()
+          if (!res.ok) return
+          setData(SiteDataSchema.parse(body))
+        })
+        .catch(() => {})
+      setTimeout(() => setMessage(''), 3000)
+    } catch (e) {
+      setProductEditMessage(e instanceof Error ? e.message : 'Errore durante il salvataggio.')
     } finally {
       setSaving(false)
     }
@@ -1222,6 +1290,31 @@ export default function AdminClientPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {data.products?.map((product, idx) => (
                 <div key={idx} className="p-6 border border-zinc-100 rounded-xl bg-zinc-50 relative group">
+                  {(() => {
+                    const isEditing = productEditIndex === idx
+                    return (
+                      <div className="absolute top-4 right-4 flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => (isEditing ? cancelEditProduct() : startEditProduct(idx))}
+                          disabled={saving}
+                          className="h-9 px-3 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                        >
+                          {isEditing ? 'Annulla' : 'Modifica'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => deleteProductAtIndex(idx)}
+                          disabled={saving}
+                          className="h-9 w-9 rounded-lg bg-white border border-zinc-200 text-zinc-500 hover:text-red-500 disabled:opacity-50 grid place-items-center"
+                          aria-label="Elimina prodotto"
+                          title="Elimina"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    )
+                  })()}
                   <div className="absolute top-4 left-4">
                     <input
                       type="checkbox"
@@ -1232,14 +1325,9 @@ export default function AdminClientPage() {
                       aria-label={`Seleziona prodotto ${String(product.name ?? '')}`}
                     />
                   </div>
-                  <button
-                    onClick={() => deleteProductAtIndex(idx)}
-                    className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-red-500 transition-colors"
-                  >
-                    <Trash2 size={18} />
-                  </button>
                   <div className="space-y-4">
                     {(() => {
+                      const isEditing = productEditIndex === idx
                       const raw = (product as any).images
                       const items: ImageItem[] = []
                       if (Array.isArray(raw)) {
@@ -1289,7 +1377,7 @@ export default function AdminClientPage() {
                               key={String((product as any).sku ?? idx)}
                               apiBase={apiBase}
                               initialItems={items}
-                              disabled={saving}
+                              disabled={saving || !isEditing}
                               onItemsChange={(nextItems) => {
                                 const urls = nextItems
                                   .filter((x) => x.status === 'uploaded' && x.previewUrl)
@@ -1315,6 +1403,7 @@ export default function AdminClientPage() {
                             updateProduct(idx, 'sizeMode', nextMode)
                             updateProduct(idx, 'sizes', [])
                           }}
+                          disabled={saving || productEditIndex !== idx}
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
                         >
                           {CATEGORY_OPTIONS.map((o) => (
@@ -1329,6 +1418,7 @@ export default function AdminClientPage() {
                         <select
                           value={(product as any).status ?? 'available'}
                           onChange={(e) => updateProduct(idx, 'status', e.target.value)}
+                          disabled={saving || productEditIndex !== idx}
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
                         >
                           {PRODUCT_STATUS_OPTIONS.map((o) => (
@@ -1411,6 +1501,7 @@ export default function AdminClientPage() {
                                   key={s}
                                   type="button"
                                   onClick={() => toggleSize(s)}
+                                  disabled={saving || productEditIndex !== idx}
                                   className={
                                     active
                                       ? 'px-3 py-2 rounded-full bg-[#e67e22] text-white text-xs font-bold'
@@ -1432,6 +1523,7 @@ export default function AdminClientPage() {
                         type="text"
                         value={product.name}
                         onChange={(e) => updateProduct(idx, 'name', e.target.value)}
+                        disabled={saving || productEditIndex !== idx}
                         className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none font-bold bg-white text-zinc-900 placeholder-zinc-400"
                       />
                     </div>
@@ -1442,6 +1534,7 @@ export default function AdminClientPage() {
                           type="text"
                           value={String((product as any).sku ?? '')}
                           onChange={(e) => updateProduct(idx, 'sku', e.target.value === '' ? undefined : e.target.value)}
+                          disabled={saving || productEditIndex !== idx}
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
                         />
                       </div>
@@ -1451,6 +1544,7 @@ export default function AdminClientPage() {
                           type="text"
                           value={String((product as any).slug ?? '')}
                           onChange={(e) => updateProduct(idx, 'slug', e.target.value === '' ? undefined : e.target.value)}
+                          disabled={saving || productEditIndex !== idx}
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
                         />
                       </div>
@@ -1461,6 +1555,7 @@ export default function AdminClientPage() {
                         <select
                           value={String((product as any).gender ?? '')}
                           onChange={(e) => updateProduct(idx, 'gender', e.target.value || undefined)}
+                          disabled={saving || productEditIndex !== idx}
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
                         >
                           <option value="">—</option>
@@ -1477,6 +1572,7 @@ export default function AdminClientPage() {
                           type="text"
                           value={String((product as any).brand ?? '')}
                           onChange={(e) => updateProduct(idx, 'brand', e.target.value)}
+                          disabled={saving || productEditIndex !== idx}
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
                         />
                       </div>
@@ -1491,6 +1587,7 @@ export default function AdminClientPage() {
                           onChange={(e) =>
                             updateProduct(idx, 'priceEur', e.target.value === '' ? undefined : Number(e.target.value))
                           }
+                          disabled={saving || productEditIndex !== idx}
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none text-[#e67e22] font-bold bg-white placeholder-zinc-400"
                         />
                       </div>
@@ -1503,6 +1600,7 @@ export default function AdminClientPage() {
                           onChange={(e) =>
                             updateProduct(idx, 'salePriceEur', e.target.value === '' ? undefined : Number(e.target.value))
                           }
+                          disabled={saving || productEditIndex !== idx}
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
                         />
                       </div>
@@ -1514,6 +1612,7 @@ export default function AdminClientPage() {
                           type="text"
                           value={String((product as any).price ?? '')}
                           onChange={(e) => updateProduct(idx, 'price', e.target.value === '' ? undefined : e.target.value)}
+                          disabled={saving || productEditIndex !== idx}
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
                         />
                       </div>
@@ -1523,6 +1622,7 @@ export default function AdminClientPage() {
                           type="text"
                           value={String((product as any).salePrice ?? '')}
                           onChange={(e) => updateProduct(idx, 'salePrice', e.target.value === '' ? undefined : e.target.value)}
+                          disabled={saving || productEditIndex !== idx}
                           className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
                         />
                       </div>
@@ -1533,6 +1633,7 @@ export default function AdminClientPage() {
                         type="text"
                         value={String((product as any).description ?? '')}
                         onChange={(e) => updateProduct(idx, 'description', e.target.value)}
+                        disabled={saving || productEditIndex !== idx}
                         className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
                       />
                     </div>
@@ -1624,6 +1725,7 @@ export default function AdminClientPage() {
                                   batteryWh: e.target.value === '' ? undefined : Number(e.target.value),
                                 })
                               }
+                              disabled={saving || productEditIndex !== idx}
                               className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
                             />
                           </div>
@@ -1638,6 +1740,7 @@ export default function AdminClientPage() {
                                   rangeKm: e.target.value === '' ? undefined : Number(e.target.value),
                                 })
                               }
+                              disabled={saving || productEditIndex !== idx}
                               className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
                             />
                           </div>
@@ -1652,6 +1755,7 @@ export default function AdminClientPage() {
                                   motorW: e.target.value === '' ? undefined : Number(e.target.value),
                                 })
                               }
+                              disabled={saving || productEditIndex !== idx}
                               className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
                             />
                           </div>
@@ -1666,6 +1770,7 @@ export default function AdminClientPage() {
                                   torqueNm: e.target.value === '' ? undefined : Number(e.target.value),
                                 })
                               }
+                              disabled={saving || productEditIndex !== idx}
                               className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
                             />
                           </div>
@@ -1681,12 +1786,39 @@ export default function AdminClientPage() {
                                   chargeTimeH: e.target.value === '' ? undefined : Number(e.target.value),
                                 })
                               }
+                              disabled={saving || productEditIndex !== idx}
                               className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
                             />
                           </div>
                         </div>
                       </div>
                     )}
+
+                    {productEditIndex === idx ? (
+                      <>
+                        {productEditMessage ? (
+                          <div className="rounded-xl px-4 py-3 text-sm font-semibold bg-red-100 text-red-800">{productEditMessage}</div>
+                        ) : null}
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={saveEditProduct}
+                            disabled={saving}
+                            className="h-10 px-4 rounded-lg bg-[#e67e22] text-white font-bold hover:bg-[#d35400] disabled:opacity-50"
+                          >
+                            Salva modifica
+                          </button>
+                          <button
+                            type="button"
+                            onClick={cancelEditProduct}
+                            disabled={saving}
+                            className="h-10 px-4 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                          >
+                            Annulla
+                          </button>
+                        </div>
+                      </>
+                    ) : null}
                   </div>
                 </div>
               ))}
