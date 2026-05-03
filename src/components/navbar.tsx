@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Bike, Menu, X, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
-import logoVincenzoBike from '../../public/logo-vincenzobike.png'
 
 export const Navbar = () => {
   const [mounted, setMounted] = useState(false)
@@ -43,8 +41,8 @@ export const Navbar = () => {
         <Link href="/" className="flex items-center gap-3 group">
           <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-white/6 border border-white/12 neon-ring group-hover:scale-[1.03] transition-transform duration-300">
             {logoOk ? (
-              <Image
-                src={logoVincenzoBike}
+              <img
+                src="/logo-vincenzobike.png?v=3"
                 alt="VincenzoBike"
                 width={44}
                 height={44}

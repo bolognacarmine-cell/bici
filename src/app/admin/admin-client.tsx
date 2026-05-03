@@ -8,7 +8,6 @@ import type { Product, Promotion } from '@/lib/site-data-schema'
 import { MediaCarousel } from '@/components/media-carousel'
 import { ImageUploader, type ImageItem, type UploaderItem } from './image-uploader'
 import Image from 'next/image'
-import logoVincenzoBike from '../../../public/logo-vincenzobike.png'
 
 const CATEGORY_OPTIONS = [
   { value: 'city', label: 'City' },
@@ -705,7 +704,7 @@ export default function AdminClientPage() {
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-start gap-3">
               <div className="h-11 w-11 rounded-xl border border-zinc-200 bg-white grid place-items-center overflow-hidden">
-                <Image src={logoVincenzoBike} alt="VincenzoBike" width={44} height={44} className="h-10 w-10 object-contain" />
+                <img src="/logo-vincenzobike.png?v=3" alt="VincenzoBike" width={44} height={44} className="h-10 w-10 object-contain" />
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-zinc-800">Pannello Admin</h1>
@@ -728,7 +727,7 @@ export default function AdminClientPage() {
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-start gap-3">
             <div className="h-11 w-11 rounded-xl border border-zinc-200 bg-white grid place-items-center overflow-hidden">
-              <Image src={logoVincenzoBike} alt="VincenzoBike" width={44} height={44} className="h-10 w-10 object-contain" />
+              <img src="/logo-vincenzobike.png?v=3" alt="VincenzoBike" width={44} height={44} className="h-10 w-10 object-contain" />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-zinc-800">Pannello Admin</h1>

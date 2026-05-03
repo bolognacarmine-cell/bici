@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { adminLogin } from './actions'
 import { getAdminUser, isAdminConfigured } from '@/lib/admin-auth'
 import Image from 'next/image'
-import logoVincenzoBike from '../../../../public/logo-vincenzobike.png'
 
 export const dynamic = 'force-dynamic'
 
@@ -38,7 +37,7 @@ export default async function AdminLoginPage({ searchParams }: { searchParams: P
         <div className="flex items-start justify-between gap-6">
           <div className="flex items-start gap-3">
             <div className="h-11 w-11 rounded-xl border border-zinc-200 bg-white grid place-items-center overflow-hidden">
-              <Image src={logoVincenzoBike} alt="VincenzoBike" width={44} height={44} className="h-10 w-10 object-contain" />
+              <Image src="/logo-vincenzobike.png?v=3" alt="VincenzoBike" width={44} height={44} className="h-10 w-10 object-contain" />
             </div>
             <h1 className="text-2xl font-bold text-zinc-900">Login Admin</h1>
             <p className="mt-1 text-zinc-600">Accedi per gestire promozioni e prodotti.</p>
