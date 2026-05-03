@@ -25,6 +25,7 @@ import { MagneticButton } from '@/components/voltbike/magnetic-button'
 import { MediaCarousel } from '@/components/media-carousel'
 import initialData from '@/data.json'
 import { SiteDataSchema } from '@/lib/site-data-schema'
+import { toHostedAssetUrl } from '@/lib/asset-url'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -75,18 +76,18 @@ export function VoltbikeLanding() {
       for (const entry of raw) {
         if (typeof entry === 'string') {
           const u = entry.trim()
-          if (u) urls.push(u)
+          if (u) urls.push(toHostedAssetUrl(u))
           continue
         }
         if (entry && typeof entry === 'object') {
           const u = String((entry as any).url ?? '').trim()
-          if (u) urls.push(u)
+          if (u) urls.push(toHostedAssetUrl(u))
         }
       }
     }
     if (urls.length > 0) return urls
     const img = typeof entity?.image === 'string' ? entity.image.trim() : ''
-    return img ? [img] : [fallback]
+    return img ? [toHostedAssetUrl(img)] : [toHostedAssetUrl(fallback)]
   }
 
   const services = ((data as any).services ?? []) as Array<any>
@@ -668,12 +669,12 @@ export function VoltbikeLanding() {
 
           <div className="mt-12 h-[74vh] md:h-[76vh]">
             <div data-track className="h-full flex gap-6 md:gap-8 px-6 md:px-20">
-              {repairs.map((s) => (
+              {repairs.map((s, i) => (
                 <div key={String(s.id ?? s.title)} className="h-full w-[82vw] sm:w-[68vw] md:w-[640px] flex-none">
                   <TiltCard className="h-full">
                     <div className="relative h-full rounded-[32px] overflow-hidden border border-white/12 bg-white/2">
                       <Image
-                        src={getImageUrls(s, '/accessori-ricambi.jpg')[0]}
+                        src={toHostedAssetUrl(`/${(i % 6) + 1}.jpg`)}
                         alt={s.title}
                         fill
                         sizes="(max-width: 768px) 82vw, 640px"

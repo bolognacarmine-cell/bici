@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
+import { toHostedAssetUrl } from '@/lib/asset-url'
 
 type Props = {
   images: string[]
@@ -67,7 +68,7 @@ export function MediaCarousel({
       }}
     >
       <Image
-        src={safeImages[index] ?? safeImages[0]}
+        src={toHostedAssetUrl(safeImages[index] ?? safeImages[0])}
         alt={alt}
         fill
         sizes={sizes}

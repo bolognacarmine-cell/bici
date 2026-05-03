@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { useCallback, useMemo, useRef, useState } from 'react'
+import { toHostedAssetUrl } from '@/lib/asset-url'
 
 type ProductCarouselProps = {
   images: string[]
@@ -11,7 +12,7 @@ type ProductCarouselProps = {
 export function ProductCarousel({ images, productName }: ProductCarouselProps) {
   const safeImages = useMemo(() => {
     const items = Array.isArray(images) ? images.map(String).filter(Boolean) : []
-    return items.length > 0 ? items : ['/bici1.jpg']
+    return items.length > 0 ? items : [toHostedAssetUrl('/bici1.jpg')]
   }, [images])
 
   const [index, setIndex] = useState(0)
@@ -63,7 +64,7 @@ export function ProductCarousel({ images, productName }: ProductCarouselProps) {
     >
       <div className="relative aspect-square rounded-2xl overflow-hidden bg-white/3 border border-white/10">
         <Image
-          src={safeImages[index] ?? '/bici1.jpg'}
+          src={toHostedAssetUrl(safeImages[index] ?? '/bici1.jpg')}
           alt={`${productName} — immagine ${index + 1}`}
           fill
           priority
@@ -116,7 +117,7 @@ export function ProductCarousel({ images, productName }: ProductCarouselProps) {
                 aria-label={`Vai all'immagine ${i + 1}`}
                 aria-current={active ? 'true' : undefined}
               >
-                <Image src={src} alt={`${productName} — miniatura ${i + 1}`} fill sizes="64px" className="object-cover" />
+                <Image src={toHostedAssetUrl(src)} alt={`${productName} — miniatura ${i + 1}`} fill sizes="64px" className="object-cover" />
                 <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors" />
               </button>
             )
