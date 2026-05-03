@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Bike, Menu, X, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export const Navbar = () => {
   const [mounted, setMounted] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [logoOk, setLogoOk] = useState(true)
   const { scrollY } = useScroll()
 
   const navHeight = useTransform(scrollY, [0, 56], ["88px", "72px"])
@@ -39,7 +41,18 @@ export const Navbar = () => {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
           <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-white/6 border border-white/12 neon-ring group-hover:scale-[1.03] transition-transform duration-300">
-            <Bike className="text-white w-6 h-6 opacity-90" />
+            {logoOk ? (
+              <Image
+                src="/logo-vincenzobike.png"
+                alt="VincenzoBike"
+                width={44}
+                height={44}
+                className="h-9 w-9 object-contain opacity-95"
+                onError={() => setLogoOk(false)}
+              />
+            ) : (
+              <Bike className="text-white w-6 h-6 opacity-90" />
+            )}
           </div>
           <span className="font-display text-2xl font-bold tracking-tight">
             Vincenzo<span className="text-gradient">Bike</span>

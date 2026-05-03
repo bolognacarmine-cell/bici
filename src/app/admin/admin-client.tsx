@@ -7,6 +7,7 @@ import { SiteDataSchema, type SiteData } from '@/lib/site-data-schema'
 import type { Product, Promotion } from '@/lib/site-data-schema'
 import { MediaCarousel } from '@/components/media-carousel'
 import { ImageUploader, type ImageItem, type UploaderItem } from './image-uploader'
+import Image from 'next/image'
 
 const CATEGORY_OPTIONS = [
   { value: 'city', label: 'City' },
@@ -701,9 +702,14 @@ export default function AdminClientPage() {
       <div className="min-h-screen bg-zinc-100 p-8 font-sans text-zinc-900">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-zinc-800">Pannello Admin</h1>
-              <p className="text-zinc-500">Caricamento dati…</p>
+            <div className="flex items-start gap-3">
+              <div className="h-11 w-11 rounded-xl border border-zinc-200 bg-white grid place-items-center overflow-hidden">
+                <Image src="/logo-vincenzobike.png" alt="VincenzoBike" width={44} height={44} className="h-10 w-10 object-contain" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-zinc-800">Pannello Admin</h1>
+                <p className="text-zinc-500">Caricamento dati…</p>
+              </div>
             </div>
             <Link href="/" className="px-4 py-2 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-colors">
               Torna al sito
@@ -719,9 +725,14 @@ export default function AdminClientPage() {
     <div className="min-h-screen bg-zinc-100 p-8 font-sans text-zinc-900">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-zinc-800">Pannello Admin</h1>
-            <p className="text-zinc-500">Gestione Promozioni e Prodotti</p>
+          <div className="flex items-start gap-3">
+            <div className="h-11 w-11 rounded-xl border border-zinc-200 bg-white grid place-items-center overflow-hidden">
+              <Image src="/logo-vincenzobike.png" alt="VincenzoBike" width={44} height={44} className="h-10 w-10 object-contain" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-zinc-800">Pannello Admin</h1>
+              <p className="text-zinc-500">Gestione Promozioni e Prodotti</p>
+            </div>
           </div>
           <div className="flex gap-4">
             <Link href="/" className="px-4 py-2 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-colors">
