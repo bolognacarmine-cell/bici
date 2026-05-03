@@ -235,12 +235,11 @@ export default function AdminClientPage() {
     }
   }, [])
 
-  const handleSave = async () => {
-    if (!data) return
+  const saveAndReload = async (nextData: SiteData, successMessage: string) => {
     setSaving(true)
     try {
-      await persistSiteData(data)
-      setMessage('Modifiche salvate con successo!')
+      await persistSiteData(nextData)
+      setMessage(successMessage)
       fetch('/api/site-data', { cache: 'no-store' })
         .then(async (res) => {
           const contentType = res.headers.get('content-type') || ''
@@ -256,6 +255,16 @@ export default function AdminClientPage() {
     } finally {
       setSaving(false)
     }
+  }
+
+  const handleSave = async () => {
+    if (!data) return
+    await saveAndReload(data, 'Modifiche salvate con successo!')
+  }
+
+  const handleSaveCatalogProducts = async () => {
+    if (!data) return
+    await saveAndReload(data, 'Catalogo prodotti creato e pubblicato sul sito!')
   }
 
   const clearAllPromotions = async () => {
@@ -1074,12 +1083,21 @@ export default function AdminClientPage() {
           <section className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
             <div className="flex justify-between items-center mb-6 border-b pb-4">
               <h2 className="text-xl font-bold text-zinc-800">Catalogo Prodotti</h2>
-              <button
-                onClick={addProduct}
-                className="flex items-center gap-2 px-3 py-1 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors text-sm font-bold"
-              >
-                <Plus size={16} /> Aggiungi Prodotto
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleSaveCatalogProducts}
+                  disabled={saving}
+                  className="px-4 py-2 rounded-lg bg-[#e67e22] text-white font-bold hover:bg-[#d35400] disabled:opacity-50"
+                >
+                  {saving ? 'Salvataggio...' : 'Crea catalogo prodotti'}
+                </button>
+                <button
+                  onClick={addProduct}
+                  className="flex items-center gap-2 px-3 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors text-sm font-bold"
+                >
+                  <Plus size={16} /> Aggiungi Prodotto
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
