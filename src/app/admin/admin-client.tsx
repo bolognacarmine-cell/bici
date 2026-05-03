@@ -264,10 +264,42 @@ export default function AdminClientPage() {
     }
   }, [])
 
+  const normalizeSiteDataForSave = (input: SiteData): SiteData => {
+    const normalizeExtensions = (raw: any) => {
+      if (!Array.isArray(raw)) return undefined
+      const cleaned = raw
+        .map((x: any) => ({ label: String(x?.label ?? '').trim(), value: String(x?.value ?? '').trim() }))
+        .filter((x: any) => x.label && x.value)
+      return cleaned.length > 0 ? cleaned : undefined
+    }
+
+    const normalizeSizes = (raw: any) => {
+      if (!Array.isArray(raw)) return undefined
+      const cleaned = raw.map((x: any) => String(x ?? '').trim()).filter(Boolean)
+      return cleaned.length > 0 ? cleaned : undefined
+    }
+
+    const products = Array.isArray(input.products)
+      ? input.products.map((p: any) => {
+          const fullDescription = String(p?.fullDescription ?? '').trim()
+          return {
+            ...p,
+            fullDescription: fullDescription ? fullDescription : undefined,
+            extensions: normalizeExtensions(p?.extensions),
+            sizes: normalizeSizes(p?.sizes),
+          }
+        })
+      : input.products
+
+    return { ...input, products }
+  }
+
   const saveAndReload = async (nextData: SiteData, successMessage: string) => {
     setSaving(true)
     try {
-      await persistSiteData(nextData)
+      const normalized = normalizeSiteDataForSave(nextData)
+      setData(normalized)
+      await persistSiteData(normalized)
       setMessage(successMessage)
       fetch('/api/site-data', { cache: 'no-store' })
         .then(async (res) => {
@@ -1687,25 +1719,24 @@ export default function AdminClientPage() {
                     {(() => {
                       const raw = (product as any).extensions
                       const extensions: Array<{ label: string; value: string }> = Array.isArray(raw)
-                        ? raw
-                            .map((x: any) => ({
-                              label: String(x?.label ?? '').trim(),
-                              value: String(x?.value ?? '').trim(),
-                            }))
-                            .filter((x: any) => x.label || x.value)
+                        ? raw.map((x: any) => ({
+                            label: String(x?.label ?? ''),
+                            value: String(x?.value ?? ''),
+                          }))
                         : []
 
                       const setExtensions = (next: Array<{ label: string; value: string }>) => {
-                        const cleaned = next
-                          .map((x) => ({ label: String(x.label ?? '').trim(), value: String(x.value ?? '').trim() }))
-                          .filter((x) => x.label && x.value)
-                        updateProduct(idx, 'extensions', cleaned.length > 0 ? cleaned : undefined)
+                        const normalized = next.map((x) => ({
+                          label: String(x.label ?? ''),
+                          value: String(x.value ?? ''),
+                        }))
+                        updateProduct(idx, 'extensions', normalized.length > 0 ? normalized : undefined)
                       }
 
                       return (
                         <div>
                           <div className="flex items-center justify-between">
-                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Specifiche</label>
+                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Dettagli tecnici</label>
                             <button
                               type="button"
                               onClick={() => setExtensions([...extensions, { label: '', value: '' }])}
@@ -1756,7 +1787,7 @@ export default function AdminClientPage() {
                                 </button>
                               </div>
                             ))}
-                            {extensions.length === 0 && <div className="text-xs text-zinc-500">Nessun dettaglio.</div>}
+                            {extensions.length === 0 && <div className="text-xs text-zinc-500">Nessun dettaglio tecnico.</div>}
                           </div>
                         </div>
                       )

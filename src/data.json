@@ -3,26 +3,32 @@
     {
       "title": "Primavera Urbana",
       "scope": "category",
-      "category": "city",
       "status": "active",
       "discountType": "percent",
       "discountValue": 15,
-      "endsAt": "2026-05-31",
-      "showOnHome": true,
+      "category": "city",
       "description": "Sconto su bici da città selezionate: perfette per commuting e tempo libero.",
-      "image": "/bici1.jpg"
+      "image": "/bici1.jpg",
+      "images": [
+        "/bici1.jpg"
+      ],
+      "endsAt": "2026-05-31",
+      "showOnHome": true
     },
     {
       "title": "E-bike Trekking Weekend",
       "scope": "product",
-      "productSku": "SKU-ELYSIUM-TREK-E50",
       "status": "active",
       "discountType": "percent",
       "discountValue": 10,
-      "endsAt": "2026-06-15",
-      "showOnHome": true,
+      "productSku": "SKU-ELYSIUM-TREK-E50",
       "description": "Promo limitata sulla e-bike trekking: autonomia, comfort e assistenza premium.",
-      "image": "/bici1.jpg"
+      "image": "/bici1.jpg",
+      "images": [
+        "/bici1.jpg"
+      ],
+      "endsAt": "2026-06-15",
+      "showOnHome": true
     },
     {
       "title": "Kit Sicurezza",
@@ -31,7 +37,10 @@
       "discountType": "amount",
       "discountValue": 20,
       "description": "€20 di sconto su accessori selezionati: luci, caschi e antifurti.",
-      "image": "/bici1.jpg"
+      "image": "/bici1.jpg",
+      "images": [
+        "/bici1.jpg"
+      ]
     },
     {
       "title": "Officina: Tagliando",
@@ -40,7 +49,10 @@
       "discountType": "percent",
       "discountValue": 10,
       "description": "Sconto su check-up e manutenzione completa per ripartire in sicurezza.",
-      "image": "/bici1.jpg"
+      "image": "/bici1.jpg",
+      "images": [
+        "/bici1.jpg"
+      ]
     }
   ],
   "products": [
@@ -50,10 +62,14 @@
       "gender": "donna",
       "status": "available",
       "sku": "SKU-CITY-DONNA-7V",
+      "slug": "city-donna-classic-7v",
       "price": "549",
       "description": "Bici da città comoda e affidabile, perfetta per spostamenti quotidiani.",
       "brand": "VincenzoBike",
-      "image": "/bici1.jpg"
+      "image": "/bici1.jpg",
+      "images": [
+        "/bici1.jpg"
+      ]
     },
     {
       "name": "MTB Trail Pro 29",
@@ -61,10 +77,14 @@
       "gender": "uomo",
       "status": "available",
       "sku": "SKU-MTB-TRAIL-29",
+      "slug": "mtb-trail-pro-29",
       "price": "1290",
       "description": "Hardtail 29\" per trail e sterrati, assetto solido e componenti robusti.",
       "brand": "VincenzoBike",
-      "image": "/bici1.jpg"
+      "image": "/bici1.jpg",
+      "images": [
+        "/bici1.jpg"
+      ]
     },
     {
       "name": "Gravel Unisex Allroad",
@@ -72,10 +92,14 @@
       "gender": "unisex",
       "status": "available",
       "sku": "SKU-GRAVEL-ALLROAD",
+      "slug": "gravel-unisex-allroad",
       "price": "1590",
       "description": "Versatile su asfalto e strade bianche: comfort, scorrevolezza e controllo.",
       "brand": "VincenzoBike",
-      "image": "/bici1.jpg"
+      "image": "/bici1.jpg",
+      "images": [
+        "/bici1.jpg"
+      ]
     },
     {
       "name": "Road Race 105",
@@ -83,11 +107,15 @@
       "gender": "uomo",
       "status": "preorder",
       "sku": "SKU-ROAD-RACE-105",
+      "slug": "road-race-105",
       "price": "2190",
       "salePrice": "1990",
       "description": "Bici da corsa per allenamenti e granfondo: reattiva e precisa.",
       "brand": "VincenzoBike",
-      "image": "/bici1.jpg"
+      "image": "/bici1.jpg",
+      "images": [
+        "/bici1.jpg"
+      ]
     },
     {
       "name": "E-bike City Donna E35",
@@ -95,11 +123,23 @@
       "gender": "donna",
       "status": "available",
       "sku": "SKU-EBIKE-CITY-E35",
+      "slug": "e-bike-city-donna-e35",
       "price": "2490",
       "description": "Assistita urbana: partenze fluide, comfort e autonomia reale per la settimana.",
       "brand": "VincenzoBike",
-      "ebike": { "batteryWh": 504, "rangeKm": 110, "motorW": 250, "torqueNm": 60, "chargeTimeH": 4.5, "display": "LCD", "assistLevels": 5 },
-      "image": "/bici1.jpg"
+      "image": "/bici1.jpg",
+      "images": [
+        "/bici1.jpg"
+      ],
+      "ebike": {
+        "batteryWh": 504,
+        "rangeKm": 110,
+        "motorW": 250,
+        "torqueNm": 60,
+        "chargeTimeH": 4.5,
+        "display": "LCD",
+        "assistLevels": 5
+      }
     },
     {
       "name": "E-bike Trekking Unisex E50",
@@ -107,11 +147,23 @@
       "gender": "unisex",
       "status": "available",
       "sku": "SKU-ELYSIUM-TREK-E50",
+      "slug": "e-bike-trekking-unisex-e50",
       "price": "3290",
       "description": "Trekking assistita: autonomia estesa, portapacchi e comfort per viaggi e commuting.",
       "brand": "VincenzoBike",
-      "ebike": { "batteryWh": 630, "rangeKm": 130, "motorW": 250, "torqueNm": 75, "chargeTimeH": 5.5, "display": "Color", "assistLevels": 5 },
-      "image": "/bici1.jpg"
+      "image": "/bici1.jpg",
+      "images": [
+        "/bici1.jpg"
+      ],
+      "ebike": {
+        "batteryWh": 630,
+        "rangeKm": 130,
+        "motorW": 250,
+        "torqueNm": 75,
+        "chargeTimeH": 5.5,
+        "display": "Color",
+        "assistLevels": 5
+      }
     },
     {
       "name": "E-MTB Enduro E70",
@@ -119,11 +171,23 @@
       "gender": "uomo",
       "status": "available",
       "sku": "SKU-EMTB-ENDURO-E70",
+      "slug": "e-mtb-enduro-e70",
       "price": "4490",
       "description": "E-MTB pronta per il trail: coppia generosa e controllo in discesa.",
       "brand": "VincenzoBike",
-      "ebike": { "batteryWh": 720, "rangeKm": 120, "motorW": 250, "torqueNm": 85, "chargeTimeH": 6.0, "display": "Color", "assistLevels": 5 },
-      "image": "/bici1.jpg"
+      "image": "/bici1.jpg",
+      "images": [
+        "/bici1.jpg"
+      ],
+      "ebike": {
+        "batteryWh": 720,
+        "rangeKm": 120,
+        "motorW": 250,
+        "torqueNm": 85,
+        "chargeTimeH": 6,
+        "display": "Color",
+        "assistLevels": 5
+      }
     },
     {
       "name": "Casco Urban MIPS",
@@ -131,20 +195,28 @@
       "gender": "unisex",
       "status": "available",
       "sku": "SKU-ACC-CASCO-MIPS",
+      "slug": "casco-urban-mips",
       "price": "79",
       "description": "Casco urbano leggero con protezione MIPS e ventilazione ottimizzata.",
       "brand": "VincenzoBike",
-      "image": "/bici1.jpg"
+      "image": "/bici1.jpg",
+      "images": [
+        "/bici1.jpg"
+      ]
     },
     {
       "name": "Catena 11v Rinforzata",
       "category": "spare_part",
       "status": "available",
       "sku": "SKU-RIC-CATENA-11V",
+      "slug": "catena-11v-rinforzata",
       "price": "29",
       "description": "Catena 11 velocità per trasmissioni strada/gravel: scorrevolezza e durata.",
       "brand": "VincenzoBike",
-      "image": "/bici1.jpg"
+      "image": "/bici1.jpg",
+      "images": [
+        "/bici1.jpg"
+      ]
     }
   ],
   "brand": {
@@ -172,7 +244,11 @@
       "category": "Officina",
       "title": "Manutenzione completa",
       "desc": "Check-up, regolazioni e messa a punto per tornare a pedalare in sicurezza.",
-      "bullets": ["Freni", "Cambio", "Trasmissione"],
+      "bullets": [
+        "Freni",
+        "Cambio",
+        "Trasmissione"
+      ],
       "image": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Workbench_of_a_bicycle_dealer.jpg"
     },
     {
@@ -180,7 +256,11 @@
       "category": "Riparazioni",
       "title": "Riparazioni rapide",
       "desc": "Interventi su forature, ruote, freni e componenti: dalla diagnosi alla soluzione.",
-      "bullets": ["Forature", "Ruote", "Freni"],
+      "bullets": [
+        "Forature",
+        "Ruote",
+        "Freni"
+      ],
       "image": "https://upload.wikimedia.org/wikipedia/commons/9/97/Bicycle_repair_shop_-_bike_parts_on_work_bench.jpg"
     },
     {
@@ -188,7 +268,11 @@
       "category": "E-bike",
       "title": "Elettriche e assistite",
       "desc": "Assistenza e manutenzione su bici elettriche e a pedalata assistita, con controlli mirati.",
-      "bullets": ["Diagnosi", "Check componenti", "Messa a punto"],
+      "bullets": [
+        "Diagnosi",
+        "Check componenti",
+        "Messa a punto"
+      ],
       "image": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Munich_-_Two_men_working_in_a_Bicycle_repair_shop_-_5893.jpg"
     },
     {
@@ -196,7 +280,11 @@
       "category": "Su richiesta",
       "title": "Riparazioni a domicilio",
       "desc": "Se non puoi spostarti, valutiamo insieme un intervento a domicilio in base al tipo di riparazione.",
-      "bullets": ["Su richiesta", "Valutazione intervento", "Comodo"],
+      "bullets": [
+        "Su richiesta",
+        "Valutazione intervento",
+        "Comodo"
+      ],
       "image": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Kitakyushu_%28%E5%8C%97%E4%B9%9D%E5%B7%9E%29%2C_Fukuoka_Prefecture%2C_Japan_%F0%9F%87%AF%F0%9F%87%B5_-_Bicycle_Repair.jpg"
     },
     {
@@ -204,7 +292,11 @@
       "category": "Shop",
       "title": "Accessori e ricambi",
       "desc": "Vendita accessori, ricambi e gadget. Possibilità di ordinare ricambistica specifica per ogni necessità.",
-      "bullets": ["Accessori", "Ricambi", "Ordini"],
+      "bullets": [
+        "Accessori",
+        "Ricambi",
+        "Ordini"
+      ],
       "image": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Bicycle_repair_tools%2C_Bicycle_Kitchen%2C_Los_Angeles.jpg"
     }
   ],

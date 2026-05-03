@@ -131,12 +131,8 @@ async function ensureTable() {
 
 export async function readSiteData(): Promise<SiteData> {
   const hasDb = !!process.env.DATABASE_URL
-  const isProd = process.env.NODE_ENV === 'production'
 
   if (!hasDb) {
-    if (isProd) {
-      throw new Error('DATABASE_URL is required in production')
-    }
     return readSiteDataFromFile()
   }
 
@@ -157,12 +153,8 @@ export async function readSiteData(): Promise<SiteData> {
 
 export async function writeSiteData(newData: unknown): Promise<void> {
   const hasDb = !!process.env.DATABASE_URL
-  const isProd = process.env.NODE_ENV === 'production'
 
   if (!hasDb) {
-    if (isProd) {
-      throw new Error('DATABASE_URL is required in production')
-    }
     return writeSiteDataToFile(newData)
   }
 
