@@ -4,6 +4,7 @@ import { writeSiteData } from '@/lib/site-data'
 import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { verifyAdminSession } from '@/lib/admin-auth'
+import { ZodError } from 'zod'
 
 export const dynamic = 'force-dynamic'
 
@@ -71,6 +72,17 @@ export async function PUT(req: Request) {
       }
     )
   } catch (err) {
+    if (err instanceof ZodError) {
+      return NextResponse.json(
+        { error: 'Dati non validi.', issues: err.issues },
+        {
+          status: 400,
+          headers: {
+            'Cache-Control': 'no-store',
+          },
+        }
+      )
+    }
     const message = err instanceof Error ? err.message : 'Unknown error'
     return NextResponse.json(
       { error: message },

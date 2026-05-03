@@ -117,6 +117,30 @@ export default function AdminClientPage() {
     })
     const json = await res.json().catch(() => null)
     if (!res.ok) {
+      if (json && typeof json === 'object' && Array.isArray((json as any).issues)) {
+        const issues = (json as any).issues as Array<any>
+        const lines: string[] = []
+        for (const it of issues) {
+          const path = Array.isArray(it?.path) ? it.path : []
+          const msg = String(it?.message ?? '').trim() || 'Campo non valido.'
+          if (path[0] === 'products' && typeof path[1] === 'number') {
+            const idx = Number(path[1]) + 1
+            const field = path.slice(2).map(String).join('.')
+            lines.push(`Prodotto ${idx}${field ? ` (${field})` : ''}: ${msg}`)
+            continue
+          }
+          if (path[0] === 'promotions' && typeof path[1] === 'number') {
+            const idx = Number(path[1]) + 1
+            const field = path.slice(2).map(String).join('.')
+            lines.push(`Promozione ${idx}${field ? ` (${field})` : ''}: ${msg}`)
+            continue
+          }
+          lines.push(msg)
+        }
+        const shown = lines.slice(0, 10)
+        const more = lines.length > shown.length ? `\n(+${lines.length - shown.length} altri errori)` : ''
+        throw new Error(`Dati non validi:\n- ${shown.join('\n- ')}${more}`)
+      }
       const msg = json && typeof json === 'object' && 'error' in json ? String((json as any).error) : 'Errore salvataggio.'
       throw new Error(msg)
     }
@@ -653,6 +677,10 @@ export default function AdminClientPage() {
     } satisfies Product
     const newProducts: Product[] = [...(data.products ?? []), newProduct]
     setData({ ...data, products: newProducts })
+    const nextIndex = newProducts.length - 1
+    setProductEditIndex(nextIndex)
+    setProductEditMessage('')
+    setProductEditBackup(JSON.stringify(newProduct))
   }
 
   const removeProduct = (index: number) => {
@@ -1662,7 +1690,8 @@ export default function AdminClientPage() {
                             <button
                               type="button"
                               onClick={() => setExtensions([...extensions, { label: '', value: '' }])}
-                              className="text-xs font-bold text-[#e67e22] hover:text-[#d35400]"
+                              disabled={saving || productEditIndex !== idx}
+                              className="text-xs font-bold text-[#e67e22] hover:text-[#d35400] disabled:opacity-50"
                             >
                               + Aggiungi
                             </button>
@@ -1679,6 +1708,7 @@ export default function AdminClientPage() {
                                     next[extIndex] = { ...next[extIndex], label: e.target.value }
                                     setExtensions(next)
                                   }}
+                                  disabled={saving || productEditIndex !== idx}
                                   className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
                                 />
                                 <input
@@ -1690,6 +1720,7 @@ export default function AdminClientPage() {
                                     next[extIndex] = { ...next[extIndex], value: e.target.value }
                                     setExtensions(next)
                                   }}
+                                  disabled={saving || productEditIndex !== idx}
                                   className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
                                 />
                                 <button
@@ -1699,7 +1730,8 @@ export default function AdminClientPage() {
                                     next.splice(extIndex, 1)
                                     setExtensions(next)
                                   }}
-                                  className="h-11 px-4 rounded-lg border border-zinc-200 bg-white text-red-600 font-bold"
+                                  disabled={saving || productEditIndex !== idx}
+                                  className="h-11 px-4 rounded-lg border border-zinc-200 bg-white text-red-600 font-bold disabled:opacity-50"
                                 >
                                   Rimuovi
                                 </button>
