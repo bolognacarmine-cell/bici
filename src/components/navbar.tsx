@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
 import { Bike, Menu, X, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
@@ -9,6 +9,7 @@ export const Navbar = () => {
   const [mounted, setMounted] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [logoOk, setLogoOk] = useState(true)
+  const [logoOpen, setLogoOpen] = useState(false)
   const { scrollY } = useScroll()
 
   const navHeight = useTransform(scrollY, [0, 56], ["88px", "72px"])
@@ -38,8 +39,16 @@ export const Navbar = () => {
     >
       <div className="container mx-auto px-6 flex justify-between items-center">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-white/8 border border-white/20 neon-ring shadow-[0_0_30px_rgba(0,245,255,0.18)] group-hover:scale-[1.04] transition-transform duration-300">
+        <div className="flex items-center gap-3 group">
+          <button
+            type="button"
+            onClick={() => {
+              setLogoOpen(true)
+              if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10)
+            }}
+            className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-white/8 border border-white/20 neon-ring shadow-[0_0_30px_rgba(0,245,255,0.18)] group-hover:scale-[1.04] transition-transform duration-300 cursor-zoom-in"
+            aria-label="Apri il logo"
+          >
             {logoOk ? (
               <img
                 src="/logo-vincenzobike.png?v=3"
@@ -52,11 +61,11 @@ export const Navbar = () => {
             ) : (
               <Bike className="text-white w-7 h-7 drop-shadow-[0_0_12px_rgba(0,245,255,0.35)]" />
             )}
-          </div>
-          <span className="font-display text-2xl font-bold tracking-tight">
+          </button>
+          <Link href="/" className="font-display text-2xl font-bold tracking-tight">
             Vincenzo<span className="text-gradient">Bike</span>
-          </span>
-        </Link>
+          </Link>
+        </div>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8">
@@ -119,6 +128,55 @@ export const Navbar = () => {
           </div>
         </motion.div>
       )}
+
+      <AnimatePresence>
+        {logoOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[120] bg-black/70 backdrop-blur-sm flex items-center justify-center px-6"
+            onClick={() => setLogoOpen(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 18, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 18, scale: 0.98 }}
+              transition={{ duration: 0.18 }}
+              className="w-full max-w-md glass-dark border border-white/12 rounded-[32px] overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
+                <div>
+                  <div className="text-white font-extrabold tracking-tight">Logo Ciclofficina Vincenzo</div>
+                  <div className="text-white/65 text-xs mt-1">In memoria di Vincenzo</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setLogoOpen(false)}
+                  className="tap-target p-2 rounded-2xl bg-white/5 border border-white/10 text-white/80 hover:text-white hover:bg-white/8 transition-colors"
+                  aria-label="Chiudi"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-8 flex flex-col items-center text-center">
+                <div className="w-44 h-44 rounded-full overflow-hidden bg-white/6 border border-white/12 shadow-[0_0_55px_rgba(0,245,255,0.16)] flex items-center justify-center">
+                  {logoOk ? (
+                    <img src="/logo-vincenzobike.png?v=3" alt="VincenzoBike" className="w-40 h-40 object-contain" />
+                  ) : (
+                    <Bike className="text-white w-14 h-14 opacity-90" />
+                  )}
+                </div>
+                <div className="mt-6 text-white/75 leading-relaxed">
+                  Questo sito è dedicato a Vincenzo. Il logo rappresenta la sua storia e la sua officina.
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.nav>
   )
 }
