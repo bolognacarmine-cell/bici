@@ -673,7 +673,7 @@ export function VoltbikeLanding() {
                   <TiltCard className="h-full">
                     <div className="relative h-full rounded-[32px] overflow-hidden border border-white/12 bg-white/2">
                       <Image
-                        src={toImageUrl(s.image, 'landscape_16_9') ?? '/bici1.jpg'}
+                        src="/accessori-ricambi.jpg"
                         alt={s.title}
                         fill
                         sizes="(max-width: 768px) 82vw, 640px"
