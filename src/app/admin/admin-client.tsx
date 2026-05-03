@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { updateData } from './actions'
 import Link from 'next/link'
 import { Plus, Trash2, Image as ImageIcon } from 'lucide-react'
 import { SiteDataSchema, type SiteData } from '@/lib/site-data-schema'
@@ -128,6 +127,28 @@ export default function AdminClientPage() {
     const n = Number.parseFloat(normalized)
     if (!Number.isFinite(n)) return null
     return Math.round(n * 100) / 100
+  }
+
+  const persistSiteData = async (nextData: unknown) => {
+    const res = await fetch('/api/site-data', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(nextData),
+      credentials: 'include',
+    })
+    const json = await res.json().catch(() => null)
+    if (!res.ok) {
+      const msg = json && typeof json === 'object' && 'error' in json ? String((json as any).error) : 'Errore salvataggio.'
+      throw new Error(msg)
+    }
+  }
+
+  const confirmDelete = (label: string) => {
+    const typed = window.prompt(`Conferma eliminazione: digita ELIMINA per ${label}.`)
+    return String(typed ?? '')
+      .trim()
+      .toUpperCase()
+      .replace(/\s+/g, ' ') === 'ELIMINA'
   }
 
   const isAllowedMime = (mime: string) => {
@@ -470,7 +491,7 @@ export default function AdminClientPage() {
       } satisfies Promotion
 
       const nextData = { ...data, promotions: [...(data.promotions ?? []), sitePromotion] }
-      await updateData(nextData)
+      await persistSiteData(nextData)
       setData(nextData)
 
       setCreateTitle('')
@@ -513,7 +534,7 @@ export default function AdminClientPage() {
     if (!data) return
     setSaving(true)
     try {
-      await updateData(data)
+      await persistSiteData(data)
       setMessage('Modifiche salvate con successo!')
       fetch('/api/site-data', { cache: 'no-store' })
         .then(async (res) => {
@@ -536,13 +557,12 @@ export default function AdminClientPage() {
     if (!data) return
     const promos = data.promotions ?? []
     if (promos.length === 0) return
-    const ok = window.confirm('Eliminare tutte le promozioni?')
-    if (!ok) return
+    if (!confirmDelete('eliminare tutte le promozioni')) return
     setSaving(true)
     try {
       const nextData = { ...data, promotions: [] }
       setData(nextData)
-      await updateData(nextData)
+      await persistSiteData(nextData)
       setPromoExpandedIndex(null)
       setPromoSelectedIndexes([])
       setPromoEditIndex(null)
@@ -571,15 +591,14 @@ export default function AdminClientPage() {
     const promos = data.promotions ?? []
     if (idx < 0 || idx >= promos.length) return
     const title = String(promos[idx]?.title ?? '').trim()
-    const ok = window.confirm(`Eliminare la promozione${title ? ` “${title}”` : ''}?`)
-    if (!ok) return
+    if (!confirmDelete(`eliminare la promozione${title ? ` “${title}”` : ''}`)) return
 
     setSaving(true)
     try {
       const nextPromos = promos.filter((_, i) => i !== idx)
       const nextData = { ...data, promotions: nextPromos }
       setData(nextData)
-      await updateData(nextData)
+      await persistSiteData(nextData)
       setPromoExpandedIndex(null)
       setPromoSelectedIndexes([])
       setPromoEditIndex(null)
@@ -599,8 +618,12 @@ export default function AdminClientPage() {
     if (promos.length === 0) return
     const selected = promoSelectedIndexes.filter((i) => i >= 0 && i < promos.length)
     if (selected.length === 0) return
-    const ok = window.confirm(`Eliminare ${selected.length} promozion${selected.length === 1 ? 'e' : 'i'} selezionat${selected.length === 1 ? 'a' : 'e'}?`)
-    if (!ok) return
+    if (
+      !confirmDelete(
+        `eliminare ${selected.length} promozion${selected.length === 1 ? 'e' : 'i'} selezionat${selected.length === 1 ? 'a' : 'e'}`
+      )
+    )
+      return
 
     const toDelete = new Set(selected)
     setSaving(true)
@@ -608,7 +631,7 @@ export default function AdminClientPage() {
       const nextPromos = promos.filter((_, i) => !toDelete.has(i))
       const nextData = { ...data, promotions: nextPromos }
       setData(nextData)
-      await updateData(nextData)
+      await persistSiteData(nextData)
       setPromoExpandedIndex(null)
       setPromoSelectedIndexes([])
       setPromoEditIndex(null)
@@ -738,7 +761,7 @@ export default function AdminClientPage() {
       const nextData = { ...data, promotions: nextPromos }
       const parsed = SiteDataSchema.parse(nextData)
       setData(parsed)
-      await updateData(parsed)
+      await persistSiteData(parsed)
       setPromoEditIndex(null)
       setPromoEditMessage('')
       setMessage('Promozione aggiornata.')
@@ -843,14 +866,6 @@ export default function AdminClientPage() {
                   <div className="text-xs text-zinc-500">Trascina, seleziona o incolla immagini</div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={clearAllPromotions}
-                    disabled={saving || creating}
-                    className="px-4 py-2 rounded-lg bg-white border border-zinc-200 text-red-700 font-bold hover:bg-zinc-50 disabled:opacity-50"
-                  >
-                    Elimina promozioni
-                  </button>
                   <button
                     type="button"
                     onClick={submitCreatePromotion}
@@ -1050,6 +1065,14 @@ export default function AdminClientPage() {
                     className="px-4 py-2 rounded-lg bg-white border border-zinc-200 text-red-700 font-bold hover:bg-zinc-50 disabled:opacity-50"
                   >
                     Elimina selezionate
+                  </button>
+                  <button
+                    type="button"
+                    onClick={clearAllPromotions}
+                    disabled={saving || creating || (data.promotions ?? []).length === 0}
+                    className="px-4 py-2 rounded-lg bg-white border border-zinc-200 text-red-700 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                  >
+                    Elimina tutte
                   </button>
                 </div>
               </div>
