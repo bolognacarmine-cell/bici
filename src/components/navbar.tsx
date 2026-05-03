@@ -39,18 +39,18 @@ export const Navbar = () => {
       <div className="container mx-auto px-6 flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-white/6 border border-white/12 neon-ring group-hover:scale-[1.03] transition-transform duration-300">
+          <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white/8 border border-white/20 neon-ring shadow-[0_0_30px_rgba(0,245,255,0.18)] group-hover:scale-[1.04] transition-transform duration-300">
             {logoOk ? (
               <img
                 src="/logo-vincenzobike.png?v=3"
                 alt="VincenzoBike"
                 width={44}
                 height={44}
-                className="h-9 w-9 object-contain opacity-95"
+                className="h-10 w-10 object-contain opacity-100 drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]"
                 onError={() => setLogoOk(false)}
               />
             ) : (
-              <Bike className="text-white w-6 h-6 opacity-90" />
+              <Bike className="text-white w-7 h-7 drop-shadow-[0_0_12px_rgba(0,245,255,0.35)]" />
             )}
           </div>
           <span className="font-display text-2xl font-bold tracking-tight">
