@@ -285,7 +285,7 @@
         "Ricambi",
         "Ordini"
       ],
-      "image": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Bicycle_repair_tools%2C_Bicycle_Kitchen%2C_Los_Angeles.jpg"
+      "image": "/2.jpg?v=1"
     }
   ],
   "models": [
@@ -340,10 +340,6 @@
       "desc": "Assistenza e manutenzione su e-bike e pedalata assistita, con controlli mirati."
     },
     {
-      "title": "Riparazioni a domicilio",
-      "desc": "Disponibile su richiesta, in base al tipo di intervento e disponibilità."
-    },
-    {
       "title": "Pompa gratuita",
       "desc": "Pompa per gonfiaggio ruote disponibile gratuitamente in officina."
     },
@@ -356,26 +352,25 @@
     {
       "title": "Diagnosi e regolazioni",
       "desc": "Controlli mirati e regolazioni per componenti e trasmissione, con attenzione alla sicurezza.",
-      "image": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Workbench_of_a_bicycle_dealer.jpg"
+      "image": "/3.jpg?v=1"
     },
     {
       "title": "Ruote e pneumatici",
       "desc": "Interventi su forature, camere d’aria e gomme: gonfiaggio e controlli disponibili anche in officina.",
-      "image": "https://upload.wikimedia.org/wikipedia/commons/9/97/Bicycle_repair_shop_-_bike_parts_on_work_bench.jpg"
+      "image": "/4.jpg?v=1"
     },
     {
       "title": "Ricambi su ordinazione",
       "desc": "Possibilità di ordinare ricambistica specifica per ogni necessità, oltre ad accessori e gadget.",
-      "image": "https://upload.wikimedia.org/wikipedia/commons/9/91/Bicycle_repair_shop.jpg"
+      "image": "/5.jpg?v=1"
     }
   ],
   "gallery": [
-    "https://upload.wikimedia.org/wikipedia/commons/2/29/Bike_workshop_-_bicycle_repair_shop.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/d/d7/Munich_-_Two_men_working_in_a_Bicycle_repair_shop_-_5893.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/9/97/Bicycle_repair_shop_-_bike_parts_on_work_bench.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/4/4c/Workbench_of_a_bicycle_dealer.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/9/91/Bicycle_repair_shop.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/0/0f/Le_m%C3%A9cano-v%C3%A9los.jpg"
+    "/ciclofficina6.jpg",
+    "/Ciclofficina4.jpg.webp",
+    "/Ciclofficina7.jpg.webp",
+    "/1.png",
+    "/2.jpg"
   ],
   "testimonials": [
     {
