@@ -1362,39 +1362,39 @@ export default function AdminClientPage() {
                   {(() => {
                     const isEditing = productEditIndex === idx
                     return (
-                      <div className="absolute top-4 right-4 flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => (isEditing ? cancelEditProduct() : startEditProduct(idx))}
+                      <div className="flex items-start justify-between gap-3">
+                        <input
+                          type="checkbox"
+                          checked={productSelectedIndexes.includes(idx)}
+                          onChange={() => toggleProductSelected(idx)}
                           disabled={saving}
-                          className="h-9 px-3 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
-                        >
-                          {isEditing ? 'Annulla' : 'Modifica'}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => deleteProductAtIndex(idx)}
-                          disabled={saving}
-                          className="h-9 w-9 rounded-lg bg-white border border-zinc-200 text-zinc-500 hover:text-red-500 disabled:opacity-50 grid place-items-center"
-                          aria-label="Elimina prodotto"
-                          title="Elimina"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                          className="mt-1 h-4 w-4"
+                          aria-label={`Seleziona prodotto ${String(product.name ?? '')}`}
+                        />
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => (isEditing ? cancelEditProduct() : startEditProduct(idx))}
+                            disabled={saving}
+                            className="h-9 px-3 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                          >
+                            {isEditing ? 'Annulla' : 'Modifica'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => deleteProductAtIndex(idx)}
+                            disabled={saving}
+                            className="h-9 w-9 rounded-lg bg-white border border-zinc-200 text-zinc-500 hover:text-red-500 disabled:opacity-50 grid place-items-center"
+                            aria-label="Elimina prodotto"
+                            title="Elimina"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </div>
                     )
                   })()}
-                  <div className="absolute top-4 left-4">
-                    <input
-                      type="checkbox"
-                      checked={productSelectedIndexes.includes(idx)}
-                      onChange={() => toggleProductSelected(idx)}
-                      disabled={saving}
-                      className="h-4 w-4"
-                      aria-label={`Seleziona prodotto ${String(product.name ?? '')}`}
-                    />
-                  </div>
-                  <div className="space-y-4">
+                  <div className="mt-4 space-y-4">
                     {(() => {
                       const isEditing = productEditIndex === idx
                       const raw = (product as any).images
@@ -1426,7 +1426,7 @@ export default function AdminClientPage() {
 
                       return (
                         <div>
-                          <div className="aspect-square bg-zinc-200 rounded-lg overflow-hidden flex items-center justify-center relative">
+                          <div className="aspect-square bg-zinc-200 rounded-lg overflow-hidden flex items-center justify-center relative z-0">
                             <MediaCarousel
                               images={items.map((x) => x.url).filter(Boolean)}
                               alt={String((product as any).name || 'Prodotto')}
