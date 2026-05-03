@@ -146,6 +146,8 @@ export async function readSiteData(): Promise<SiteData> {
       ...fromDb,
       services: (seed as any).services ?? (fromDb as any).services,
       technology: (seed as any).technology ?? (fromDb as any).technology,
+      features: (seed as any).features ?? (fromDb as any).features,
+      gallery: (seed as any).gallery ?? (fromDb as any).gallery,
     } as any
   }
 
