@@ -42,7 +42,7 @@ export function CursorGlow() {
     <div
       ref={ref}
       aria-hidden="true"
-      className="pointer-events-none fixed left-0 top-0 z-[60] h-0 w-0"
+      className="pointer-events-none fixed left-0 top-0 z-0 h-0 w-0"
     >
       <div className="-translate-x-1/2 -translate-y-1/2 h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle,rgba(0,245,255,0.12)_0%,rgba(163,255,0,0.08)_25%,rgba(255,255,255,0)_62%)] blur-2xl" />
     </div>

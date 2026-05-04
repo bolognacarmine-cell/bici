@@ -1033,13 +1033,13 @@ export function VoltbikeLanding() {
                 </div>
 
                 <div className="mt-8 rounded-2xl bg-white/4 border border-white/10 p-6">
-                  <div className="flex items-center justify-between text-white/80 text-sm font-semibold">
+                  <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between text-white/80 text-sm font-semibold">
                     <div>Email</div>
-                    <div className="text-white">{(data as any).footer.email}</div>
+                    <div className="text-white break-words">{(data as any).footer.email}</div>
                   </div>
-                  <div className="mt-3 flex items-center justify-between text-white/80 text-sm font-semibold">
+                  <div className="mt-3 flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between text-white/80 text-sm font-semibold">
                     <div>Telefono</div>
-                    <div className="text-white">{(data as any).footer.phone}</div>
+                    <div className="text-white break-words">{(data as any).footer.phone}</div>
                   </div>
                 </div>
               </div>
@@ -1061,7 +1061,7 @@ export function VoltbikeLanding() {
               </div>
             </div>
 
-            <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
+            <div className="md:col-span-7 grid grid-cols-2 lg:grid-cols-3 gap-8">
               <div>
                 <div className="text-white font-bold">Esplora</div>
                 <div className="mt-4 flex flex-col gap-3 text-white/65 font-semibold">
@@ -1088,15 +1088,15 @@ export function VoltbikeLanding() {
               <div>
                 <div className="text-white font-bold">Newsletter</div>
                 <div className="mt-4 text-white/60 text-sm">Novità e promozioni VincenzoBike.</div>
-                <div className="mt-4 flex gap-3">
+                <div className="mt-4 flex flex-col lg:flex-row gap-3">
                   <input
-                    className="h-12 w-full rounded-2xl bg-white/4 border border-white/10 px-4 text-white placeholder:text-white/35 outline-none focus:border-white/20"
+                    className="h-12 w-full min-w-0 rounded-2xl bg-white/4 border border-white/10 px-4 text-white placeholder:text-white/35 outline-none focus:border-white/20"
                     placeholder="Email"
                     type="email"
                     inputMode="email"
                     autoComplete="email"
                   />
-                  <button className="tap-target h-12 px-5 rounded-2xl btn-primary font-bold">
+                  <button className="tap-target h-12 px-5 rounded-2xl btn-primary font-bold whitespace-nowrap">
                     Iscriviti
                   </button>
                 </div>
