@@ -282,10 +282,12 @@ export function VoltbikeLanding() {
                   </MagneticButton>
                 </div>
 
-                <div className="mt-12 grid grid-cols-3 gap-3 max-w-xl">
+                <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl">
                   {(data as any).kpis.map((k: any) => (
-                    <div key={k.label} className="hero-kpi glass border border-white/10 rounded-2xl px-4 py-4">
-                      <div className="text-white text-xl md:text-2xl font-extrabold tracking-tight">{k.value}</div>
+                    <div key={k.label} className="hero-kpi glass border border-white/10 rounded-2xl px-4 py-4 min-w-0">
+                      <div className="text-white text-base sm:text-lg md:text-2xl font-extrabold tracking-tight leading-tight break-words">
+                        {k.value}
+                      </div>
                       <div className="text-white/60 text-xs tracking-wide uppercase mt-1">{k.label}</div>
                     </div>
                   ))}
