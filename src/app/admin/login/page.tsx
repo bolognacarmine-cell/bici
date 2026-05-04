@@ -12,16 +12,19 @@ export default async function AdminLoginPage({ searchParams }: { searchParams: P
 
   if (!isAdminConfigured()) {
     return (
-      <div className="min-h-screen bg-zinc-100 text-zinc-900 px-5 py-10 font-sans">
-        <div className="max-w-lg mx-auto bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
-          <div className="flex items-start justify-between gap-6">
-            <div>
-              <h1 className="text-2xl font-bold text-zinc-900">Admin disabled</h1>
-              <p className="mt-2 text-zinc-600 leading-relaxed">
-                Imposta la variabile d’ambiente <span className="font-mono">ADMIN_PASSWORD</span> su Render e ridistribuisci.
+      <div className="min-h-[100dvh] bg-zinc-950 text-zinc-100 px-4 py-10 font-sans overflow-x-hidden">
+        <div className="max-w-lg mx-auto rounded-3xl border border-white/10 bg-black/30 p-6">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="min-w-0">
+              <h1 className="text-xl font-extrabold tracking-tight text-zinc-100">Admin disabled</h1>
+              <p className="mt-2 text-sm text-zinc-300 leading-relaxed">
+                Imposta la variabile d’ambiente <span className="font-mono text-zinc-100">ADMIN_PASSWORD</span> su Render e ridistribuisci.
               </p>
             </div>
-            <Link href="/" className="shrink-0 px-4 py-2 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-colors">
+            <Link
+              href="/"
+              className="shrink-0 inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-extrabold text-zinc-100 hover:bg-white/8"
+            >
               Torna al sito
             </Link>
           </div>
@@ -33,11 +36,11 @@ export default async function AdminLoginPage({ searchParams }: { searchParams: P
   const user = getAdminUser()
 
   return (
-    <div className="min-h-screen bg-zinc-100 text-zinc-900 px-5 py-10 font-sans">
-      <div className="max-w-lg mx-auto bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
-        <div className="flex items-start justify-between gap-6">
-          <div className="flex items-start gap-3">
-            <div className="h-11 w-11 rounded-xl border border-zinc-200 bg-white grid place-items-center overflow-hidden">
+    <div className="min-h-[100dvh] bg-zinc-950 text-zinc-100 px-4 py-10 font-sans overflow-x-hidden">
+      <div className="max-w-lg mx-auto rounded-3xl border border-white/10 bg-black/30 p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3 min-w-0">
+            <div className="h-11 w-11 rounded-2xl border border-white/10 bg-white/5 grid place-items-center overflow-hidden shrink-0">
               <Image
                 src={toHostedAssetUrl('/logo-vincenzobike.png?v=3')}
                 alt="VincenzoBike"
@@ -46,38 +49,47 @@ export default async function AdminLoginPage({ searchParams }: { searchParams: P
                 className="h-10 w-10 object-contain"
               />
             </div>
-            <h1 className="text-2xl font-bold text-zinc-900">Login Admin</h1>
-            <p className="mt-1 text-zinc-600">Accedi per gestire promozioni e prodotti.</p>
+            <div className="min-w-0">
+              <h1 className="text-xl font-extrabold tracking-tight text-zinc-100">Login Admin</h1>
+              <p className="mt-1 text-sm text-zinc-400">Accedi per gestire promozioni e prodotti.</p>
+            </div>
           </div>
-          <Link href="/" className="shrink-0 px-4 py-2 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-colors">
+          <Link
+            href="/"
+            className="shrink-0 inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-extrabold text-zinc-100 hover:bg-white/8"
+          >
             Torna al sito
           </Link>
         </div>
 
-        {error && <div className="mt-4 p-3 rounded-lg bg-red-100 text-red-700 font-medium">Credenziali non valide.</div>}
+        {error && (
+          <div className="mt-4 rounded-2xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-200">
+            Credenziali non valide.
+          </div>
+        )}
 
         <form action={adminLogin} className="mt-6 space-y-4">
           <div>
-            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">User</label>
+            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">User</label>
             <input
               name="user"
               defaultValue={user}
-              className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none bg-white text-zinc-900 placeholder-zinc-400"
+              className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500 focus:ring-2 focus:ring-emerald-500/40"
               autoComplete="username"
               required
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Password</label>
+            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Password</label>
             <input
               name="password"
               type="password"
-              className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none bg-white text-zinc-900 placeholder-zinc-400"
+              className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500 focus:ring-2 focus:ring-emerald-500/40"
               autoComplete="current-password"
               required
             />
           </div>
-          <button className="w-full px-5 py-2 bg-[#e67e22] text-white font-bold rounded-lg hover:bg-[#d35400] transition-colors">
+          <button className="w-full px-5 py-3 bg-emerald-500 text-zinc-950 font-extrabold rounded-2xl hover:bg-emerald-400 transition-colors">
             Entra
           </button>
         </form>

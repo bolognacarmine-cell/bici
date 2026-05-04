@@ -731,127 +731,144 @@ export default function AdminClientPage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-zinc-100 p-8 font-sans text-zinc-900">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <div className="flex items-start gap-3">
-              <div className="h-11 w-11 rounded-xl border border-zinc-200 bg-white grid place-items-center overflow-hidden">
-                <img src="/logo-vincenzobike.png?v=3" alt="VincenzoBike" width={44} height={44} className="h-10 w-10 object-contain" />
+      <div className="min-h-[100dvh] bg-zinc-950 text-zinc-100 font-sans overflow-x-hidden">
+        <div className="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur border-b border-white/10">
+          <div className="mx-auto w-full max-w-5xl px-4 py-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="h-11 w-11 rounded-2xl border border-white/10 bg-white/5 grid place-items-center overflow-hidden shrink-0">
+                  <img
+                    src="/logo-vincenzobike.png?v=3"
+                    alt="VincenzoBike"
+                    width={44}
+                    height={44}
+                    className="h-10 w-10 object-contain"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <h1 className="text-lg font-extrabold tracking-tight text-zinc-100 truncate">Pannello Admin</h1>
+                  <p className="text-xs text-zinc-400 truncate">Caricamento dati…</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-zinc-800">Pannello Admin</h1>
-                <p className="text-zinc-500">Caricamento dati…</p>
-              </div>
+              <Link
+                href="/"
+                className="shrink-0 inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-extrabold text-zinc-100 hover:bg-white/8"
+              >
+                Torna al sito
+              </Link>
             </div>
-            <Link href="/" className="px-4 py-2 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-colors">
-              Torna al sito
-            </Link>
           </div>
-          {message && <div className="mb-6 p-4 rounded-lg text-center font-medium bg-red-100 text-red-700">{message}</div>}
+        </div>
+        <div className="mx-auto w-full max-w-5xl px-4 pt-6 pb-24">
+          {message && (
+            <div className="mb-6 rounded-2xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-center text-sm font-semibold text-red-200">
+              {message}
+            </div>
+          )}
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-zinc-100 p-8 font-sans text-zinc-900">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex items-start gap-3">
-            <div className="h-11 w-11 rounded-xl border border-zinc-200 bg-white grid place-items-center overflow-hidden">
-              <img src="/logo-vincenzobike.png?v=3" alt="VincenzoBike" width={44} height={44} className="h-10 w-10 object-contain" />
+    <div className="min-h-[100dvh] bg-zinc-950 text-zinc-100 font-sans overflow-x-hidden">
+      <div className="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur border-b border-white/10">
+        <div className="mx-auto w-full max-w-5xl px-4 py-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="h-11 w-11 rounded-2xl border border-white/10 bg-white/5 grid place-items-center overflow-hidden shrink-0">
+                <img src="/logo-vincenzobike.png?v=3" alt="VincenzoBike" width={44} height={44} className="h-10 w-10 object-contain" />
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-lg font-extrabold tracking-tight text-zinc-100 truncate">Pannello Admin</h1>
+                <p className="text-xs text-zinc-400 truncate">Promozioni e prodotti</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-zinc-800">Pannello Admin</h1>
-              <p className="text-zinc-500">Gestione Promozioni e Prodotti</p>
-            </div>
-          </div>
-          <div className="flex gap-4">
-            <Link href="/" className="px-4 py-2 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-colors">
+            <Link
+              href="/"
+              className="shrink-0 inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-extrabold text-zinc-100 hover:bg-white/8"
+            >
               Torna al sito
             </Link>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="px-6 py-2 bg-[#e67e22] text-white font-bold rounded-lg hover:bg-[#d35400] disabled:opacity-50 transition-all shadow-md"
-            >
-              {saving ? 'Salvataggio...' : 'Salva Modifiche'}
-            </button>
           </div>
         </div>
+      </div>
 
+      <div className="mx-auto w-full max-w-5xl px-4 pt-6 pb-32">
         {message && (
           <div
-            className={`mb-6 p-4 rounded-lg text-center font-medium ${message.includes('Errore') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}
+            className={`mb-6 rounded-2xl border px-4 py-3 text-center text-sm font-semibold ${
+              message.includes('Errore') ? 'border-red-500/25 bg-red-500/10 text-red-200' : 'border-emerald-500/25 bg-emerald-500/10 text-emerald-200'
+            }`}
           >
             {message}
           </div>
         )}
 
-        <div className="space-y-12 pb-20">
-          <section className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
-            <div className="flex justify-between items-center mb-6 border-b pb-4">
-              <h2 className="text-xl font-bold text-zinc-800">Promozioni</h2>
+        <div className="space-y-10">
+          <section className="rounded-3xl border border-white/10 bg-white/3 p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-3 mb-6 border-b border-white/10 pb-4">
+              <h2 className="text-lg font-extrabold text-zinc-100">Promozioni</h2>
             </div>
 
-            <div className="mb-8 rounded-2xl border border-zinc-200 bg-white p-5">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <div className="text-sm font-bold text-zinc-800">Aggiungi promozione</div>
-                  <div className="text-xs text-zinc-500">Trascina, seleziona o incolla immagini</div>
+            <div className="mb-8 rounded-3xl border border-white/10 bg-black/30 p-5">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-sm font-extrabold text-zinc-100">Aggiungi promozione</div>
+                  <div className="text-xs text-zinc-400">Trascina, seleziona o incolla immagini</div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={submitCreatePromotion}
-                    disabled={creating}
-                    className="px-4 py-2 rounded-lg bg-[#e67e22] text-white font-bold hover:bg-[#d35400] disabled:opacity-50"
-                  >
-                    {creating ? 'Creazione...' : 'Crea promozione'}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={submitCreatePromotion}
+                  disabled={creating}
+                  className="inline-flex w-full sm:w-auto items-center justify-center rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-extrabold text-zinc-950 hover:bg-emerald-400 disabled:opacity-50"
+                >
+                  {creating ? 'Creazione...' : 'Crea promozione'}
+                </button>
               </div>
 
               {createStatus && (
                 <div
-                  className={`mt-4 rounded-xl px-4 py-3 text-sm font-semibold ${createStatus.includes('creata') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+                  className={`mt-4 rounded-2xl border px-4 py-3 text-sm font-semibold ${
+                    createStatus.includes('creata') ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-200' : 'border-red-500/25 bg-red-500/10 text-red-200'
+                  }`}
                 >
                   {createStatus}
                 </div>
               )}
 
-              <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Titolo promozione</label>
+                  <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Titolo promozione</label>
                   <input
                     value={createTitle}
                     onChange={(e) => setCreateTitle(e.target.value)}
-                    className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                    className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
                     placeholder="Es. Promo Primavera"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Attiva</label>
+                  <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Attiva</label>
                   <select
                     value={String(createIsActive)}
                     onChange={(e) => setCreateIsActive(e.target.value === 'true')}
-                    className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                    className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
                   >
                     <option value="true">Sì</option>
                     <option value="false">No</option>
                   </select>
                 </div>
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Descrizione</label>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Descrizione</label>
                   <textarea
                     value={createDescription}
                     onChange={(e) => setCreateDescription(e.target.value)}
-                    className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none h-20 bg-white text-zinc-900 placeholder-zinc-400"
+                    className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none h-24 bg-black/30 text-zinc-100 placeholder-zinc-500"
                     placeholder="Testo breve della promozione"
                   />
                 </div>
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo in euro</label>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Prezzo in euro</label>
                   <input
                     value={createPriceInput}
                     onChange={(e) => setCreatePriceInput(e.target.value)}
@@ -859,7 +876,7 @@ export default function AdminClientPage() {
                       const n = parsePriceEur(createPriceInput)
                       if (typeof n === 'number') setCreatePriceInput(euro.format(n))
                     }}
-                    className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                    className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
                     placeholder="Es. 12500,00 €"
                     inputMode="decimal"
                   />
@@ -867,7 +884,7 @@ export default function AdminClientPage() {
               </div>
 
               <div className="mt-5">
-                <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Immagini</label>
+                <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Immagini</label>
                 <ImageUploader
                   key={createImagesKey}
                   apiBase={apiBase}
@@ -881,15 +898,15 @@ export default function AdminClientPage() {
             <div className="mt-6">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
                 <div>
-                  <div className="text-sm font-bold text-zinc-800">Elenco promozioni</div>
-                  <div className="text-xs text-zinc-500">{(data.promotions ?? []).length} totali</div>
+                  <div className="text-sm font-extrabold text-zinc-100">Elenco promozioni</div>
+                  <div className="text-xs text-zinc-400">{(data.promotions ?? []).length} totali</div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <button
                     type="button"
                     onClick={toggleSelectAllPromos}
                     disabled={saving || creating || (data.promotions ?? []).length === 0}
-                    className="px-4 py-2 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                    className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-extrabold text-zinc-100 hover:bg-white/8 disabled:opacity-50"
                   >
                     {promoSelectedIndexes.length === (data.promotions ?? []).length && (data.promotions ?? []).length > 0 ? 'Deseleziona tutte' : 'Seleziona tutte'}
                   </button>
@@ -897,7 +914,7 @@ export default function AdminClientPage() {
                     type="button"
                     onClick={deleteSelectedPromotions}
                     disabled={saving || creating || promoSelectedIndexes.length === 0}
-                    className="px-4 py-2 rounded-lg bg-white border border-zinc-200 text-red-700 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                    className="inline-flex items-center justify-center rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs font-extrabold text-red-200 hover:bg-red-500/15 disabled:opacity-50"
                   >
                     Elimina selezionate
                   </button>
@@ -905,7 +922,7 @@ export default function AdminClientPage() {
                     type="button"
                     onClick={clearAllPromotions}
                     disabled={saving || creating || (data.promotions ?? []).length === 0}
-                    className="px-4 py-2 rounded-lg bg-white border border-zinc-200 text-red-700 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                    className="inline-flex items-center justify-center rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs font-extrabold text-red-200 hover:bg-red-500/15 disabled:opacity-50"
                   >
                     Elimina tutte
                   </button>
@@ -913,7 +930,7 @@ export default function AdminClientPage() {
               </div>
 
               {(data.promotions ?? []).length === 0 ? (
-                <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4 text-sm text-zinc-600">Nessuna promozione salvata.</div>
+                <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm text-zinc-400">Nessuna promozione salvata.</div>
               ) : (
                 <div className="space-y-3">
                   {(data.promotions ?? []).map((promo, idx) => {
@@ -947,7 +964,7 @@ export default function AdminClientPage() {
                       promo.discountType === 'amount' ? euro.format(promo.discountValue) : `${promo.discountValue}%`
 
                     return (
-                      <div key={`${promo.title}-${idx}`} className="rounded-2xl border border-zinc-200 bg-white overflow-hidden">
+                      <div key={`${promo.title}-${idx}`} className="rounded-3xl border border-white/10 bg-black/30 overflow-hidden">
                         <div className="p-4">
                           <div className="flex items-start gap-3">
                             <input
@@ -961,21 +978,21 @@ export default function AdminClientPage() {
                             <div className="flex-1 min-w-0">
                               <div className="flex flex-col md:flex-row md:items-start justify-between gap-3">
                                 <div className="min-w-0">
-                                  <div className="font-bold text-zinc-800 truncate">{promo.title}</div>
-                                  <div className="mt-1 text-xs text-zinc-500">
+                                  <div className="font-extrabold text-zinc-100 truncate">{promo.title}</div>
+                                  <div className="mt-1 text-xs text-zinc-400">
                                     {promo.status} • {promo.scope} • {discountLabel}
                                     {promo.showOnHome === false ? ' • nascosta in home' : ''}
                                     {promo.startsAt ? ` • dal ${promo.startsAt}` : ''}
                                     {promo.endsAt ? ` • fino al ${promo.endsAt}` : ''}
                                   </div>
-                                  {promo.description ? <div className="mt-2 text-sm text-zinc-700 line-clamp-2">{promo.description}</div> : null}
+                                  {promo.description ? <div className="mt-2 text-sm text-zinc-300 line-clamp-2">{promo.description}</div> : null}
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex flex-wrap items-center justify-end gap-2">
                                   <button
                                     type="button"
                                     onClick={() => (isEditing ? cancelEditPromotion() : startEditPromotion(idx))}
                                     disabled={saving || creating}
-                                    className="h-10 px-4 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                                    className="h-10 px-4 rounded-2xl bg-white/5 border border-white/10 text-zinc-100 font-extrabold hover:bg-white/8 disabled:opacity-50"
                                   >
                                     {isEditing ? 'Annulla' : 'Modifica'}
                                   </button>
@@ -983,7 +1000,7 @@ export default function AdminClientPage() {
                                     type="button"
                                     onClick={() => setPromoExpandedIndex((prev) => (prev === idx ? null : idx))}
                                     disabled={saving || creating}
-                                    className="h-10 px-4 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                                    className="h-10 px-4 rounded-2xl bg-white/5 border border-white/10 text-zinc-100 font-extrabold hover:bg-white/8 disabled:opacity-50"
                                   >
                                     {isExpanded ? 'Chiudi' : 'Apri'}
                                   </button>
@@ -991,7 +1008,7 @@ export default function AdminClientPage() {
                                     type="button"
                                     onClick={() => deletePromotionAtIndex(idx)}
                                     disabled={saving || creating}
-                                    className="h-10 px-4 rounded-lg bg-white border border-zinc-200 text-red-700 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                                    className="h-10 px-4 rounded-2xl border border-red-500/30 bg-red-500/10 text-red-200 font-extrabold hover:bg-red-500/15 disabled:opacity-50"
                                   >
                                     Elimina
                                   </button>
@@ -999,8 +1016,8 @@ export default function AdminClientPage() {
                               </div>
 
                               {isExpanded ? (
-                                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-                                  <div className="aspect-square bg-zinc-200 rounded-lg overflow-hidden relative">
+                                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+                                  <div className="aspect-square bg-black/30 rounded-2xl overflow-hidden relative border border-white/10">
                                     {items.length > 0 ? (
                                       <MediaCarousel
                                         images={items.map((x) => x.url).filter(Boolean)}
@@ -1011,37 +1028,37 @@ export default function AdminClientPage() {
                                         objectPosition="50% 50%"
                                       />
                                     ) : (
-                                      <div className="absolute inset-0 grid place-items-center text-sm text-zinc-600">Nessuna immagine</div>
+                                      <div className="absolute inset-0 grid place-items-center text-sm text-zinc-400">Nessuna immagine</div>
                                     )}
                                   </div>
 
                                   {isEditing ? (
-                                    <div className="space-y-3 text-sm text-zinc-700">
+                                    <div className="space-y-3 text-sm text-zinc-300">
                                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <div className="sm:col-span-2">
-                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Titolo</label>
+                                          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Titolo</label>
                                           <input
                                             value={promoEditTitle}
                                             onChange={(e) => setPromoEditTitle(e.target.value)}
-                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
                                           />
                                         </div>
 
                                         <div className="sm:col-span-2">
-                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Descrizione</label>
+                                          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Descrizione</label>
                                           <textarea
                                             value={promoEditDescription}
                                             onChange={(e) => setPromoEditDescription(e.target.value)}
-                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 h-20"
+                                            className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 h-24"
                                           />
                                         </div>
 
                                         <div>
-                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Stato</label>
+                                          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Stato</label>
                                           <select
                                             value={promoEditStatus}
                                             onChange={(e) => setPromoEditStatus(e.target.value as Promotion['status'])}
-                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
                                           >
                                             {PROMO_STATUS_OPTIONS.map((o) => (
                                               <option key={o.value} value={o.value}>
@@ -1052,11 +1069,11 @@ export default function AdminClientPage() {
                                         </div>
 
                                         <div>
-                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Scope</label>
+                                          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Scope</label>
                                           <select
                                             value={promoEditScope}
                                             onChange={(e) => setPromoEditScope(e.target.value as Promotion['scope'])}
-                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
                                           >
                                             {PROMO_SCOPE_OPTIONS.map((o) => (
                                               <option key={o.value} value={o.value}>
@@ -1068,11 +1085,11 @@ export default function AdminClientPage() {
 
                                         {promoEditScope === 'category' ? (
                                           <div className="sm:col-span-2">
-                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Categoria</label>
+                                            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Categoria</label>
                                             <select
                                               value={promoEditCategory}
                                               onChange={(e) => setPromoEditCategory(e.target.value as Promotion['category'])}
-                                              className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                              className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
                                             >
                                               <option value="">Seleziona…</option>
                                               {CATEGORY_OPTIONS.map((o) => (
@@ -1086,11 +1103,11 @@ export default function AdminClientPage() {
 
                                         {promoEditScope === 'product' ? (
                                           <div className="sm:col-span-2">
-                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">SKU prodotto</label>
+                                            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">SKU prodotto</label>
                                             <input
                                               value={promoEditProductSku}
                                               onChange={(e) => setPromoEditProductSku(e.target.value)}
-                                              className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                              className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
                                               list={`promo-sku-${idx}`}
                                             />
                                             <datalist id={`promo-sku-${idx}`}>
@@ -1105,11 +1122,11 @@ export default function AdminClientPage() {
                                         ) : null}
 
                                         <div>
-                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Tipo sconto</label>
+                                          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Tipo sconto</label>
                                           <select
                                             value={promoEditDiscountType}
                                             onChange={(e) => setPromoEditDiscountType(e.target.value as Promotion['discountType'])}
-                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
                                           >
                                             {PROMO_DISCOUNT_TYPE_OPTIONS.map((o) => (
                                               <option key={o.value} value={o.value}>
@@ -1120,21 +1137,21 @@ export default function AdminClientPage() {
                                         </div>
 
                                         <div>
-                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Valore sconto</label>
+                                          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Valore sconto</label>
                                           <input
                                             value={promoEditDiscountValueInput}
                                             onChange={(e) => setPromoEditDiscountValueInput(e.target.value)}
-                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
                                             inputMode="decimal"
                                           />
                                         </div>
 
                                         <div>
-                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Mostra in home</label>
+                                          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Mostra in home</label>
                                           <select
                                             value={String(promoEditShowOnHome)}
                                             onChange={(e) => setPromoEditShowOnHome(e.target.value === 'true')}
-                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
                                           >
                                             <option value="true">Sì</option>
                                             <option value="false">No</option>
@@ -1142,22 +1159,22 @@ export default function AdminClientPage() {
                                         </div>
 
                                         <div>
-                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo</label>
+                                          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Prezzo</label>
                                           <input
                                             value={promoEditPriceInput}
                                             onChange={(e) => setPromoEditPriceInput(e.target.value)}
-                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
                                             placeholder="Es. 12500,00 €"
                                             inputMode="decimal"
                                           />
                                         </div>
 
                                         <div>
-                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Offerta attiva</label>
+                                          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Offerta attiva</label>
                                           <select
                                             value={String(promoEditOfferActive)}
                                             onChange={(e) => setPromoEditOfferActive(e.target.value === 'true')}
-                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
                                           >
                                             <option value="false">No</option>
                                             <option value="true">Sì</option>
@@ -1165,70 +1182,72 @@ export default function AdminClientPage() {
                                         </div>
 
                                         <div>
-                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo offerta</label>
+                                          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Prezzo offerta</label>
                                           <input
                                             value={promoEditOfferPriceInput}
                                             onChange={(e) => setPromoEditOfferPriceInput(e.target.value)}
                                             disabled={!promoEditOfferActive}
-                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 disabled:opacity-50"
+                                            className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 disabled:opacity-50"
                                             placeholder="Es. 9900,00 €"
                                             inputMode="decimal"
                                           />
                                         </div>
 
                                         <div>
-                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Inizio (opz.)</label>
+                                          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Inizio (opz.)</label>
                                           <input
                                             value={promoEditStartsAt}
                                             onChange={(e) => setPromoEditStartsAt(e.target.value)}
-                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
                                             placeholder="Es. 2026-05-03T10:00:00Z"
                                           />
                                         </div>
 
                                         <div>
-                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Fine (opz.)</label>
+                                          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Fine (opz.)</label>
                                           <input
                                             value={promoEditEndsAt}
                                             onChange={(e) => setPromoEditEndsAt(e.target.value)}
-                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
                                             placeholder="Es. 2026-05-20T10:00:00Z"
                                           />
                                         </div>
 
                                         <div>
-                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">CTA testo (opz.)</label>
+                                          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">CTA testo (opz.)</label>
                                           <input
                                             value={promoEditCtaText}
                                             onChange={(e) => setPromoEditCtaText(e.target.value)}
-                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
                                           />
                                         </div>
 
                                         <div>
-                                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">CTA link (opz.)</label>
+                                          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">CTA link (opz.)</label>
                                           <input
                                             value={promoEditCtaHref}
                                             onChange={(e) => setPromoEditCtaHref(e.target.value)}
-                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                                            className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
                                           />
                                         </div>
                                       </div>
 
                                       {promoEditMessage ? (
                                         <div
-                                          className={`rounded-xl px-4 py-3 text-sm font-semibold ${promoEditMessage.includes('Errore') ? 'bg-red-100 text-red-800' : 'bg-red-100 text-red-800'}`}
+                                          className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${
+                                            promoEditMessage.includes('Errore') ? 'border-red-500/25 bg-red-500/10 text-red-200' : 'border-emerald-500/25 bg-emerald-500/10 text-emerald-200'
+                                          }`}
                                         >
                                           {promoEditMessage}
                                         </div>
                                       ) : null}
 
-                                      <div className="flex items-center gap-2">
+                                      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                                         <button
                                           type="button"
                                           onClick={saveEditPromotion}
                                           disabled={saving || creating}
-                                          className="h-10 px-4 rounded-lg bg-[#e67e22] text-white font-bold hover:bg-[#d35400] disabled:opacity-50"
+                                          className="inline-flex w-full sm:w-auto items-center justify-center rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-extrabold text-zinc-950 hover:bg-emerald-400 disabled:opacity-50"
                                         >
                                           Salva modifica
                                         </button>
@@ -1236,53 +1255,53 @@ export default function AdminClientPage() {
                                           type="button"
                                           onClick={cancelEditPromotion}
                                           disabled={saving || creating}
-                                          className="h-10 px-4 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                                          className="inline-flex w-full sm:w-auto items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-extrabold text-zinc-100 hover:bg-white/8 disabled:opacity-50"
                                         >
                                           Annulla
                                         </button>
                                       </div>
                                     </div>
                                   ) : (
-                                    <div className="space-y-3 text-sm text-zinc-700">
+                                    <div className="space-y-3 text-sm text-zinc-300">
                                       <div className="grid grid-cols-1 gap-2">
                                         <div>
-                                          <div className="text-xs font-bold text-zinc-500 uppercase">Sconto</div>
-                                          <div className="font-semibold">{discountLabel}</div>
+                                          <div className="text-xs font-bold text-zinc-400 uppercase">Sconto</div>
+                                          <div className="font-semibold text-zinc-100">{discountLabel}</div>
                                         </div>
                                         {promo.scope === 'category' && promo.category ? (
                                           <div>
-                                            <div className="text-xs font-bold text-zinc-500 uppercase">Categoria</div>
-                                            <div className="font-semibold">{promo.category}</div>
+                                            <div className="text-xs font-bold text-zinc-400 uppercase">Categoria</div>
+                                            <div className="font-semibold text-zinc-100">{promo.category}</div>
                                           </div>
                                         ) : null}
                                         {promo.scope === 'product' && promo.productSku ? (
                                           <div>
-                                            <div className="text-xs font-bold text-zinc-500 uppercase">SKU prodotto</div>
-                                            <div className="font-semibold">{promo.productSku}</div>
+                                            <div className="text-xs font-bold text-zinc-400 uppercase">SKU prodotto</div>
+                                            <div className="font-semibold text-zinc-100">{promo.productSku}</div>
                                           </div>
                                         ) : null}
                                         {typeof promo.priceEur === 'number' ? (
                                           <div>
-                                            <div className="text-xs font-bold text-zinc-500 uppercase">Prezzo</div>
-                                            <div className="font-semibold">{euro.format(promo.priceEur)}</div>
+                                            <div className="text-xs font-bold text-zinc-400 uppercase">Prezzo</div>
+                                            <div className="font-semibold text-zinc-100">{euro.format(promo.priceEur)}</div>
                                           </div>
                                         ) : null}
                                         {promo.offerActive && typeof promo.offerPriceEur === 'number' ? (
                                           <div>
-                                            <div className="text-xs font-bold text-zinc-500 uppercase">Prezzo offerta</div>
-                                            <div className="font-semibold">{euro.format(promo.offerPriceEur)}</div>
+                                            <div className="text-xs font-bold text-zinc-400 uppercase">Prezzo offerta</div>
+                                            <div className="font-semibold text-zinc-100">{euro.format(promo.offerPriceEur)}</div>
                                           </div>
                                         ) : null}
                                         {promo.ctaHref ? (
                                           <div>
-                                            <div className="text-xs font-bold text-zinc-500 uppercase">Link CTA</div>
-                                            <div className="font-semibold break-all">{promo.ctaHref}</div>
+                                            <div className="text-xs font-bold text-zinc-400 uppercase">Link CTA</div>
+                                            <div className="font-semibold text-zinc-100 break-all">{promo.ctaHref}</div>
                                           </div>
                                         ) : null}
                                         {promo.internalNote ? (
                                           <div>
-                                            <div className="text-xs font-bold text-zinc-500 uppercase">Nota interna</div>
-                                            <div className="font-semibold">{promo.internalNote}</div>
+                                            <div className="text-xs font-bold text-zinc-400 uppercase">Nota interna</div>
+                                            <div className="font-semibold text-zinc-100">{promo.internalNote}</div>
                                           </div>
                                         ) : null}
                                       </div>
@@ -1301,20 +1320,20 @@ export default function AdminClientPage() {
             </div>
           </section>
 
-          <section className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
-            <div className="flex justify-between items-center mb-6 border-b pb-4">
-              <h2 className="text-xl font-bold text-zinc-800">Catalogo Prodotti</h2>
-              <div className="flex items-center gap-3">
+          <section className="rounded-3xl border border-white/10 bg-white/3 p-5 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 border-b border-white/10 pb-4">
+              <h2 className="text-lg font-extrabold text-zinc-100">Catalogo Prodotti</h2>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <button
                   onClick={handleSaveCatalogProducts}
                   disabled={saving}
-                  className="px-4 py-2 rounded-lg bg-[#e67e22] text-white font-bold hover:bg-[#d35400] disabled:opacity-50"
+                  className="inline-flex w-full sm:w-auto items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-extrabold text-zinc-100 hover:bg-white/8 disabled:opacity-50"
                 >
                   {saving ? 'Salvataggio...' : 'Crea catalogo prodotti'}
                 </button>
                 <button
                   onClick={addProduct}
-                  className="flex items-center gap-2 px-3 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors text-sm font-bold"
+                  className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-extrabold text-zinc-950 hover:bg-emerald-400"
                 >
                   <Plus size={16} /> Aggiungi Prodotto
                 </button>
@@ -1323,15 +1342,15 @@ export default function AdminClientPage() {
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6">
               <div>
-                <div className="text-sm font-bold text-zinc-800">Elenco catalogo</div>
-                <div className="text-xs text-zinc-500">{(data.products ?? []).length} prodotti</div>
+                <div className="text-sm font-extrabold text-zinc-100">Elenco catalogo</div>
+                <div className="text-xs text-zinc-400">{(data.products ?? []).length} prodotti</div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <button
                   type="button"
                   onClick={toggleSelectAllProducts}
                   disabled={saving || (data.products ?? []).length === 0}
-                  className="px-4 py-2 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                  className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-extrabold text-zinc-100 hover:bg-white/8 disabled:opacity-50"
                 >
                   {productSelectedIndexes.length === (data.products ?? []).length && (data.products ?? []).length > 0
                     ? 'Deseleziona tutti'
@@ -1341,7 +1360,7 @@ export default function AdminClientPage() {
                   type="button"
                   onClick={deleteSelectedProducts}
                   disabled={saving || productSelectedIndexes.length === 0}
-                  className="px-4 py-2 rounded-lg bg-white border border-zinc-200 text-red-700 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                  className="inline-flex items-center justify-center rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs font-extrabold text-red-200 hover:bg-red-500/15 disabled:opacity-50"
                 >
                   Elimina selezionati
                 </button>
@@ -1349,7 +1368,7 @@ export default function AdminClientPage() {
                   type="button"
                   onClick={clearAllProducts}
                   disabled={saving || (data.products ?? []).length === 0}
-                  className="px-4 py-2 rounded-lg bg-white border border-zinc-200 text-red-700 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                  className="inline-flex items-center justify-center rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs font-extrabold text-red-200 hover:bg-red-500/15 disabled:opacity-50"
                 >
                   Elimina tutti
                 </button>
@@ -1358,7 +1377,7 @@ export default function AdminClientPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {data.products?.map((product, idx) => (
-                <div key={idx} className="p-6 border border-zinc-100 rounded-xl bg-zinc-50 relative group">
+                <div key={idx} className="p-5 sm:p-6 border border-white/10 rounded-3xl bg-black/30 relative group">
                   {(() => {
                     const isEditing = productEditIndex === idx
                     return (
@@ -1376,7 +1395,7 @@ export default function AdminClientPage() {
                             type="button"
                             onClick={() => (isEditing ? cancelEditProduct() : startEditProduct(idx))}
                             disabled={saving}
-                            className="h-9 px-3 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                            className="h-10 px-4 rounded-2xl bg-white/5 border border-white/10 text-zinc-100 font-extrabold hover:bg-white/8 disabled:opacity-50"
                           >
                             {isEditing ? 'Annulla' : 'Modifica'}
                           </button>
@@ -1384,7 +1403,7 @@ export default function AdminClientPage() {
                             type="button"
                             onClick={() => deleteProductAtIndex(idx)}
                             disabled={saving}
-                            className="h-9 w-9 rounded-lg bg-white border border-zinc-200 text-zinc-500 hover:text-red-500 disabled:opacity-50 grid place-items-center"
+                            className="h-10 w-10 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-200 hover:bg-red-500/15 disabled:opacity-50 grid place-items-center"
                             aria-label="Elimina prodotto"
                             title="Elimina"
                           >
@@ -1426,7 +1445,7 @@ export default function AdminClientPage() {
 
                       return (
                         <div>
-                          <div className="aspect-square bg-zinc-200 rounded-lg overflow-hidden flex items-center justify-center relative z-0">
+                          <div className="aspect-square bg-black/30 rounded-2xl border border-white/10 overflow-hidden flex items-center justify-center relative z-0">
                             <MediaCarousel
                               images={items.map((x) => x.url).filter(Boolean)}
                               alt={String((product as any).name || 'Prodotto')}
@@ -1435,13 +1454,13 @@ export default function AdminClientPage() {
                               imageClassName="object-cover"
                               objectPosition="50% 50%"
                             />
-                            <div className="pointer-events-none absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                            <div className="pointer-events-none absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                               <ImageIcon className="text-white" />
                             </div>
                           </div>
 
                           <div className="mt-3">
-                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Immagini</label>
+                            <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Immagini</label>
                             <ImageUploader
                               key={String((product as any).sku ?? idx)}
                               apiBase={apiBase}
@@ -1461,7 +1480,7 @@ export default function AdminClientPage() {
                     })()}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Categoria</label>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Categoria</label>
                         <select
                           value={(product as any).category ?? 'city'}
                           onChange={(e) => {
@@ -1473,7 +1492,7 @@ export default function AdminClientPage() {
                             updateProduct(idx, 'sizes', [])
                           }}
                           disabled={saving || productEditIndex !== idx}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                          className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 disabled:opacity-50"
                         >
                           {CATEGORY_OPTIONS.map((o) => (
                             <option key={o.value} value={o.value}>
@@ -1483,12 +1502,12 @@ export default function AdminClientPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Stato</label>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Stato</label>
                         <select
                           value={(product as any).status ?? 'available'}
                           onChange={(e) => updateProduct(idx, 'status', e.target.value)}
                           disabled={saving || productEditIndex !== idx}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                          className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 disabled:opacity-50"
                         >
                           {PRODUCT_STATUS_OPTIONS.map((o) => (
                             <option key={o.value} value={o.value}>
@@ -1530,11 +1549,11 @@ export default function AdminClientPage() {
                         updateProduct(idx, 'sizes', next)
                       }
                       return (
-                        <div className="rounded-xl border border-zinc-200 bg-white p-4">
+                        <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
                           <div className="flex items-start justify-between gap-4">
                             <div>
-                              <div className="text-sm font-bold text-zinc-800">Taglie</div>
-                              <div className="text-xs text-zinc-500 mt-1">
+                              <div className="text-sm font-extrabold text-zinc-100">Taglie</div>
+                              <div className="text-xs text-zinc-400 mt-1">
                                 {category === 'junior'
                                   ? 'Bici bambino/a: misura ruota in pollici.'
                                   : category === 'road'
@@ -1546,14 +1565,14 @@ export default function AdminClientPage() {
                             </div>
                             {modeOptions.length > 1 && (
                               <div className="w-44">
-                                <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1">Formato</label>
+                                <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">Formato</label>
                                 <select
                                   value={currentMode}
                                   onChange={(e) => {
                                     updateProduct(idx, 'sizeMode', e.target.value)
                                     updateProduct(idx, 'sizes', [])
                                   }}
-                                  className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 text-sm"
+                                  className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 text-sm"
                                 >
                                   <option value="alpha">XS–XXL</option>
                                   <option value="inch">Pollici</option>
@@ -1571,11 +1590,11 @@ export default function AdminClientPage() {
                                   type="button"
                                   onClick={() => toggleSize(s)}
                                   disabled={saving || productEditIndex !== idx}
-                                  className={
+                                  className={`px-3 py-2 rounded-full border text-xs font-extrabold disabled:opacity-50 ${
                                     active
-                                      ? 'px-3 py-2 rounded-full bg-[#e67e22] text-white text-xs font-bold'
-                                      : 'px-3 py-2 rounded-full bg-zinc-50 border border-zinc-200 text-zinc-800 text-xs font-bold hover:bg-zinc-100'
-                                  }
+                                      ? 'border-emerald-500/30 bg-emerald-500/20 text-emerald-100'
+                                      : 'border-white/10 bg-white/5 text-zinc-100 hover:bg-white/8'
+                                  }`}
                                 >
                                   {s}
                                 </button>
@@ -1587,45 +1606,45 @@ export default function AdminClientPage() {
                     })()}
 
                     <div>
-                      <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Nome Prodotto</label>
+                      <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Nome Prodotto</label>
                       <input
                         type="text"
                         value={product.name}
                         onChange={(e) => updateProduct(idx, 'name', e.target.value)}
                         disabled={saving || productEditIndex !== idx}
-                        className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none font-bold bg-white text-zinc-900 placeholder-zinc-400"
+                        className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none font-extrabold bg-black/30 text-zinc-100 placeholder-zinc-500 focus:ring-2 focus:ring-emerald-500/40"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">SKU</label>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">SKU</label>
                         <input
                           type="text"
                           value={String((product as any).sku ?? '')}
                           onChange={(e) => updateProduct(idx, 'sku', e.target.value === '' ? undefined : e.target.value)}
                           disabled={saving || productEditIndex !== idx}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                          className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Slug</label>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Slug</label>
                         <input
                           type="text"
                           value={String((product as any).slug ?? '')}
                           onChange={(e) => updateProduct(idx, 'slug', e.target.value === '' ? undefined : e.target.value)}
                           disabled={saving || productEditIndex !== idx}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                          className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
                         />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Genere</label>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Genere</label>
                         <select
                           value={String((product as any).gender ?? '')}
                           onChange={(e) => updateProduct(idx, 'gender', e.target.value || undefined)}
                           disabled={saving || productEditIndex !== idx}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                          className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 disabled:opacity-50"
                         >
                           <option value="">—</option>
                           {GENDER_OPTIONS.map((o) => (
@@ -1636,19 +1655,19 @@ export default function AdminClientPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Marca</label>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Marca</label>
                         <input
                           type="text"
                           value={String((product as any).brand ?? '')}
                           onChange={(e) => updateProduct(idx, 'brand', e.target.value)}
                           disabled={saving || productEditIndex !== idx}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                          className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
                         />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo (€)</label>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Prezzo (€)</label>
                         <input
                           type="number"
                           step="0.01"
@@ -1657,11 +1676,11 @@ export default function AdminClientPage() {
                             updateProduct(idx, 'priceEur', e.target.value === '' ? undefined : Number(e.target.value))
                           }
                           disabled={saving || productEditIndex !== idx}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-[#e67e22] outline-none text-[#e67e22] font-bold bg-white placeholder-zinc-400"
+                          className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none font-extrabold bg-black/30 text-zinc-100 placeholder-zinc-500 focus:ring-2 focus:ring-emerald-500/40"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo offerta (€)</label>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Prezzo offerta (€)</label>
                         <input
                           type="number"
                           step="0.01"
@@ -1670,49 +1689,49 @@ export default function AdminClientPage() {
                             updateProduct(idx, 'salePriceEur', e.target.value === '' ? undefined : Number(e.target.value))
                           }
                           disabled={saving || productEditIndex !== idx}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                          className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
                         />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo (testo)</label>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Prezzo (testo)</label>
                         <input
                           type="text"
                           value={String((product as any).price ?? '')}
                           onChange={(e) => updateProduct(idx, 'price', e.target.value === '' ? undefined : e.target.value)}
                           disabled={saving || productEditIndex !== idx}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                          className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prezzo offerta (testo)</label>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Prezzo offerta (testo)</label>
                         <input
                           type="text"
                           value={String((product as any).salePrice ?? '')}
                           onChange={(e) => updateProduct(idx, 'salePrice', e.target.value === '' ? undefined : e.target.value)}
                           disabled={saving || productEditIndex !== idx}
-                          className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                          className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Descrizione breve</label>
+                      <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Descrizione breve</label>
                       <input
                         type="text"
                         value={String((product as any).description ?? '')}
                         onChange={(e) => updateProduct(idx, 'description', e.target.value)}
                         disabled={saving || productEditIndex !== idx}
-                        className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                        className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Dettagli (testo)</label>
+                      <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Dettagli (testo)</label>
                       <textarea
                         value={String((product as any).fullDescription ?? '')}
                         onChange={(e) => updateProduct(idx, 'fullDescription', e.target.value === '' ? undefined : e.target.value)}
                         disabled={saving || productEditIndex !== idx}
-                        className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400 h-28"
+                        className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500 h-32"
                         placeholder="Dettagli completi del prodotto (materiali, componenti, note, utilizzo...)"
                       />
                     </div>
@@ -1736,12 +1755,12 @@ export default function AdminClientPage() {
                       return (
                         <div>
                           <div className="flex items-center justify-between">
-                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Dettagli tecnici</label>
+                            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Dettagli tecnici</label>
                             <button
                               type="button"
                               onClick={() => setExtensions([...extensions, { label: '', value: '' }])}
                               disabled={saving || productEditIndex !== idx}
-                              className="text-xs font-bold text-[#e67e22] hover:text-[#d35400] disabled:opacity-50"
+                              className="text-xs font-extrabold text-emerald-300 hover:text-emerald-200 disabled:opacity-50"
                             >
                               + Aggiungi
                             </button>
@@ -1759,7 +1778,7 @@ export default function AdminClientPage() {
                                     setExtensions(next)
                                   }}
                                   disabled={saving || productEditIndex !== idx}
-                                  className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                                  className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
                                 />
                                 <input
                                   type="text"
@@ -1771,7 +1790,7 @@ export default function AdminClientPage() {
                                     setExtensions(next)
                                   }}
                                   disabled={saving || productEditIndex !== idx}
-                                  className="w-full px-4 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900 placeholder-zinc-400"
+                                  className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
                                 />
                                 <button
                                   type="button"
@@ -1781,7 +1800,7 @@ export default function AdminClientPage() {
                                     setExtensions(next)
                                   }}
                                   disabled={saving || productEditIndex !== idx}
-                                  className="h-11 px-4 rounded-lg border border-zinc-200 bg-white text-red-600 font-bold disabled:opacity-50"
+                                  className="h-11 w-full md:w-auto px-4 rounded-2xl border border-red-500/30 bg-red-500/10 text-red-200 font-extrabold disabled:opacity-50"
                                 >
                                   Rimuovi
                                 </button>
@@ -1793,11 +1812,11 @@ export default function AdminClientPage() {
                       )
                     })()}
                     {String((product as any).category ?? '').startsWith('ebike_') && (
-                      <div className="rounded-xl border border-zinc-200 bg-white p-4 space-y-3">
-                        <div className="text-sm font-bold text-zinc-800">Dati e-bike</div>
+                      <div className="rounded-2xl border border-white/10 bg-black/20 p-4 space-y-3">
+                        <div className="text-sm font-extrabold text-zinc-100">Dati e-bike</div>
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Batteria (Wh)</label>
+                            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Batteria (Wh)</label>
                             <input
                               type="number"
                               value={String((product as any).ebike?.batteryWh ?? '')}
@@ -1808,11 +1827,11 @@ export default function AdminClientPage() {
                                 })
                               }
                               disabled={saving || productEditIndex !== idx}
-                              className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                              className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 disabled:opacity-50"
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Autonomia (km)</label>
+                            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Autonomia (km)</label>
                             <input
                               type="number"
                               value={String((product as any).ebike?.rangeKm ?? '')}
@@ -1823,11 +1842,11 @@ export default function AdminClientPage() {
                                 })
                               }
                               disabled={saving || productEditIndex !== idx}
-                              className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                              className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 disabled:opacity-50"
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Motore (W)</label>
+                            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Motore (W)</label>
                             <input
                               type="number"
                               value={String((product as any).ebike?.motorW ?? '')}
@@ -1838,11 +1857,11 @@ export default function AdminClientPage() {
                                 })
                               }
                               disabled={saving || productEditIndex !== idx}
-                              className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                              className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 disabled:opacity-50"
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Coppia (Nm)</label>
+                            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Coppia (Nm)</label>
                             <input
                               type="number"
                               value={String((product as any).ebike?.torqueNm ?? '')}
@@ -1853,11 +1872,11 @@ export default function AdminClientPage() {
                                 })
                               }
                               disabled={saving || productEditIndex !== idx}
-                              className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                              className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 disabled:opacity-50"
                             />
                           </div>
                           <div className="col-span-2">
-                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Tempo ricarica (h)</label>
+                            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Tempo ricarica (h)</label>
                             <input
                               type="number"
                               step="0.1"
@@ -1869,7 +1888,7 @@ export default function AdminClientPage() {
                                 })
                               }
                               disabled={saving || productEditIndex !== idx}
-                              className="w-full px-3 py-2 border border-zinc-200 rounded-lg outline-none bg-white text-zinc-900"
+                              className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 disabled:opacity-50"
                             />
                           </div>
                         </div>
@@ -1879,14 +1898,16 @@ export default function AdminClientPage() {
                     {productEditIndex === idx ? (
                       <>
                         {productEditMessage ? (
-                          <div className="rounded-xl px-4 py-3 text-sm font-semibold bg-red-100 text-red-800">{productEditMessage}</div>
+                          <div className="rounded-2xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-200">
+                            {productEditMessage}
+                          </div>
                         ) : null}
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                           <button
                             type="button"
                             onClick={saveEditProduct}
                             disabled={saving}
-                            className="h-10 px-4 rounded-lg bg-[#e67e22] text-white font-bold hover:bg-[#d35400] disabled:opacity-50"
+                            className="inline-flex w-full sm:w-auto items-center justify-center rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-extrabold text-zinc-950 hover:bg-emerald-400 disabled:opacity-50"
                           >
                             Salva modifica
                           </button>
@@ -1894,7 +1915,7 @@ export default function AdminClientPage() {
                             type="button"
                             onClick={cancelEditProduct}
                             disabled={saving}
-                            className="h-10 px-4 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 disabled:opacity-50"
+                            className="inline-flex w-full sm:w-auto items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-extrabold text-zinc-100 hover:bg-white/8 disabled:opacity-50"
                           >
                             Annulla
                           </button>
@@ -1907,6 +1928,24 @@ export default function AdminClientPage() {
             </div>
             {(!data.products || data.products.length === 0) && <p className="text-center text-zinc-400 py-8 italic">Nessun prodotto in catalogo</p>}
           </section>
+        </div>
+      </div>
+
+      <div className="sticky bottom-0 z-40 border-t border-white/10 bg-zinc-950/85 backdrop-blur">
+        <div className="mx-auto w-full max-w-5xl px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="flex-1 inline-flex items-center justify-center rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-extrabold text-zinc-950 hover:bg-emerald-400 disabled:opacity-50"
+            >
+              {saving ? 'Salvataggio...' : 'Salva modifiche'}
+            </button>
+          </div>
+          <div className="mt-2 text-[11px] text-zinc-500">
+            {saving ? 'Salvataggio in corso…' : 'Le modifiche vengono applicate a promozioni e prodotti.'}
+          </div>
         </div>
       </div>
     </div>

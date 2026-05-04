@@ -179,6 +179,17 @@ export function ImageUploader({
     })
   }
 
+  const clearAll = async () => {
+    const snapshot = [...items]
+    setItems([])
+    const uploaded = snapshot.map((x) => x.uploaded?.public_id).filter(Boolean) as string[]
+    await Promise.all(
+      uploaded.map((id) =>
+        fetch(`${apiBase}/api/promotions/image/${encodeURIComponent(id)}`, { method: 'DELETE' }).catch(() => {})
+      )
+    )
+  }
+
   const hasUploading = useMemo(() => items.some((x) => x.status === 'pending' || x.status === 'uploading'), [items])
 
   return (
@@ -212,11 +223,12 @@ export function ImageUploader({
             addLocalFiles(files)
           }
         }}
-        className="rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 px-4 py-4"
+        className="rounded-2xl border border-dashed border-white/10 bg-zinc-950/40 px-4 py-4"
       >
-        <div className="flex flex-col md:flex-row md:items-center gap-3 justify-between">
-          <div className="text-sm font-semibold text-zinc-700">Trascina, seleziona o incolla immagini</div>
-          <label className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-white border border-zinc-200 text-zinc-800 font-bold hover:bg-zinc-50 cursor-pointer">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-sm font-semibold text-zinc-200">Trascina, seleziona o incolla immagini</div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <label className="inline-flex w-full sm:w-auto items-center justify-center px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-zinc-100 font-bold hover:bg-white/8 cursor-pointer">
             Seleziona file
             <input
               type="file"
@@ -230,26 +242,49 @@ export function ImageUploader({
                 if (list.length > 0) addLocalFiles(list)
               }}
             />
-          </label>
+            </label>
+            {items.length > 0 && (
+              <button
+                type="button"
+                onClick={clearAll}
+                disabled={disabled || hasUploading}
+                className="inline-flex w-full sm:w-auto items-center justify-center px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-red-200 font-bold hover:bg-red-500/15 disabled:opacity-50"
+              >
+                Elimina
+              </button>
+            )}
+          </div>
         </div>
-        <div className="mt-2 text-xs text-zinc-500">CTRL+V per incollare direttamente qui.</div>
+        <div className="mt-2 flex flex-col gap-1">
+          <div className="text-xs text-zinc-400">CTRL+V per incollare direttamente qui.</div>
+          <div className="text-xs text-zinc-500 min-w-0">
+            {items.length === 0 ? (
+              <span>Nessun file selezionato.</span>
+            ) : (
+              <span className="inline-flex min-w-0 gap-2">
+                <span className="shrink-0">{items.length} file</span>
+                <span className="min-w-0 truncate">Ultimo: {items[items.length - 1]?.fileName}</span>
+              </span>
+            )}
+          </div>
+        </div>
       </div>
 
       {items.length > 0 && (
-        <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {items.map((img, idx) => (
-            <div key={img.id} className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-              <div className="relative aspect-square bg-zinc-100">
+            <div key={img.id} className="rounded-2xl border border-white/10 bg-zinc-950/40 overflow-hidden">
+              <div className="relative aspect-square bg-zinc-900/60">
                 {img.previewUrl ? (
                   <img src={img.previewUrl} alt={img.fileName} className="absolute inset-0 h-full w-full object-cover" />
                 ) : (
-                  <div className="absolute inset-0 grid place-items-center text-xs text-zinc-500">Nessuna preview</div>
+                  <div className="absolute inset-0 grid place-items-center text-xs text-zinc-400">Nessuna preview</div>
                 )}
-                <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-black/65 text-white text-xs font-bold">{idx + 1}</div>
+                <div className="absolute top-2 left-2 px-2 py-1 rounded-xl bg-black/65 text-white text-xs font-bold">{idx + 1}</div>
               </div>
               <div className="p-2">
-                <div className="text-[11px] font-semibold text-zinc-700 truncate">{img.fileName}</div>
-                <div className="mt-1 text-[11px] text-zinc-500">
+                <div className="min-w-0 text-[11px] font-semibold text-zinc-100 truncate">{img.fileName}</div>
+                <div className="mt-1 text-[11px] text-zinc-400">
                   {img.status === 'uploading'
                     ? 'Upload...'
                     : img.status === 'uploaded'
@@ -258,13 +293,13 @@ export function ImageUploader({
                         ? img.error || 'Errore'
                         : 'In attesa'}
                 </div>
-                <div className="mt-2 flex items-center justify-between gap-1">
+                <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
                       onClick={() => moveImage(img.id, -1)}
                       disabled={disabled || hasUploading || idx === 0}
-                      className="h-8 w-8 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
+                      className="h-9 w-9 rounded-xl border border-white/10 bg-white/5 text-zinc-100 disabled:opacity-40"
                       title="Sposta su"
                     >
                       ↑
@@ -273,7 +308,7 @@ export function ImageUploader({
                       type="button"
                       onClick={() => moveImage(img.id, 1)}
                       disabled={disabled || hasUploading || idx === items.length - 1}
-                      className="h-8 w-8 rounded-lg border border-zinc-200 bg-white text-zinc-700 disabled:opacity-40"
+                      className="h-9 w-9 rounded-xl border border-white/10 bg-white/5 text-zinc-100 disabled:opacity-40"
                       title="Sposta giù"
                     >
                       ↓
@@ -283,7 +318,7 @@ export function ImageUploader({
                     type="button"
                     onClick={() => removeImage(img.id)}
                     disabled={disabled || hasUploading}
-                    className="h-8 px-3 rounded-lg border border-zinc-200 bg-white text-red-600 font-bold disabled:opacity-50"
+                    className="h-9 w-full sm:w-auto px-3 rounded-xl border border-red-500/30 bg-red-500/10 text-red-200 font-bold disabled:opacity-50"
                   >
                     Elimina
                   </button>
