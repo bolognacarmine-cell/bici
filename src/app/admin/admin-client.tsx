@@ -109,6 +109,102 @@ export default function AdminClientPage() {
     return Math.round(n * 100) / 100
   }
 
+  const parseMoneyFlexible = (input: string) => {
+    const raw = String(input || '').trim()
+    if (!raw) return null
+    const cleaned = raw.replace(/\s+/g, '').replace(/[€]/g, '').replace(/eur/gi, '')
+    if (cleaned.includes('-')) return null
+    const only = cleaned.replace(/[^\d.,]/g, '')
+    if (!only) return null
+
+    const lastComma = only.lastIndexOf(',')
+    const lastDot = only.lastIndexOf('.')
+
+    let normalized = only
+
+    if (lastComma !== -1 && lastDot !== -1) {
+      const decSep = lastComma > lastDot ? ',' : '.'
+      const thouSep = decSep === ',' ? '.' : ','
+      normalized = normalized.replaceAll(thouSep, '')
+      normalized = normalized.replace(decSep, '.')
+    } else if (lastComma !== -1) {
+      const parts = normalized.split(',')
+      if (parts.length > 2) {
+        normalized = parts.join('')
+      } else {
+        const decimals = parts[1] ?? ''
+        normalized = decimals.length >= 1 && decimals.length <= 2 ? parts[0] + '.' + decimals : parts.join('')
+      }
+    } else if (lastDot !== -1) {
+      const parts = normalized.split('.')
+      if (parts.length > 2) {
+        normalized = parts.join('')
+      } else {
+        const decimals = parts[1] ?? ''
+        normalized = decimals.length >= 1 && decimals.length <= 2 ? parts[0] + '.' + decimals : parts.join('')
+      }
+    }
+
+    const n = Number.parseFloat(normalized)
+    if (!Number.isFinite(n)) return null
+    return Math.round(n * 100) / 100
+  }
+
+  const formatPercent = (value: number) => {
+    const v = Math.round(value * 100) / 100
+    return `${v.toLocaleString('it-IT', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}%`
+  }
+
+  const getOfferPreview = (originalEur: number | null, rawInput: string) => {
+    const raw = String(rawInput || '').trim()
+    if (!raw) {
+      return {
+        mode: null as null | 'percent' | 'eur',
+        originalEur,
+        discountPercent: null as number | null,
+        finalOfferEur: null as number | null,
+        savingsEur: null as number | null,
+        error: '',
+      }
+    }
+
+    const lower = raw.toLowerCase()
+    const hasPercent = raw.includes('%')
+    const hasEuro = raw.includes('€') || lower.includes('eur')
+
+    const numeric = parseMoneyFlexible(raw)
+    if (numeric === null) {
+      return { mode: null, originalEur, discountPercent: null, finalOfferEur: null, savingsEur: null, error: 'Valore non valido.' }
+    }
+
+    const mode: 'percent' | 'eur' = hasPercent ? 'percent' : hasEuro ? 'eur' : numeric <= 100 ? 'percent' : 'eur'
+
+    if (mode === 'percent') {
+      if (originalEur === null) {
+        return { mode, originalEur, discountPercent: null, finalOfferEur: null, savingsEur: null, error: 'Inserisci il prezzo base per calcolare la percentuale.' }
+      }
+      if (!(numeric > 0 && numeric < 100)) {
+        return { mode, originalEur, discountPercent: null, finalOfferEur: null, savingsEur: null, error: 'La percentuale deve essere tra 1 e 99.' }
+      }
+      const finalOfferEur = Math.round(originalEur * (1 - numeric / 100) * 100) / 100
+      const savingsEur = Math.round((originalEur - finalOfferEur) * 100) / 100
+      if (!(finalOfferEur > 0)) {
+        return { mode, originalEur, discountPercent: null, finalOfferEur: null, savingsEur: null, error: 'Prezzo offerta non valido.' }
+      }
+      return { mode, originalEur, discountPercent: numeric, finalOfferEur, savingsEur, error: '' }
+    }
+
+    if (!(numeric > 0)) {
+      return { mode, originalEur, discountPercent: null, finalOfferEur: null, savingsEur: null, error: 'Il prezzo offerta deve essere maggiore di 0.' }
+    }
+    if (typeof originalEur === 'number' && numeric >= originalEur) {
+      return { mode, originalEur, discountPercent: null, finalOfferEur: null, savingsEur: null, error: 'Il prezzo offerta deve essere inferiore al prezzo base.' }
+    }
+    const discountPercent = typeof originalEur === 'number' ? Math.round(((1 - numeric / originalEur) * 100) * 100) / 100 : null
+    const savingsEur = typeof originalEur === 'number' ? Math.round((originalEur - numeric) * 100) / 100 : null
+    return { mode, originalEur, discountPercent, finalOfferEur: numeric, savingsEur, error: '' }
+  }
+
   const persistSiteData = async (nextData: unknown) => {
     const res = await fetch('/api/site-data', {
       method: 'PUT',
@@ -491,21 +587,22 @@ export default function AdminClientPage() {
     }
 
     const priceRaw = promoEditPriceInput.trim()
-    const priceEur = priceRaw ? parsePriceEur(priceRaw) : null
+    const priceEur = priceRaw ? parseMoneyFlexible(priceRaw) : null
     if (priceRaw && priceEur === null) {
       setPromoEditMessage('Prezzo non valido.')
       return
     }
 
     const offerPriceRaw = promoEditOfferPriceInput.trim()
-    const offerPriceEur = offerPriceRaw ? parsePriceEur(offerPriceRaw) : null
+    const offerPreview = getOfferPreview(typeof priceEur === 'number' ? priceEur : null, offerPriceRaw)
+    const offerPriceEur = offerPriceRaw ? offerPreview.finalOfferEur : null
     if (promoEditOfferActive) {
       if (!offerPriceRaw || offerPriceEur === null) {
         setPromoEditMessage('Se l’offerta è attiva, il prezzo offerta è obbligatorio.')
         return
       }
-      if (typeof priceEur === 'number' && typeof offerPriceEur === 'number' && offerPriceEur >= priceEur) {
-        setPromoEditMessage('Il prezzo offerta deve essere inferiore al prezzo base.')
+      if (offerPreview.error) {
+        setPromoEditMessage(offerPreview.error)
         return
       }
     }
@@ -1186,11 +1283,63 @@ export default function AdminClientPage() {
                                           <input
                                             value={promoEditOfferPriceInput}
                                             onChange={(e) => setPromoEditOfferPriceInput(e.target.value)}
+                                            onBlur={() => {
+                                              const original = promoEditPriceInput.trim() ? parseMoneyFlexible(promoEditPriceInput) : null
+                                              const preview = getOfferPreview(typeof original === 'number' ? original : null, promoEditOfferPriceInput)
+                                              if (preview.error || preview.mode === null) return
+                                              if (preview.mode === 'percent' && typeof preview.discountPercent === 'number') {
+                                                setPromoEditOfferPriceInput(formatPercent(preview.discountPercent))
+                                                return
+                                              }
+                                              if (preview.mode === 'eur' && typeof preview.finalOfferEur === 'number') {
+                                                setPromoEditOfferPriceInput(euro.format(preview.finalOfferEur))
+                                              }
+                                            }}
                                             disabled={!promoEditOfferActive}
                                             className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 disabled:opacity-50"
-                                            placeholder="Es. 9900,00 €"
+                                            placeholder="Es. 15% oppure 9900,00 €"
                                             inputMode="decimal"
                                           />
+                                          {(() => {
+                                            if (!promoEditOfferActive) return null
+                                            const original = promoEditPriceInput.trim() ? parseMoneyFlexible(promoEditPriceInput) : null
+                                            const preview = getOfferPreview(typeof original === 'number' ? original : null, promoEditOfferPriceInput)
+                                            if (!promoEditOfferPriceInput.trim()) return null
+                                            return (
+                                              <div className="mt-2 rounded-2xl border border-white/10 bg-black/20 px-3 py-2 text-xs">
+                                                {preview.error ? (
+                                                  <div className="font-semibold text-red-200">{preview.error}</div>
+                                                ) : (
+                                                  <div className="space-y-1 text-zinc-300">
+                                                    <div className="flex items-center justify-between gap-2">
+                                                      <div className="text-zinc-400">Prezzo base</div>
+                                                      <div className="font-semibold text-zinc-100">
+                                                        {typeof preview.originalEur === 'number' ? euro.format(preview.originalEur) : '—'}
+                                                      </div>
+                                                    </div>
+                                                    <div className="flex items-center justify-between gap-2">
+                                                      <div className="text-zinc-400">Sconto</div>
+                                                      <div className="font-semibold text-zinc-100">
+                                                        {typeof preview.discountPercent === 'number' ? formatPercent(preview.discountPercent) : '—'}
+                                                      </div>
+                                                    </div>
+                                                    <div className="flex items-center justify-between gap-2">
+                                                      <div className="text-zinc-400">Prezzo offerta</div>
+                                                      <div className="font-semibold text-zinc-100">
+                                                        {typeof preview.finalOfferEur === 'number' ? euro.format(preview.finalOfferEur) : '—'}
+                                                      </div>
+                                                    </div>
+                                                    <div className="flex items-center justify-between gap-2">
+                                                      <div className="text-zinc-400">Risparmi</div>
+                                                      <div className="font-semibold text-zinc-100">
+                                                        {typeof preview.savingsEur === 'number' ? euro.format(preview.savingsEur) : '—'}
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                )}
+                                              </div>
+                                            )
+                                          })()}
                                         </div>
 
                                         <div>
