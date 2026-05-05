@@ -1098,7 +1098,7 @@ export function VoltbikeLanding() {
                     inputMode="email"
                     autoComplete="email"
                   />
-                  <button className="tap-target h-12 px-5 rounded-2xl btn-primary font-bold whitespace-nowrap">
+                  <button className="tap-target h-12 px-5 rounded-2xl inline-flex items-center justify-center bg-[#A3FF00] text-black shadow-lg active:scale-95 transition-all duration-300 font-bold whitespace-nowrap">
                     Iscriviti
                   </button>
                 </div>
