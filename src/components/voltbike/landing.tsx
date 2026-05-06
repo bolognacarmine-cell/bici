@@ -16,6 +16,8 @@ import {
   Home,
   ShoppingBag,
   MapPinned,
+  PhoneCall,
+  MessageCircle,
 } from 'lucide-react'
 
 import { Navbar } from '@/components/navbar'
@@ -26,6 +28,7 @@ import { MediaCarousel } from '@/components/media-carousel'
 import initialData from '@/data.json'
 import { SiteDataSchema } from '@/lib/site-data-schema'
 import { toHostedAssetUrl } from '@/lib/asset-url'
+import { CONTACT_PHONE_DISPLAY, CONTACT_TEL_HREF, CONTACT_WHATSAPP_HREF } from '@/lib/contact'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -272,14 +275,21 @@ export function VoltbikeLanding() {
                 </p>
 
                 <div className="hero-cta mt-10 flex flex-col sm:flex-row gap-4">
-                  <MagneticButton href="#riparazioni" className="btn-primary px-7 py-4 font-bold">
-                    Scopri le riparazioni
+                  <a href={CONTACT_TEL_HREF} className="tap-target btn-primary px-7 py-4 font-bold inline-flex items-center justify-center gap-2">
+                    <PhoneCall className="w-5 h-5" />
+                    Chiama ora
                     <ArrowRight className="w-5 h-5" />
-                  </MagneticButton>
-                  <MagneticButton href="#contatti" className="btn-secondary px-7 py-4 font-bold border border-white/12">
-                    Dove siamo
-                    <MapPinned className="w-5 h-5" />
-                  </MagneticButton>
+                  </a>
+                  <a
+                    href={CONTACT_WHATSAPP_HREF}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="tap-target btn-secondary px-7 py-4 font-bold border border-white/12 inline-flex items-center justify-center gap-2"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                    Scrivi su WhatsApp
+                    <ArrowRight className="w-5 h-5" />
+                  </a>
                 </div>
 
                 <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl">
@@ -330,7 +340,7 @@ export function VoltbikeLanding() {
                       Accessori
                     </div>
                     <div className="mt-2 text-white text-2xl font-extrabold">In negozio</div>
-                    <div className="text-white/55 text-xs mt-1">Ricambi · gadget · ordini</div>
+                    <div className="text-white/55 text-xs mt-1">Ricambi · accessori · su richiesta</div>
                   </div>
                   <div className="rounded-2xl bg-white/4 border border-white/10 p-4">
                     <div className="flex items-center gap-2 text-white/85 font-semibold">
@@ -480,10 +490,15 @@ export function VoltbikeLanding() {
                       </div>
                     )}
                     <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                      <MagneticButton href="#contatti" className="btn-primary px-6 py-4 font-bold flex-1">
-                        Richiedi info
+                      <a
+                        href={CONTACT_WHATSAPP_HREF}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="tap-target btn-primary px-6 py-4 font-bold flex-1 inline-flex items-center justify-center gap-2"
+                      >
+                        Scrivi su WhatsApp
                         <ArrowRight className="w-5 h-5" />
-                      </MagneticButton>
+                      </a>
                       <MagneticButton href="#riparazioni" className="btn-secondary px-6 py-4 font-bold border border-white/12">
                         Riparazioni
                         <Play className="w-5 h-5" />
@@ -631,10 +646,15 @@ export function VoltbikeLanding() {
                           </MagneticButton>
                         )
                       })()}
-                      <MagneticButton href="#contatti" className="btn-secondary w-full px-5 py-4 font-bold border border-white/12">
-                        Richiedi disponibilità
+                      <a
+                        href={CONTACT_WHATSAPP_HREF}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="tap-target btn-secondary w-full px-5 py-4 font-bold border border-white/12 inline-flex items-center justify-center gap-2"
+                      >
+                        Contattaci per disponibilità
                         <ArrowRight className="w-5 h-5" />
-                      </MagneticButton>
+                      </a>
                     </div>
                   </div>
                 </motion.div>
@@ -785,7 +805,7 @@ export function VoltbikeLanding() {
                     { icon: <Wrench className="w-4 h-4 text-[rgb(163,255,0)]" />, title: 'Riparazioni', desc: 'Freni · cambio · ruote · forature.' },
                     { icon: <Check className="w-4 h-4 text-[rgb(0,245,255)]" />, title: 'Manutenzione', desc: 'Check-up · regolazioni · sicurezza.' },
                     { icon: <Home className="w-4 h-4 text-white/70" />, title: 'A domicilio', desc: 'Interventi su richiesta.' },
-                    { icon: <ShoppingBag className="w-4 h-4 text-white/70" />, title: 'Accessori e ricambi', desc: 'Vendita · gadget · ordini specifici.' },
+                    { icon: <ShoppingBag className="w-4 h-4 text-white/70" />, title: 'Accessori e ricambi', desc: 'Disponibilità e dettagli su richiesta.' },
                   ].map((f) => (
                     <div key={f.title} className="rounded-2xl bg-white/4 border border-white/10 p-4">
                       <div className="flex items-center gap-2 text-white/90 font-semibold">
@@ -993,7 +1013,7 @@ export function VoltbikeLanding() {
                   {
                     icon: <ShoppingBag className="w-4 h-4 text-white/80" />,
                     title: 'Accessori e ricambi',
-                    desc: 'Vendita gadget e possibilità di ordinare ricambistica specifica.',
+                    desc: 'Ricambi e accessori su richiesta, con compatibilità verificata.',
                   },
                 ].map((c) => (
                   <div key={c.title} className="rounded-2xl bg-white/4 border border-white/10 p-6">
@@ -1008,20 +1028,31 @@ export function VoltbikeLanding() {
 
               <div className="mt-8 flex flex-col sm:flex-row gap-3">
                 <a
-                  href={mapsHref}
-                  target="_blank"
-                  rel="noreferrer"
+                  href={CONTACT_TEL_HREF}
                   className="btn-primary px-7 py-4 font-bold rounded-2xl inline-flex items-center justify-center gap-2"
                 >
-                  Apri in Maps
+                  <PhoneCall className="w-5 h-5" />
+                  Chiama ora
                   <ArrowRight className="w-5 h-5" />
                 </a>
                 <a
-                  href={`mailto:${(data as any).footer.email}`}
+                  href={CONTACT_WHATSAPP_HREF}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="btn-secondary px-7 py-4 font-bold rounded-2xl inline-flex items-center justify-center gap-2 border border-white/12"
                 >
-                  Scrivici
+                  <MessageCircle className="w-5 h-5" />
+                  Scrivi su WhatsApp
                   <ArrowRight className="w-5 h-5" />
+                </a>
+                <a
+                  href={mapsHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-secondary px-7 py-4 font-bold rounded-2xl inline-flex items-center justify-center gap-2 border border-white/12"
+                >
+                  Apri in Maps
+                  <MapPinned className="w-5 h-5" />
                 </a>
               </div>
             </div>
@@ -1041,7 +1072,15 @@ export function VoltbikeLanding() {
                   </div>
                   <div className="mt-3 flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between text-white/80 text-sm font-semibold">
                     <div>Telefono</div>
-                    <div className="text-white break-words">{(data as any).footer.phone}</div>
+                    <a href={CONTACT_TEL_HREF} className="text-white break-words hover:underline">
+                      {CONTACT_PHONE_DISPLAY}
+                    </a>
+                  </div>
+                  <div className="mt-3 flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between text-white/80 text-sm font-semibold">
+                    <div>WhatsApp</div>
+                    <a href={CONTACT_WHATSAPP_HREF} target="_blank" rel="noopener noreferrer" className="text-white break-words hover:underline">
+                      Scrivi su WhatsApp
+                    </a>
                   </div>
                 </div>
               </div>
@@ -1083,7 +1122,12 @@ export function VoltbikeLanding() {
                 <div className="text-white font-bold">Contatti</div>
                 <div className="mt-4 flex flex-col gap-2 text-white/65 font-semibold">
                   <div>{(data as any).footer.address}</div>
-                  <div>{(data as any).footer.phone}</div>
+                  <a href={CONTACT_TEL_HREF} className="hover:text-white transition-colors">
+                    {CONTACT_PHONE_DISPLAY}
+                  </a>
+                  <a href={CONTACT_WHATSAPP_HREF} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                    Scrivi su WhatsApp
+                  </a>
                   <div>{(data as any).footer.email}</div>
                 </div>
               </div>

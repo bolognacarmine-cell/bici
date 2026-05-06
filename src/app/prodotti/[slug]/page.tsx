@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { ProductCarousel } from './product-carousel'
 import { readSiteData } from '@/lib/site-data'
 import type { Product } from '@/lib/site-data-schema'
+import { CONTACT_TEL_HREF, CONTACT_WHATSAPP_HREF } from '@/lib/contact'
 
 export const dynamic = 'force-dynamic'
 
@@ -318,7 +319,7 @@ export default async function ProdottoPage({ params }: { params: Promise<{ slug:
               <div className="rounded-2xl bg-white/4 border border-white/10 p-5">
                 <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Disponibilità</div>
                 <div className="mt-3 text-white text-xl font-extrabold">{availabilityLabel(status)}</div>
-                <div className="mt-2 text-white/60 text-sm">{status === 'preorder' ? 'Ordinabile su richiesta.' : 'Verifica in officina.'}</div>
+                <div className="mt-2 text-white/60 text-sm">{status === 'preorder' ? 'Disponibile su richiesta.' : 'Verifica in officina.'}</div>
               </div>
             </div>
 
@@ -382,15 +383,17 @@ export default async function ProdottoPage({ params }: { params: Promise<{ slug:
             )}
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/#contatti"
-                className="tap-target btn-primary px-6 py-4 font-bold flex-1 text-center"
+              <a href={CONTACT_TEL_HREF} className="tap-target btn-primary px-6 py-4 font-bold flex-1 text-center">
+                Chiama ora
+              </a>
+              <a
+                href={CONTACT_WHATSAPP_HREF}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="tap-target btn-secondary px-6 py-4 font-bold border border-white/12 flex-1 text-center"
               >
-                Richiedi disponibilità
-              </Link>
-              <Link href="/#riparazioni" className="tap-target btn-secondary px-6 py-4 font-bold border border-white/12 flex-1 text-center">
-                Riparazioni
-              </Link>
+                Scrivi su WhatsApp
+              </a>
             </div>
           </section>
         </div>

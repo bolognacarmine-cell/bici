@@ -222,7 +222,7 @@
   "brand": {
     "name": "VincenzoBike",
     "headline": "VincenzoBike",
-    "subheadline": "Assistenza, manutenzione e riparazioni per bici muscolari, elettriche e a pedalata assistita. Interventi a domicilio su richiesta. In officina trovi pompa gratuita per il gonfiaggio e un angolo shop con accessori, ricambi e gadget, con possibilità di ordinare componenti specifici."
+    "subheadline": "Assistenza, manutenzione e riparazioni per bici muscolari, elettriche e a pedalata assistita. Interventi a domicilio su richiesta. In officina trovi pompa gratuita per il gonfiaggio e un angolo accessori e ricambi: disponibilità e dettagli via telefono o WhatsApp."
   },
   "kpis": [
     {
@@ -277,13 +277,13 @@
     },
     {
       "id": "ricambi",
-      "category": "Shop",
+      "category": "Accessori",
       "title": "Accessori e ricambi",
-      "desc": "Vendita accessori, ricambi e gadget. Possibilità di ordinare ricambistica specifica per ogni necessità.",
+      "desc": "Accessori e ricambi in officina, con disponibilità e compatibilità da verificare su richiesta.",
       "bullets": [
         "Accessori",
         "Ricambi",
-        "Ordini"
+        "Su richiesta"
       ],
       "image": "/2.jpg?v=1"
     }
@@ -345,7 +345,7 @@
     },
     {
       "title": "Accessori e ricambi",
-      "desc": "Vendita accessori, ricambi e gadget, con possibilità di ordinare ricambistica specifica."
+      "desc": "Accessori e ricambi in officina e su richiesta: disponibilità e compatibilità da verificare via telefono o WhatsApp."
     }
   ],
   "technology": [
@@ -360,8 +360,8 @@
       "image": "/4.jpg?v=1"
     },
     {
-      "title": "Ricambi su ordinazione",
-      "desc": "Possibilità di ordinare ricambistica specifica per ogni necessità, oltre ad accessori e gadget.",
+      "title": "Ricambi su richiesta",
+      "desc": "Ricambistica specifica e accessori: disponibilità e compatibilità da verificare su richiesta.",
       "image": "/5.jpg?v=1"
     }
   ],
@@ -435,7 +435,7 @@
   },
   "footer": {
     "email": "info@vincenzobike.example",
-    "phone": "+39 000 000 0000",
+    "phone": "333 169 0636",
     "address": "Via Novelli, 51, Marcianise (CE) 81025, Italia",
     "social": [
       {

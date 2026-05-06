@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
-import { Bike, Menu, X, ArrowRight } from 'lucide-react'
+import { Bike, Menu, X, ArrowRight, PhoneCall, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
+import { CONTACT_PHONE_DISPLAY, CONTACT_TEL_HREF, CONTACT_WHATSAPP_HREF } from '@/lib/contact'
 
 export const Navbar = () => {
   const [mounted, setMounted] = useState(false)
@@ -25,7 +26,7 @@ export const Navbar = () => {
 
   const items = [
     { label: 'Promo', id: 'promozioni' },
-    { label: 'Shop', id: 'prodotti' },
+    { label: 'Catalogo', id: 'prodotti' },
     { label: 'Riparazioni', id: 'riparazioni' },
     { label: 'Perché', id: 'perche' },
     { label: 'Gallery', id: 'gallery' },
@@ -80,13 +81,23 @@ export const Navbar = () => {
           ))}
           
           <div className="flex items-center gap-3 ml-6">
-            <Link
-              href="#contatti"
+            <a
+              href={CONTACT_TEL_HREF}
               className="tap-target px-5 py-3 rounded-2xl btn-primary font-bold text-sm flex items-center gap-2 hover:shadow-[0_0_40px_rgba(0,245,255,0.20)] transition-shadow"
             >
-              Contattaci
+              <PhoneCall className="w-4 h-4" />
+              Chiama <span className="hidden lg:inline">{CONTACT_PHONE_DISPLAY}</span>
+            </a>
+            <a
+              href={CONTACT_WHATSAPP_HREF}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="tap-target px-5 py-3 rounded-2xl btn-secondary font-bold text-sm flex items-center gap-2 border border-white/12"
+            >
+              <MessageCircle className="w-4 h-4" />
+              WhatsApp
               <ArrowRight className="w-4 h-4" />
-            </Link>
+            </a>
           </div>
         </div>
 

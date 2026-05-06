@@ -1,0 +1,4 @@
+export const CONTACT_PHONE_DISPLAY = '333 169 0636'
+export const CONTACT_TEL_HREF = 'tel:+393331690636'
+export const CONTACT_WHATSAPP_HREF = 'https://wa.me/393331690636'
+
