@@ -541,7 +541,10 @@ export function VoltbikeLanding() {
                   className="group glass border border-white/12 rounded-[28px] p-6 hover:border-white/20 transition-colors"
                 >
                   <Link
-                    href={`/prodotti/${encodeURIComponent(String(p?.slug || p?.sku || ''))}`}
+                    href={(() => {
+                      const key = String((p as any)?.slug || (p as any)?.sku || '').trim()
+                      return key ? `/prodotti/${encodeURIComponent(key)}` : '#contatti'
+                    })()}
                     className="block relative aspect-square rounded-2xl overflow-hidden bg-white/3 border border-white/10"
                     aria-label={`Apri dettagli: ${String(p?.name || 'Prodotto')}`}
                   >
@@ -557,7 +560,10 @@ export function VoltbikeLanding() {
                   </Link>
                   <div className="mt-5 flex items-start justify-between gap-3">
                     <Link
-                      href={`/prodotti/${encodeURIComponent(String(p?.slug || p?.sku || ''))}`}
+                      href={(() => {
+                        const key = String((p as any)?.slug || (p as any)?.sku || '').trim()
+                        return key ? `/prodotti/${encodeURIComponent(key)}` : '#contatti'
+                      })()}
                       className="text-white font-extrabold tracking-tight hover:underline"
                     >
                       {p.name || 'Prodotto'}
@@ -1066,10 +1072,16 @@ export function VoltbikeLanding() {
                 </div>
 
                 <div className="mt-8 rounded-2xl bg-white/4 border border-white/10 p-6">
-                  <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between text-white/80 text-sm font-semibold">
-                    <div>Email</div>
-                    <div className="text-white break-words">{(data as any).footer.email}</div>
-                  </div>
+                  {(() => {
+                    const email = String((data as any).footer.email ?? '').trim()
+                    if (!email || email.includes('.example')) return null
+                    return (
+                      <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between text-white/80 text-sm font-semibold">
+                        <div>Email</div>
+                        <div className="text-white break-words">{email}</div>
+                      </div>
+                    )
+                  })()}
                   <div className="mt-3 flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between text-white/80 text-sm font-semibold">
                     <div>Telefono</div>
                     <a href={CONTACT_TEL_HREF} className="text-white break-words hover:underline">
@@ -1128,7 +1140,11 @@ export function VoltbikeLanding() {
                   <a href={CONTACT_WHATSAPP_HREF} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                     Scrivi su WhatsApp
                   </a>
-                  <div>{(data as any).footer.email}</div>
+                  {(() => {
+                    const email = String((data as any).footer.email ?? '').trim()
+                    if (!email || email.includes('.example')) return null
+                    return <div>{email}</div>
+                  })()}
                 </div>
               </div>
               <div>

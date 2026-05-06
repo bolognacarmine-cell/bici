@@ -65,6 +65,11 @@ body {
   background: rgba(0, 245, 255, 0.22);
 }
 
+:focus-visible {
+  outline: 2px solid rgba(0, 245, 255, 0.85);
+  outline-offset: 3px;
+}
+
 /* Optimization for mobile scrolling */
 .smooth-scroll {
   -webkit-overflow-scrolling: touch;

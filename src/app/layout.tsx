@@ -17,29 +17,33 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://vincenzobike.example"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://vincenzobike.it"),
   title: {
-    default: "VincenzoBike — Officina biciclette a Marcianise",
+    default: "VincenzoBike — Officina bici a Marcianise (CE)",
     template: "%s — VincenzoBike",
   },
   description:
-    "Officina per manutenzione e riparazioni bici muscolari, elettriche e a pedalata assistita. Su richiesta, riparazioni a domicilio. Pompa gratuita e vendita accessori e ricambi.",
+    "Officina bici a Marcianise (CE): manutenzione e riparazioni per bici muscolari ed e-bike. Disponibilità e dettagli via telefono o WhatsApp. Ritiro in sede e interventi su richiesta.",
   applicationName: "VincenzoBike",
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "VincenzoBike" },
   formatDetection: { telephone: false },
+  icons: {
+    icon: [{ url: "/logo-vincenzobike.png" }],
+    apple: [{ url: "/logo-vincenzobike.png" }],
+  },
   openGraph: {
     type: "website",
-    title: "VincenzoBike — Officina biciclette a Marcianise",
+    title: "VincenzoBike — Officina bici a Marcianise (CE)",
     description:
-      "Manutenzione e riparazioni per bici muscolari, elettriche e a pedalata assistita. Su richiesta, riparazioni a domicilio.",
+      "Officina bici a Marcianise (CE): manutenzione e riparazioni per bici muscolari ed e-bike. Contatto diretto via telefono o WhatsApp.",
     siteName: "VincenzoBike",
     images: [{ url: "/bici1.jpg", width: 1600, height: 900, alt: "Officina biciclette" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "VincenzoBike — Officina biciclette a Marcianise",
+    title: "VincenzoBike — Officina bici a Marcianise (CE)",
     description:
-      "Manutenzione e riparazioni per bici muscolari, elettriche e a pedalata assistita. Su richiesta, riparazioni a domicilio.",
+      "Officina bici a Marcianise (CE): manutenzione e riparazioni per bici muscolari ed e-bike. Contatto diretto via telefono o WhatsApp.",
     images: ["/bici1.jpg"],
   },
   manifest: "/manifest.json",

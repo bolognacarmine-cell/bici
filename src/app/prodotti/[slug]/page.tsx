@@ -50,7 +50,7 @@ function availabilitySchema(status: string) {
 }
 
 function getSiteUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL || 'https://vincenzobike.example'
+  return process.env.NEXT_PUBLIC_SITE_URL || 'https://vincenzobike.it'
 }
 
 function toAbsoluteUrl(input: string) {
