@@ -22,6 +22,15 @@ export const Navbar = () => {
     return () => clearTimeout(id)
   }, [])
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [mobileMenuOpen])
+
   if (!mounted) return null
 
   const items = [
@@ -113,30 +122,45 @@ export const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu (Overlay) */}
-      {mobileMenuOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute top-full left-0 right-0 p-6 md:hidden glass-dark border-b border-white/10"
-        >
-          <div className="flex flex-col gap-3">
-            {items.map((item) => (
-              <Link
-                key={item.id}
-                href={`#${item.id}`}
-                onClick={() => {
-                  setMobileMenuOpen(false)
-                  if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10)
-                }}
-                className="tap-target w-full px-4 py-4 rounded-2xl bg-white/3 border border-white/10 text-lg font-bold text-white/90 active:bg-white/8 transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <motion.div
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.18 }}
+              className="absolute left-0 right-0 top-[calc(88px+env(safe-area-inset-top))] p-6 glass-dark border-b border-white/10 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-label="Menu"
+            >
+              <div className="flex flex-col gap-3 max-h-[calc(100dvh-140px)] overflow-auto">
+                {items.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`#${item.id}`}
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10)
+                    }}
+                    className="tap-target w-full px-4 py-4 rounded-2xl bg-white/6 border border-white/12 text-lg font-bold text-white active:bg-white/10 transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {logoOpen && (

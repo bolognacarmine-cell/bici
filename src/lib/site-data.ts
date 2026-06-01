@@ -144,6 +144,8 @@ export async function readSiteData(): Promise<SiteData> {
     const seed = await readSiteDataFromFile()
     return {
       ...fromDb,
+      brand: (seed as any).brand ?? (fromDb as any).brand,
+      footer: (seed as any).footer ?? (fromDb as any).footer,
       services: (seed as any).services ?? (fromDb as any).services,
       technology: (seed as any).technology ?? (fromDb as any).technology,
       features: (seed as any).features ?? (fromDb as any).features,
