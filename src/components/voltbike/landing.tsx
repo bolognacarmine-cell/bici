@@ -774,7 +774,7 @@ export function VoltbikeLanding() {
             transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-4xl"
           >
-            <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Perché Cicomoto</div>
+            <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Perché Ciclomoto</div>
             <h2 className="mt-3 font-display font-extrabold tracking-tight text-4xl md:text-6xl">
               Cura che <span className="text-gradient">si sente</span>
             </h2>
@@ -963,7 +963,7 @@ export function VoltbikeLanding() {
                   <div className="mt-6 text-white/75 leading-relaxed text-lg">“{t.quote}”</div>
                     <div className="mt-8 flex items-center gap-2 text-white/55 text-sm font-semibold">
                     <Sparkles className="w-4 h-4 text-[rgb(163,255,0)]" />
-                      Verificato · Clienti Cicomoto
+                      Verificato · Clienti Ciclomoto
                   </div>
                 </div>
               ))}
@@ -993,7 +993,7 @@ export function VoltbikeLanding() {
 
           <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="lg:col-span-7 glass border border-white/12 rounded-[32px] p-8 md:p-10">
-              <div className="text-white font-bold">Cosa trovi da Cicomoto</div>
+              <div className="text-white font-bold">Cosa trovi da Ciclomoto</div>
               <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                   {
@@ -1104,7 +1104,7 @@ export function VoltbikeLanding() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
             <div className="md:col-span-5">
               <div className="font-display text-2xl font-extrabold tracking-tight text-white">
-                Cico<span className="text-gradient">moto</span>
+                Ciclo<span className="text-gradient">moto</span>
               </div>
               <div className="mt-3 text-white/60 max-w-md">
                 Assistenza, manutenzione e riparazioni per bici muscolari, elettriche e a pedalata assistita. Su richiesta,
@@ -1150,7 +1150,7 @@ export function VoltbikeLanding() {
               </div>
               <div>
                 <div className="text-white font-bold">Newsletter</div>
-                <div className="mt-4 text-white/60 text-sm">Novità e promozioni Cicomoto.</div>
+                <div className="mt-4 text-white/60 text-sm">Novità e promozioni Ciclomoto.</div>
                 <div className="mt-4 flex flex-col lg:flex-row gap-3">
                   <input
                     className="h-12 w-full min-w-0 rounded-2xl bg-white/4 border border-white/10 px-4 text-white placeholder:text-white/35 outline-none focus:border-white/20"
@@ -1168,7 +1168,7 @@ export function VoltbikeLanding() {
           </div>
 
           <div className="mt-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-white/45 text-xs">
-            <div>© {new Date().getFullYear()} Cicomoto. Tutti i diritti riservati.</div>
+            <div>© {new Date().getFullYear()} Ciclomoto. Tutti i diritti riservati.</div>
             <div className="flex items-center gap-4">
               {(data as any).footer.social.map((s: any) => (
                 <a key={s.label} href={s.href} className="hover:text-white/70 transition-colors">

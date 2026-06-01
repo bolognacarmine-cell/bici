@@ -19,13 +19,13 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://vincenzobike.it"),
   title: {
-    default: "Cicomoto — Officina bici a Marcianise (CE)",
-    template: "%s — Cicomoto",
+    default: "Ciclomoto — Officina bici a Marcianise (CE)",
+    template: "%s — Ciclomoto",
   },
   description:
     "Officina bici a Marcianise (CE): manutenzione e riparazioni per bici muscolari ed e-bike. Disponibilità e dettagli via telefono o WhatsApp. Ritiro in sede e interventi su richiesta.",
-  applicationName: "Cicomoto",
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Cicomoto" },
+  applicationName: "Ciclomoto",
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Ciclomoto" },
   formatDetection: { telephone: false },
   icons: {
     icon: [{ url: "/logo-vincenzobike.png" }],
@@ -33,15 +33,15 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    title: "Cicomoto — Officina bici a Marcianise (CE)",
+    title: "Ciclomoto — Officina bici a Marcianise (CE)",
     description:
       "Officina bici a Marcianise (CE): manutenzione e riparazioni per bici muscolari ed e-bike. Contatto diretto via telefono o WhatsApp.",
-    siteName: "Cicomoto",
+    siteName: "Ciclomoto",
     images: [{ url: "/bici1.jpg", width: 1600, height: 900, alt: "Officina biciclette" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cicomoto — Officina bici a Marcianise (CE)",
+    title: "Ciclomoto — Officina bici a Marcianise (CE)",
     description:
       "Officina bici a Marcianise (CE): manutenzione e riparazioni per bici muscolari ed e-bike. Contatto diretto via telefono o WhatsApp.",
     images: ["/bici1.jpg"],

@@ -64,7 +64,7 @@ export const Navbar = () => {
             )}
           </button>
           <Link href="/" className="font-display text-2xl font-bold tracking-tight">
-            Cico<span className="text-gradient">moto</span>
+            Ciclo<span className="text-gradient">moto</span>
           </Link>
         </div>
 
