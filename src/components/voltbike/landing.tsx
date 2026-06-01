@@ -389,8 +389,7 @@ export function VoltbikeLanding() {
             <p className="mt-4 text-white/70 leading-relaxed">
               La sua gioia era vedere le persone risalire in sella in sicurezza. A 19 anni era già il mastro e i ciclisti
               chiedevano di lui. Con Antonetta Iodice ha costruito una famiglia: Antonio, Domenico e Luigi. Oggi la
-              bottega di famiglia continua grazie ai figli: Antonio e Luigi portano avanti l’attività, mentre Domenico
-              vive a Firenze. Vincenzo resta qui, in ogni riparazione fatta bene e in ogni bici che riparte.
+              bottega di famiglia continua grazie ai figli:Antonio,Luigi e Domenico. Vincenzo resta qui, in ogni riparazione fatta bene e in ogni bici che riparte.
             </p>
           </motion.div>
         </div>
