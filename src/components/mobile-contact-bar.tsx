@@ -1,8 +1,8 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { PhoneCall, MessageCircle } from 'lucide-react'
-import { CONTACT_TEL_HREF, CONTACT_WHATSAPP_HREF } from '@/lib/contact'
+import { PhoneCall } from 'lucide-react'
+import { CONTACT_ANTONIO_PHONE, CONTACT_ANTONIO_TEL_HREF, CONTACT_LUIGI_PHONE, CONTACT_LUIGI_TEL_HREF } from '@/lib/contact'
 
 export function MobileContactBar() {
   const pathname = usePathname()
@@ -15,18 +15,16 @@ export function MobileContactBar() {
       <div className="md:hidden fixed left-0 right-0 bottom-0 z-[80] px-4 pb-[calc(env(safe-area-inset-bottom)+12px)]">
         <div className="glass-dark border border-white/12 rounded-[28px] p-2 backdrop-blur-xl">
           <div className="grid grid-cols-2 gap-2">
-            <a href={CONTACT_TEL_HREF} className="tap-target btn-primary h-12 font-bold inline-flex items-center justify-center gap-2">
+            <a href={CONTACT_ANTONIO_TEL_HREF} className="tap-target btn-primary h-12 font-bold inline-flex items-center justify-center gap-2">
               <PhoneCall className="h-5 w-5" />
-              Chiama
+              Chiama Antonio: {CONTACT_ANTONIO_PHONE}
             </a>
             <a
-              href={CONTACT_WHATSAPP_HREF}
-              target="_blank"
-              rel="noopener noreferrer"
               className="tap-target btn-secondary h-12 font-bold border border-white/12 inline-flex items-center justify-center gap-2"
+              href={CONTACT_LUIGI_TEL_HREF}
             >
-              <MessageCircle className="h-5 w-5" />
-              WhatsApp
+              <PhoneCall className="h-5 w-5" />
+              Chiama Luigi: {CONTACT_LUIGI_PHONE}
             </a>
           </div>
         </div>
@@ -34,4 +32,3 @@ export function MobileContactBar() {
     </>
   )
 }
-

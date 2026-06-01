@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
-import { Bike, Menu, X, ArrowRight, PhoneCall, MessageCircle } from 'lucide-react'
+import { Bike, Menu, X, ArrowRight, PhoneCall } from 'lucide-react'
 import Link from 'next/link'
-import { CONTACT_PHONE_DISPLAY, CONTACT_TEL_HREF, CONTACT_WHATSAPP_HREF } from '@/lib/contact'
+import { CONTACT_ANTONIO_PHONE, CONTACT_LUIGI_PHONE, CONTACT_TEL_HREF, CONTACT_LUIGI_TEL_HREF } from '@/lib/contact'
 
 export const Navbar = () => {
   const [mounted, setMounted] = useState(false)
@@ -64,7 +64,7 @@ export const Navbar = () => {
             )}
           </button>
           <Link href="/" className="font-display text-2xl font-bold tracking-tight">
-            Vincenzo<span className="text-gradient">Bike</span>
+            Cico<span className="text-gradient">moto</span>
           </Link>
         </div>
 
@@ -86,16 +86,14 @@ export const Navbar = () => {
               className="tap-target px-5 py-3 rounded-2xl btn-primary font-bold text-sm flex items-center gap-2 hover:shadow-[0_0_40px_rgba(0,245,255,0.20)] transition-shadow"
             >
               <PhoneCall className="w-4 h-4" />
-              Chiama <span className="hidden lg:inline">{CONTACT_PHONE_DISPLAY}</span>
+              Chiama Antonio: {CONTACT_ANTONIO_PHONE}
             </a>
             <a
-              href={CONTACT_WHATSAPP_HREF}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={CONTACT_LUIGI_TEL_HREF}
               className="tap-target px-5 py-3 rounded-2xl btn-secondary font-bold text-sm flex items-center gap-2 border border-white/12"
             >
-              <MessageCircle className="w-4 h-4" />
-              WhatsApp
+              <PhoneCall className="w-4 h-4" />
+              Chiama Luigi: {CONTACT_LUIGI_PHONE}
               <ArrowRight className="w-4 h-4" />
             </a>
           </div>
