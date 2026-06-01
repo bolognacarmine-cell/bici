@@ -53,7 +53,7 @@ export const Navbar = () => {
             {logoOk ? (
               <img
                 src="/logo-vincenzobike.png?v=3"
-                alt="VincenzoBike"
+                alt="Ciclo Moto"
                 width={44}
                 height={44}
                 className="h-10 w-10 object-contain rounded-full opacity-100 drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]"
@@ -173,7 +173,7 @@ export const Navbar = () => {
               <div className="p-8 flex flex-col items-center text-center">
                 <div className="w-44 h-44 rounded-full overflow-hidden bg-white/6 border border-white/12 shadow-[0_0_55px_rgba(0,245,255,0.16)] flex items-center justify-center">
                   {logoOk ? (
-                    <img src="/logo-vincenzobike.png?v=3" alt="VincenzoBike" className="w-40 h-40 object-contain" />
+                    <img src="/logo-vincenzobike.png?v=3" alt="Ciclo Moto" className="w-40 h-40 object-contain" />
                   ) : (
                     <Bike className="text-white w-14 h-14 opacity-90" />
                   )}
