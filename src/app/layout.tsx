@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { MobileContactBar } from "@/components/mobile-contact-bar";
+import { CookieBanner } from "@/components/cookie-banner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -78,6 +79,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <CookieBanner />
           <MobileContactBar />
         </ThemeProvider>
       </body>

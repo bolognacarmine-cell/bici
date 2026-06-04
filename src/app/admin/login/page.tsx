@@ -89,6 +89,24 @@ export default async function AdminLoginPage({ searchParams }: { searchParams: P
               required
             />
           </div>
+          <label className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+            <input
+              name="privacy_ack"
+              type="checkbox"
+              className="mt-1 h-4 w-4 rounded border-white/20 bg-black/30"
+            />
+            <span className="text-sm text-zinc-300 leading-relaxed">
+              Ho letto{' '}
+              <Link href="/privacy" className="underline underline-offset-4">
+                l’Informativa Privacy
+              </Link>{' '}
+              e{' '}
+              <Link href="/cookie-policy" className="underline underline-offset-4">
+                la Cookie Policy
+              </Link>
+              .
+            </span>
+          </label>
           <button className="w-full px-5 py-3 bg-emerald-500 text-zinc-950 font-extrabold rounded-2xl hover:bg-emerald-400 transition-colors">
             Entra
           </button>
