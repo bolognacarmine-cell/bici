@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel · Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <div class="brand">
+            <div class="brand-badge">AP</div>
+            <div>
+              <div class="brand-title">Admin Panel</div>
+              <div class="brand-subtitle">Dashboard</div>
+            </div>
+          </div>
+        </div>
+        <nav class="nav">
+          <a class="nav-link is-active" href="#dashboard">Dashboard</a>
+          <a class="nav-link" href="#products">Prodotti</a>
+        </nav>
+        <div class="sidebar-bottom">
+          <button id="logoutBtn" class="btn btn-ghost" type="button">Logout</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <div class="topbar-title">Gestione</div>
+            <div class="topbar-subtitle">Prodotti, immagini, statistiche</div>
+          </div>
+          <div class="topbar-actions">
+            <button id="refreshBtn" class="btn btn-ghost" type="button">Aggiorna</button>
+            <button id="newProductBtn" class="btn btn-primary" type="button">Nuovo prodotto</button>
+          </div>
+        </header>
+
+        <section class="cards" id="dashboard">
+          <div class="card">
+            <div class="card-label">Totale prodotti</div>
+            <div id="productsTotal" class="card-value">—</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Totale ordini</div>
+            <div id="ordersTotal" class="card-value">—</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Revenue</div>
+            <div id="revenueTotal" class="card-value">—</div>
+          </div>
+        </section>
+
+        <section class="panel" id="products">
+          <div class="panel-top">
+            <div>
+              <div class="panel-title">Prodotti</div>
+              <div class="panel-subtitle">Ricerca, modifica, eliminazione e gestione immagini</div>
+            </div>
+            <div class="panel-actions">
+              <input id="searchInput" class="input" placeholder="Cerca per nome o categoria…" />
+              <select id="limitSelect" class="select" aria-label="Per pagina">
+                <option value="8">8</option>
+                <option value="12" selected>12</option>
+                <option value="24">24</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Categoria</th>
+                  <th>Prezzo</th>
+                  <th>Stock</th>
+                  <th>Attivo</th>
+                  <th class="th-actions">Azioni</th>
+                </tr>
+              </thead>
+              <tbody id="productsTbody"></tbody>
+            </table>
+          </div>
+
+          <div class="pagination">
+            <button id="prevPageBtn" class="btn btn-ghost" type="button">Indietro</button>
+            <div id="pageLabel" class="page-label">Pagina —</div>
+            <button id="nextPageBtn" class="btn btn-ghost" type="button">Avanti</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="modal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close="1"></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-label="Prodotto">
+        <div class="modal-head">
+          <div>
+            <div id="modalTitle" class="modal-title">Nuovo prodotto</div>
+            <div class="modal-subtitle">Compila i campi e salva</div>
+          </div>
+          <button class="icon-btn" type="button" data-close="1" aria-label="Chiudi">×</button>
+        </div>
+
+        <form id="productForm" class="modal-body">
+          <input type="hidden" name="id" />
+
+          <div class="grid">
+            <label class="field">
+              <span>Nome *</span>
+              <input name="name" type="text" required />
+            </label>
+            <label class="field">
+              <span>Categoria</span>
+              <input name="category" type="text" />
+            </label>
+            <label class="field">
+              <span>Prezzo *</span>
+              <input name="price" type="number" step="0.01" min="0" required />
+            </label>
+            <label class="field">
+              <span>Stock</span>
+              <input name="stock" type="number" step="1" min="0" value="0" />
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Descrizione</span>
+            <textarea name="description" rows="3"></textarea>
+          </label>
+
+          <label class="field field-inline">
+            <input name="active" type="checkbox" checked />
+            <span>Attivo</span>
+          </label>
+
+          <div class="uploader">
+            <div class="uploader-head">
+              <div>
+                <div class="uploader-title">Immagini</div>
+                <div class="uploader-subtitle">Drag & drop oppure seleziona file</div>
+              </div>
+              <input id="fileInput" type="file" accept="image/*" multiple />
+            </div>
+            <div id="dropzone" class="dropzone" tabindex="0">
+              Trascina qui le immagini
+            </div>
+            <div id="previewGrid" class="preview-grid"></div>
+          </div>
+
+          <div class="modal-foot">
+            <button class="btn btn-ghost" type="button" data-close="1">Annulla</button>
+            <button id="saveBtn" class="btn btn-primary" type="submit">Salva</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="toastRoot" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+    <div id="spinner" class="spinner" aria-hidden="true">
+      <div class="spinner-ring"></div>
+      <div class="spinner-text">Loading…</div>
+    </div>
+
+    <script type="module" src="/js/products.js"></script>
+  </body>
+</html>
+

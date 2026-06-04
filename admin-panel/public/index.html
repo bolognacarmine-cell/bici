@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel · Login</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="auth-shell">
+      <div class="auth-card">
+        <div class="auth-brand">
+          <div class="auth-logo">AP</div>
+          <div>
+            <div class="auth-title">Admin Panel</div>
+            <div class="auth-subtitle">Accedi per gestire prodotti e contenuti</div>
+          </div>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="Auth">
+          <button class="tab is-active" data-tab="login" type="button">Login</button>
+          <button class="tab" data-tab="register" type="button">Register</button>
+        </div>
+
+        <form id="loginForm" class="form is-active">
+          <label class="field">
+            <span>Email</span>
+            <input name="email" type="email" autocomplete="email" required />
+          </label>
+          <label class="field">
+            <span>Password</span>
+            <input name="password" type="password" autocomplete="current-password" required />
+          </label>
+          <button class="btn btn-primary" type="submit">Entra</button>
+        </form>
+
+        <form id="registerForm" class="form">
+          <label class="field">
+            <span>Email</span>
+            <input name="email" type="email" autocomplete="email" required />
+          </label>
+          <label class="field">
+            <span>Password (min 8 caratteri)</span>
+            <input name="password" type="password" autocomplete="new-password" minlength="8" required />
+          </label>
+          <button class="btn btn-primary" type="submit">Crea account</button>
+        </form>
+
+        <div class="hint">
+          In locale puoi usare la stessa app: API e frontend sono serviti dallo stesso server.
+        </div>
+      </div>
+    </div>
+
+    <div id="toastRoot" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+    <script type="module" src="/js/auth.js"></script>
+  </body>
+</html>
+
