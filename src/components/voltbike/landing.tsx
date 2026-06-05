@@ -713,7 +713,7 @@ export function VoltbikeLanding() {
         </section>
       )}
 
-      <section id="riparazioni" data-hscroll className="relative overflow-hidden">
+      <section id="riparazioni" className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(900px_540px_at_10%_30%,rgba(0,245,255,0.10),transparent_60%),radial-gradient(900px_540px_at_90%_40%,rgba(163,255,0,0.08),transparent_60%)]" />
         <div className="relative z-10">
           <div id="servizi" className="sr-only" />
@@ -776,13 +776,21 @@ export function VoltbikeLanding() {
             <div className="relative h-full">
               <div
                 ref={repairsTrackRef}
-                data-track
                 className="h-full flex gap-6 md:gap-8 px-6 md:px-20 overflow-x-auto overscroll-x-contain"
                 style={{
                   scrollSnapType: 'x mandatory',
                   WebkitOverflowScrolling: 'touch',
                   scrollBehavior: prefersReducedMotion ? 'auto' : 'smooth',
                   touchAction: 'pan-x',
+                  scrollPaddingInline: '24px',
+                }}
+                onWheel={(e) => {
+                  const el = repairsTrackRef.current
+                  if (!el) return
+                  if (Math.abs(e.deltaX) > 0) return
+                  if (Math.abs(e.deltaY) < 1) return
+                  el.scrollLeft += e.deltaY
+                  e.preventDefault()
                 }}
               >
               {repairs.map((s, i) => (
