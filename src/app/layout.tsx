@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { MobileContactBar } from "@/components/mobile-contact-bar";
 import { CookieBanner } from "@/components/cookie-banner";
+import { Navbar } from "@/components/navbar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -78,7 +79,10 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          {children}
+          <Navbar />
+          <div id="siteContent" className="flex-1">
+            {children}
+          </div>
           <CookieBanner />
           <MobileContactBar />
         </ThemeProvider>

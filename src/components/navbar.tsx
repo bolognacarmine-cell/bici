@@ -1,16 +1,28 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
-import { Bike, Menu, X, ArrowRight, PhoneCall } from 'lucide-react'
+import { Bike, X, ArrowRight, PhoneCall, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
-import { CONTACT_ANTONIO_PHONE, CONTACT_LUIGI_PHONE, CONTACT_TEL_HREF, CONTACT_LUIGI_TEL_HREF } from '@/lib/contact'
+import { usePathname } from 'next/navigation'
+import {
+  CONTACT_ANTONIO_PHONE,
+  CONTACT_LUIGI_PHONE,
+  CONTACT_TEL_HREF,
+  CONTACT_LUIGI_TEL_HREF,
+  CONTACT_WHATSAPP_HREF,
+} from '@/lib/contact'
 
 export const Navbar = () => {
   const [mounted, setMounted] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [logoOk, setLogoOk] = useState(true)
   const [logoOpen, setLogoOpen] = useState(false)
+  const btnRef = useRef<HTMLButtonElement | null>(null)
+  const menuRef = useRef<HTMLElement | null>(null)
+  const firstLinkRef = useRef<HTMLAnchorElement | null>(null)
+  const prevOpenRef = useRef(false)
+  const pathname = usePathname()
   const { scrollY } = useScroll()
 
   const navHeight = useTransform(scrollY, [0, 56], ["88px", "72px"])
@@ -31,7 +43,52 @@ export const Navbar = () => {
     }
   }, [mobileMenuOpen])
 
+  useEffect(() => {
+    if (!mounted) return
+    document.body.classList.toggle('menu-push-open', mobileMenuOpen)
+    return () => {
+      document.body.classList.remove('menu-push-open')
+    }
+  }, [mobileMenuOpen, mounted])
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileMenuOpen(false)
+    }
+    const onPointerDown = (e: PointerEvent) => {
+      const target = e.target as Node | null
+      if (!target) return
+      if (menuRef.current && menuRef.current.contains(target)) return
+      if (btnRef.current && btnRef.current.contains(target)) return
+      setMobileMenuOpen(false)
+    }
+    document.addEventListener('keydown', onKeyDown)
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.removeEventListener('pointerdown', onPointerDown)
+    }
+  }, [mobileMenuOpen])
+
+  useEffect(() => {
+    if (!mounted) return
+    if (!prevOpenRef.current && mobileMenuOpen) {
+      const id = window.setTimeout(() => firstLinkRef.current?.focus(), 0)
+      return () => window.clearTimeout(id)
+    }
+  }, [mobileMenuOpen, mounted])
+
+  useEffect(() => {
+    if (!mounted) return
+    if (prevOpenRef.current && !mobileMenuOpen) {
+      btnRef.current?.focus()
+    }
+    prevOpenRef.current = mobileMenuOpen
+  }, [mobileMenuOpen, mounted])
+
   if (!mounted) return null
+  if (pathname.startsWith('/admin')) return null
 
   const items = [
     { label: 'Promo', id: 'promozioni' },
@@ -43,122 +100,162 @@ export const Navbar = () => {
   ]
 
   return (
-    <motion.nav
-      style={{ height: navHeight, background: navBg, borderColor: navBorder }}
-      className="fixed top-0 left-0 right-0 z-50 flex items-center backdrop-blur-xl transition-colors duration-300 border-b pt-[env(safe-area-inset-top)]"
-    >
-      <div className="container mx-auto px-6 flex justify-between items-center">
-        {/* Logo */}
-        <div className="flex items-center gap-3 group">
-          <button
-            type="button"
-            onClick={() => {
-              setLogoOpen(true)
-              if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10)
-            }}
-            className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-white/8 border border-white/20 neon-ring shadow-[0_0_30px_rgba(0,245,255,0.18)] group-hover:scale-[1.04] transition-transform duration-300 cursor-zoom-in"
-            aria-label="Apri il logo"
-          >
-            {logoOk ? (
-              <img
-                src="/logo-vincenzobike.png?v=3"
-                alt="Ciclo Moto"
-                width={44}
-                height={44}
-                className="h-10 w-10 object-contain rounded-full opacity-100 drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]"
-                onError={() => setLogoOk(false)}
-              />
-            ) : (
-              <Bike className="text-white w-7 h-7 drop-shadow-[0_0_12px_rgba(0,245,255,0.35)]" />
-            )}
-          </button>
-          <Link href="/" className="font-display text-2xl font-bold tracking-tight">
-            Ciclo<span className="text-gradient">moto</span>
-          </Link>
-        </div>
-
-        {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-8">
-          {items.slice(0, 5).map((item) => (
-            <Link
-              key={item.id}
-              href={`#${item.id}`}
-              className="text-sm font-semibold tracking-wide text-white/75 hover:text-white transition-colors"
+    <>
+      <motion.nav
+        style={{ height: navHeight, background: navBg, borderColor: navBorder }}
+        className="fixed top-0 left-0 right-0 z-50 flex items-center backdrop-blur-xl transition-colors duration-300 border-b pt-[env(safe-area-inset-top)]"
+      >
+        <div className="container mx-auto px-6 flex justify-between items-center">
+          <div className="flex items-center gap-3 group">
+            <button
+              type="button"
+              onClick={() => {
+                setLogoOpen(true)
+                if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10)
+              }}
+              className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-white/8 border border-white/20 neon-ring shadow-[0_0_30px_rgba(0,245,255,0.18)] group-hover:scale-[1.04] transition-transform duration-300 cursor-zoom-in"
+              aria-label="Apri il logo"
             >
-              {item.label}
+              {logoOk ? (
+                <img
+                  src="/logo-vincenzobike.png?v=3"
+                  alt="Ciclo Moto"
+                  width={44}
+                  height={44}
+                  className="h-10 w-10 object-contain rounded-full opacity-100 drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]"
+                  onError={() => setLogoOk(false)}
+                />
+              ) : (
+                <Bike className="text-white w-7 h-7 drop-shadow-[0_0_12px_rgba(0,245,255,0.35)]" />
+              )}
+            </button>
+            <Link href="/" className="font-display text-2xl font-bold tracking-tight">
+              Ciclo<span className="text-gradient">moto</span>
             </Link>
-          ))}
-          
-          <div className="flex items-center gap-3 ml-6">
-            <a
-              href={CONTACT_TEL_HREF}
-              className="tap-target px-5 py-3 rounded-2xl btn-primary font-bold text-sm flex items-center gap-2 hover:shadow-[0_0_40px_rgba(0,245,255,0.20)] transition-shadow"
-            >
-              <PhoneCall className="w-4 h-4" />
-              Chiama Antonio: {CONTACT_ANTONIO_PHONE}
-            </a>
-            <a
-              href={CONTACT_LUIGI_TEL_HREF}
-              className="tap-target px-5 py-3 rounded-2xl btn-secondary font-bold text-sm flex items-center gap-2 border border-white/12"
-            >
-              <PhoneCall className="w-4 h-4" />
-              Chiama Luigi: {CONTACT_LUIGI_PHONE}
-              <ArrowRight className="w-4 h-4" />
-            </a>
+          </div>
+
+          <div className="hidden md:flex items-center gap-8">
+            {items.slice(0, 5).map((item) => (
+              <Link
+                key={item.id}
+                href={`/#${item.id}`}
+                className="text-sm font-semibold tracking-wide text-white/75 hover:text-white transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
+
+            <div className="flex items-center gap-3 ml-6">
+              <a
+                href={CONTACT_TEL_HREF}
+                className="tap-target px-5 py-3 rounded-2xl btn-primary font-bold text-sm flex items-center gap-2 hover:shadow-[0_0_40px_rgba(0,245,255,0.20)] transition-shadow"
+              >
+                <PhoneCall className="w-4 h-4" />
+                Chiama Antonio: {CONTACT_ANTONIO_PHONE}
+              </a>
+              <a
+                href={CONTACT_LUIGI_TEL_HREF}
+                className="tap-target px-5 py-3 rounded-2xl btn-secondary font-bold text-sm flex items-center gap-2 border border-white/12"
+              >
+                <PhoneCall className="w-4 h-4" />
+                Chiama Luigi: {CONTACT_LUIGI_PHONE}
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
           </div>
         </div>
+      </motion.nav>
 
-        {/* Mobile Menu Toggle */}
-        <div className="md:hidden flex items-center gap-4">
-          <button
-            className="tap-target p-3 rounded-2xl bg-white/6 border border-white/12 backdrop-blur-xl"
-            onClick={() => {
-              setMobileMenuOpen(!mobileMenuOpen)
-              if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10)
-            }}
-          >
-            {mobileMenuOpen ? <X /> : <Menu />}
-          </button>
-        </div>
-      </div>
+      <button
+        ref={btnRef}
+        type="button"
+        aria-label="Menu"
+        aria-controls="hamburgerMenu"
+        aria-expanded={mobileMenuOpen}
+        className="md:hidden fixed right-6 top-[calc(env(safe-area-inset-top)+16px)] z-[110] w-12 h-12 rounded-2xl bg-white/6 border border-white/12 backdrop-blur-xl"
+        onClick={() => {
+          setMobileMenuOpen(!mobileMenuOpen)
+          if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10)
+        }}
+      >
+        <span
+          className={`absolute left-1/2 top-1/2 h-[2px] w-6 -translate-x-1/2 bg-white/90 transition-transform duration-300 ${
+            mobileMenuOpen ? 'translate-y-0 rotate-45' : '-translate-y-[7px] rotate-0'
+          }`}
+        />
+        <span
+          className={`absolute left-1/2 top-1/2 h-[2px] w-6 -translate-x-1/2 bg-white/90 transition-all duration-300 ${
+            mobileMenuOpen ? 'opacity-0' : 'opacity-100'
+          }`}
+        />
+        <span
+          className={`absolute left-1/2 top-1/2 h-[2px] w-6 -translate-x-1/2 bg-white/90 transition-transform duration-300 ${
+            mobileMenuOpen ? 'translate-y-0 -rotate-45' : 'translate-y-[7px] rotate-0'
+          }`}
+        />
+      </button>
 
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 md:hidden"
-            onClick={() => setMobileMenuOpen(false)}
+          <motion.nav
+            ref={menuRef}
+            id="hamburgerMenu"
+            initial={{ x: -300 }}
+            animate={{ x: 0 }}
+            exit={{ x: -300 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="md:hidden fixed left-0 top-0 bottom-0 z-[105] w-[280px] text-white shadow-2xl"
+            style={{ backgroundColor: '#2c3e50' }}
+            role="dialog"
+            aria-label="Menu"
           >
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-            <motion.div
-              initial={{ opacity: 0, y: -12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.18 }}
-              className="absolute left-0 right-0 top-[calc(88px+env(safe-area-inset-top))] p-6 glass-dark border-b border-white/10 shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-              role="dialog"
-              aria-label="Menu"
-            >
-              <div className="flex flex-col gap-3 max-h-[calc(100dvh-140px)] overflow-auto">
-                {items.map((item) => (
+            <div className="h-full flex flex-col px-6 pt-[calc(env(safe-area-inset-top)+18px)] pb-[calc(env(safe-area-inset-bottom)+18px)]">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="text-white font-extrabold tracking-tight text-xl">Ciclomoto</div>
+                  <div className="text-white/80 text-sm mt-1">Officina bici · Marcianise</div>
+                </div>
+                <button
+                  type="button"
+                  className="tap-target p-2 rounded-2xl bg-white/10 border border-white/15 text-white/90"
+                  aria-label="Chiudi"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="mt-6 flex flex-col gap-2 overflow-auto">
+                {items.map((item, idx) => (
                   <Link
                     key={item.id}
-                    href={`#${item.id}`}
+                    href={`/#${item.id}`}
+                    ref={idx === 0 ? firstLinkRef : undefined}
                     onClick={() => {
                       setMobileMenuOpen(false)
                       if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10)
                     }}
-                    className="tap-target w-full px-4 py-4 rounded-2xl bg-white/6 border border-white/12 text-lg font-bold text-white active:bg-white/10 transition-colors"
+                    className="tap-target w-full px-4 py-4 rounded-2xl bg-white/10 border border-white/15 text-base font-extrabold text-white active:bg-white/15 transition-colors"
                   >
                     {item.label}
                   </Link>
                 ))}
               </div>
-            </motion.div>
-          </motion.div>
+
+              <div className="mt-auto pt-6">
+                <a
+                  href={CONTACT_WHATSAPP_HREF}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tap-target w-full px-5 py-4 rounded-2xl font-extrabold inline-flex items-center justify-center gap-2"
+                  style={{ backgroundColor: '#25D366', color: '#0b0d12' }}
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  Scrivici su WhatsApp
+                </a>
+              </div>
+            </div>
+          </motion.nav>
         )}
       </AnimatePresence>
 
@@ -210,6 +307,6 @@ export const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+    </>
   )
 }

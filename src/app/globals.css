@@ -45,6 +45,7 @@
 html {
   scroll-behavior: smooth;
   height: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -54,11 +55,24 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
   min-height: 100vh;
   min-height: -webkit-fill-available;
+  overflow-x: hidden;
   /* Safe area insets for mobile */
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
+}
+
+@media (max-width: 768px) {
+  #siteContent {
+    transform: translateX(0);
+    transition: transform 0.3s ease-in-out;
+    will-change: transform;
+  }
+
+  body.menu-push-open #siteContent {
+    transform: translateX(280px);
+  }
 }
 
 ::selection {

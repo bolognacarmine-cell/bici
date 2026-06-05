@@ -20,7 +20,6 @@ import {
   MessageCircle,
 } from 'lucide-react'
 
-import { Navbar } from '@/components/navbar'
 import { TiltCard } from '@/components/tilt-card'
 import { CursorGlow } from '@/components/voltbike/cursor-glow'
 import { MagneticButton } from '@/components/voltbike/magnetic-button'
@@ -219,7 +218,6 @@ export function VoltbikeLanding() {
   return (
     <div ref={rootRef} className="min-h-screen overflow-x-hidden bg-noise">
       <CursorGlow />
-      <Navbar />
 
       <section id="hero" className="relative min-h-[108svh] md:min-h-[100svh] pt-28 md:pt-32">
         <div className="absolute inset-0">
