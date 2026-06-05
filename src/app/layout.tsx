@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { MobileContactBar } from "@/components/mobile-contact-bar";
 import { CookieBanner } from "@/components/cookie-banner";
 import { Navbar } from "@/components/navbar";
+import { MobileFooterAccordion } from "@/components/mobile-footer-accordion";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -83,6 +84,7 @@ export default function RootLayout({
           <div id="siteContent" className="flex-1">
             {children}
           </div>
+          <MobileFooterAccordion />
           <CookieBanner />
           <MobileContactBar />
         </ThemeProvider>
