@@ -12,7 +12,7 @@ type ProductCarouselProps = {
 export function ProductCarousel({ images, productName }: ProductCarouselProps) {
   const safeImages = useMemo(() => {
     const items = Array.isArray(images) ? images.map(String).filter(Boolean) : []
-    return items.length > 0 ? items : [toHostedAssetUrl('/bici1.jpg')]
+    return items.length > 0 ? items : [toHostedAssetUrl('/1.jpg')]
   }, [images])
 
   const [index, setIndex] = useState(0)
@@ -64,7 +64,7 @@ export function ProductCarousel({ images, productName }: ProductCarouselProps) {
     >
       <div className="relative aspect-square rounded-2xl overflow-hidden bg-white/3 border border-white/10">
         <Image
-          src={toHostedAssetUrl(safeImages[index] ?? '/bici1.jpg')}
+          src={toHostedAssetUrl(safeImages[index] ?? '/1.jpg')}
           alt={`${productName} — immagine ${index + 1}`}
           fill
           priority

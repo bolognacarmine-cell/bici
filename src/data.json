@@ -8,9 +8,9 @@
       "discountValue": 15,
       "category": "city",
       "description": "Sconto su bici da città selezionate: perfette per commuting e tempo libero.",
-      "image": "/bici1.jpg",
+      "image": "/1.jpg",
       "images": [
-        "/bici1.jpg"
+        "/1.jpg"
       ],
       "endsAt": "2026-05-31",
       "showOnHome": true
@@ -23,9 +23,9 @@
       "discountValue": 10,
       "productSku": "SKU-ELYSIUM-TREK-E50",
       "description": "Promo limitata sulla e-bike trekking: autonomia, comfort e assistenza premium.",
-      "image": "/bici1.jpg",
+      "image": "/1.jpg",
       "images": [
-        "/bici1.jpg"
+        "/1.jpg"
       ],
       "endsAt": "2026-06-15",
       "showOnHome": true
@@ -37,9 +37,9 @@
       "discountType": "amount",
       "discountValue": 20,
       "description": "€20 di sconto su accessori selezionati: luci, caschi e antifurti.",
-      "image": "/bici1.jpg",
+      "image": "/1.jpg",
       "images": [
-        "/bici1.jpg"
+        "/1.jpg"
       ]
     },
     {
@@ -49,9 +49,9 @@
       "discountType": "percent",
       "discountValue": 10,
       "description": "Sconto su check-up e manutenzione completa per ripartire in sicurezza.",
-      "image": "/bici1.jpg",
+      "image": "/1.jpg",
       "images": [
-        "/bici1.jpg"
+        "/1.jpg"
       ]
     }
   ],
