@@ -784,6 +784,8 @@ export function VoltbikeLanding() {
                   touchAction: 'pan-x',
                   scrollPaddingInline: '24px',
                 }}
+                role="region"
+                aria-label="Galleria riparazioni e manutenzione"
                 onWheel={(e) => {
                   const el = repairsTrackRef.current
                   if (!el) return
@@ -791,6 +793,43 @@ export function VoltbikeLanding() {
                   if (Math.abs(e.deltaY) < 1) return
                   el.scrollLeft += e.deltaY
                   e.preventDefault()
+                }}
+                onPointerDown={(e) => {
+                  if (e.pointerType !== 'mouse' || e.button !== 0) return
+                  const el = repairsTrackRef.current
+                  if (!el) return
+                  el.setPointerCapture(e.pointerId)
+                  ;(el as any)._cmDragX = e.clientX
+                  ;(el as any)._cmDragLeft = el.scrollLeft
+                }}
+                onPointerMove={(e) => {
+                  if (e.pointerType !== 'mouse') return
+                  const el = repairsTrackRef.current
+                  if (!el) return
+                  const startX = (el as any)._cmDragX
+                  const startLeft = (el as any)._cmDragLeft
+                  if (typeof startX !== 'number' || typeof startLeft !== 'number') return
+                  const dx = e.clientX - startX
+                  el.scrollLeft = startLeft - dx
+                }}
+                onPointerUp={(e) => {
+                  if (e.pointerType !== 'mouse') return
+                  const el = repairsTrackRef.current
+                  if (!el) return
+                  delete (el as any)._cmDragX
+                  delete (el as any)._cmDragLeft
+                  try {
+                    el.releasePointerCapture(e.pointerId)
+                  } catch {}
+                }}
+                onPointerCancel={(e) => {
+                  const el = repairsTrackRef.current
+                  if (!el) return
+                  delete (el as any)._cmDragX
+                  delete (el as any)._cmDragLeft
+                  try {
+                    el.releasePointerCapture(e.pointerId)
+                  } catch {}
                 }}
               >
               {repairs.map((s, i) => (
