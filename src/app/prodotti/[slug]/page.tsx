@@ -85,7 +85,7 @@ function buildImages(product: Product) {
     seen.add(url)
     deduped.push(url)
   }
-  return deduped.length > 0 ? deduped : ['/1.jpg']
+  return deduped.length > 0 ? deduped : ['/7.jpg']
 }
 
 async function getProductBySlugOrSku(slugOrSku: string) {

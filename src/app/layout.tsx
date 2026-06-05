@@ -40,14 +40,14 @@ export const metadata: Metadata = {
     description:
       "Officina bici a Marcianise (CE): manutenzione e riparazioni per bici muscolari ed e-bike. Contatto diretto via telefono o WhatsApp.",
     siteName: "Ciclomoto",
-    images: [{ url: "/1.jpg", width: 1600, height: 900, alt: "Officina biciclette" }],
+    images: [{ url: "/7.jpg", width: 1600, height: 900, alt: "Officina biciclette" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Ciclomoto — Officina bici a Marcianise (CE)",
     description:
       "Officina bici a Marcianise (CE): manutenzione e riparazioni per bici muscolari ed e-bike. Contatto diretto via telefono o WhatsApp.",
-    images: ["/1.jpg"],
+    images: ["/7.jpg"],
   },
   manifest: "/manifest.json",
 };
