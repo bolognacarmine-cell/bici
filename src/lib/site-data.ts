@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 import path from 'path'
 import { SiteDataSchema, type SiteData } from './site-data-schema'
-import { getPgPool } from './db'
+import { getMongoDb } from './mongo'
 
 export function getSiteDataFilePath() {
   return path.join(process.cwd(), 'src', 'data.json')
@@ -118,62 +118,30 @@ async function writeSiteDataToFile(newData: unknown): Promise<void> {
   await fs.writeFile(filePath, JSON.stringify(validated, null, 2))
 }
 
-async function ensureTable() {
-  const pool = getPgPool()
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS site_data (
-      id TEXT PRIMARY KEY,
-      data JSONB NOT NULL,
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-    );
-  `)
-}
-
 export async function readSiteData(): Promise<SiteData> {
-  const hasDb = !!process.env.DATABASE_URL
+  const hasMongo = !!process.env.MONGODB_URI
+  if (!hasMongo) return readSiteDataFromFile()
 
-  if (!hasDb) {
-    return readSiteDataFromFile()
-  }
-
-  await ensureTable()
-  const pool = getPgPool()
-  const res = await pool.query('SELECT data FROM site_data WHERE id=$1 LIMIT 1', ['default'])
-  if (res.rowCount && res.rows[0]?.data) {
-    const fromDb = normalizeSiteData(SiteDataSchema.parse(res.rows[0].data))
-    const seed = await readSiteDataFromFile()
-    return {
-      ...fromDb,
-      brand: (seed as any).brand ?? (fromDb as any).brand,
-      footer: (seed as any).footer ?? (fromDb as any).footer,
-      services: (seed as any).services ?? (fromDb as any).services,
-      technology: (seed as any).technology ?? (fromDb as any).technology,
-      features: (seed as any).features ?? (fromDb as any).features,
-      gallery: (seed as any).gallery ?? (fromDb as any).gallery,
-    } as any
+  const db = await getMongoDb()
+  const col = db.collection<{ _id: string; data: unknown; updated_at?: Date }>('site_data')
+  const doc = await col.findOne({ _id: 'default' })
+  if (doc?.data) {
+    return normalizeSiteData(SiteDataSchema.parse(doc.data))
   }
 
   const seed = await readSiteDataFromFile()
-  await pool.query(
-    'INSERT INTO site_data (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, updated_at = now()',
-    ['default', seed]
-  )
+  await col.updateOne({ _id: 'default' }, { $set: { data: seed, updated_at: new Date() } }, { upsert: true })
   return seed
 }
 
 export async function writeSiteData(newData: unknown): Promise<void> {
-  const hasDb = !!process.env.DATABASE_URL
-
-  if (!hasDb) {
-    return writeSiteDataToFile(newData)
-  }
-
-  await ensureTable()
-  const pool = getPgPool()
   const validated = normalizeSiteData(SiteDataSchema.parse(newData))
-  await pool.query(
-    'INSERT INTO site_data (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, updated_at = now()',
-    ['default', validated]
-  )
+
+  const hasMongo = !!process.env.MONGODB_URI
+  if (!hasMongo) return writeSiteDataToFile(validated)
+
+  const db = await getMongoDb()
+  const col = db.collection<{ _id: string; data: unknown; updated_at?: Date }>('site_data')
+  await col.updateOne({ _id: 'default' }, { $set: { data: validated, updated_at: new Date() } }, { upsert: true })
 }
 

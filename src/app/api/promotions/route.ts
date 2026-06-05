@@ -1,8 +1,19 @@
 import { NextResponse } from 'next/server'
-import { getPgPool } from '@/lib/db'
-import { ensurePromotionsTables, normalizePgSchema } from '@/lib/promotions-db'
+import { createPromotionDoc } from '@/lib/promotions-repo'
 
 export const dynamic = 'force-dynamic'
+
+function toSafeErrorMessage(err: unknown) {
+  const msg = err instanceof Error ? err.message : ''
+  if (msg === 'MONGODB_URI is not set') return msg
+  if (msg.includes('ENOTFOUND') || msg.includes('MongoServerSelectionError')) {
+    return 'Connessione MongoDB fallita (verifica MONGODB_URI e Network Access su Atlas).'
+  }
+  if (msg.toLowerCase().includes('authentication failed') || msg.toLowerCase().includes('bad auth')) {
+    return 'Autenticazione MongoDB fallita (verifica username/password nella MONGODB_URI).'
+  }
+  return 'Errore interno.'
+}
 
 function parsePriceEur(input: unknown) {
   if (input === null || input === undefined || input === '') return null
@@ -15,6 +26,13 @@ function parsePriceEur(input: unknown) {
   const n = Number.parseFloat(normalized)
   if (!Number.isFinite(n)) return null
   return Math.round(n * 100) / 100
+}
+
+export async function GET() {
+  return NextResponse.json(
+    { ok: true, endpoint: 'api/promotions', storage: process.env.MONGODB_URI ? 'mongo' : 'file-disabled' },
+    { status: 200 }
+  )
 }
 
 export async function POST(req: Request) {
@@ -37,94 +55,53 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Carica almeno una immagine.' }, { status: 400 })
     }
 
-    const schema = normalizePgSchema(process.env.PG_SCHEMA)
-    const promotions = `"${schema}"."promotions"`
-    const promotionImages = `"${schema}"."promotion_images"`
+    const now = new Date().toISOString()
+    const promoId = crypto.randomUUID()
+    const normalizedImages = images
+      .map((img: any, i: number) => {
+        if (!img || typeof img !== 'object') return null
+        const publicId = String(img.public_id ?? img.publicId ?? '').trim()
+        const secureUrl = String(img.secure_url ?? img.secureUrl ?? '').trim()
+        if (!publicId || !secureUrl) return null
+        const mime = String(img.mime_type ?? img.mimeType ?? 'image/jpeg').trim() || 'image/jpeg'
+        const format = img.format ? String(img.format) : null
+        const width = typeof img.width === 'number' ? img.width : null
+        const height = typeof img.height === 'number' ? img.height : null
+        const bytes = typeof img.bytes === 'number' ? img.bytes : null
+        const sortOrder = typeof img.sort_order === 'number' ? img.sort_order : i
+        return {
+          id: crypto.randomUUID(),
+          public_id: publicId,
+          secure_url: secureUrl,
+          mime_type: mime,
+          format,
+          width,
+          height,
+          bytes,
+          sort_order: sortOrder,
+          created_at: now,
+        }
+      })
+      .filter(Boolean) as any[]
 
-    const pool = getPgPool()
-    const client = await pool.connect()
-    try {
-      await client.query('BEGIN')
-      await ensurePromotionsTables(client, schema)
-      const promoRes = await client.query(
-        `
-          INSERT INTO ${promotions} (title, description, price_eur, is_active)
-          VALUES ($1,$2,$3,$4)
-          RETURNING id, title, description, price_eur, is_active, created_at, updated_at
-        `,
-        [title, description, priceEur, isActive]
-      )
-      const promotion = promoRes.rows[0]
-
-      const values: string[] = []
-      const params: any[] = []
-      let p = 1
-      for (let i = 0; i < images.length; i += 1) {
-        const img = images[i]
-        if (!img || typeof img !== 'object') continue
-        const publicId = String((img as any).public_id ?? (img as any).publicId ?? '').trim()
-        const secureUrl = String((img as any).secure_url ?? (img as any).secureUrl ?? '').trim()
-        if (!publicId || !secureUrl) continue
-
-        const mime = String((img as any).mime_type ?? (img as any).mimeType ?? 'image/jpeg').trim() || 'image/jpeg'
-        const format = (img as any).format ? String((img as any).format) : null
-        const width = typeof (img as any).width === 'number' ? (img as any).width : null
-        const height = typeof (img as any).height === 'number' ? (img as any).height : null
-        const bytes = typeof (img as any).bytes === 'number' ? (img as any).bytes : null
-        const sortOrder = typeof (img as any).sort_order === 'number' ? (img as any).sort_order : i
-
-        values.push(`($${p++},$${p++},$${p++},$${p++},$${p++},$${p++},$${p++},$${p++},$${p++})`)
-        params.push(promotion.id, publicId, secureUrl, mime, format, width, height, bytes, sortOrder)
-      }
-
-      if (values.length === 0) {
-        await client.query('ROLLBACK')
-        return NextResponse.json({ success: false, error: 'Immagini non valide.' }, { status: 400 })
-      }
-
-      const imgsRes = await client.query(
-        `
-          INSERT INTO ${promotionImages}
-            (promotion_id, public_id, secure_url, mime_type, format, width, height, bytes, sort_order)
-          VALUES
-            ${values.join(',')}
-          RETURNING id, promotion_id, public_id, secure_url, mime_type, format, width, height, bytes, sort_order, created_at
-        `,
-        params
-      )
-
-      await client.query('COMMIT')
-      return NextResponse.json({ success: true, promotion, images: imgsRes.rows }, { status: 201 })
-    } catch (e) {
-      await client.query('ROLLBACK')
-      const code = e && typeof e === 'object' && 'code' in e ? String((e as any).code) : ''
-      if (code === '42P01') {
-        return NextResponse.json(
-          { success: false, error: 'Tabelle promotions/promotion_images mancanti. Esegui lo script sql/promotions.sql.' },
-          { status: 500 }
-        )
-      }
-      if (code === '42501') {
-        return NextResponse.json(
-          { success: false, error: 'Permessi insufficienti per creare/leggere le tabelle promozioni nel DB.' },
-          { status: 500 }
-        )
-      }
-      if (code === '3F000') {
-        return NextResponse.json(
-          { success: false, error: 'Schema Postgres non valido. Imposta PG_SCHEMA (default: public).' },
-          { status: 500 }
-        )
-      }
-      return NextResponse.json({ success: false, error: 'Errore interno.' }, { status: 500 })
-    } finally {
-      client.release()
+    if (normalizedImages.length === 0) {
+      return NextResponse.json({ success: false, error: 'Immagini non valide.' }, { status: 400 })
     }
+
+    const promotion = {
+      id: promoId,
+      title,
+      description,
+      price_eur: priceEur,
+      is_active: isActive,
+      created_at: now,
+      updated_at: now,
+      images: normalizedImages,
+    }
+    await createPromotionDoc(promotion)
+
+    return NextResponse.json({ success: true, promotion, images: normalizedImages }, { status: 201 })
   } catch (e) {
-    const msg = e instanceof Error ? e.message : ''
-    if (msg === 'DATABASE_URL is not set') {
-      return NextResponse.json({ success: false, error: 'DATABASE_URL is required' }, { status: 500 })
-    }
-    return NextResponse.json({ success: false, error: 'Errore interno.' }, { status: 500 })
+    return NextResponse.json({ success: false, error: toSafeErrorMessage(e) }, { status: 500 })
   }
 }

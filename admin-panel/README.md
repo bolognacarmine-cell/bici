@@ -1,6 +1,6 @@
 # Admin Panel (Node.js + MongoDB Atlas + Cloudinary)
 
-Questo progetto ricostruisce un pannello admin moderno da zero, senza dipendenze legacy dal vecchio database PostgreSQL su Render (scaduto).  
+Questo progetto ricostruisce un pannello admin moderno da zero, senza dipendenze legacy dal vecchio database su Render (scaduto).  
 Stack:
 
 - Backend: Node.js + Express

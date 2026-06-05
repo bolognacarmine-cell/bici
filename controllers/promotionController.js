@@ -1,13 +1,36 @@
-import pgPkg from 'pg'
 import { ALLOWED_MIMES, MAX_BYTES, isAllowedImage } from '../middleware/upload.js'
 import { deleteByPublicId, uploadImageBuffer } from '../services/cloudinaryService.js'
+import fs from 'fs/promises'
+import path from 'path'
 
-const { Pool } = pgPkg
+function getStorePath() {
+  return path.join(process.cwd(), 'storage', 'promotions.json')
+}
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
-})
+async function ensureStoreDir() {
+  await fs.mkdir(path.dirname(getStorePath()), { recursive: true })
+}
+
+async function readStore() {
+  const filePath = getStorePath()
+  try {
+    const raw = await fs.readFile(filePath, 'utf8')
+    const parsed = JSON.parse(raw)
+    const promotions = Array.isArray(parsed?.promotions) ? parsed.promotions : []
+    return { promotions }
+  } catch (e) {
+    const code = e && typeof e === 'object' && 'code' in e ? String(e.code) : ''
+    if (code === 'ENOENT') return { promotions: [] }
+    throw e
+  }
+}
+
+async function writeStore(store) {
+  await ensureStoreDir()
+  const filePath = getStorePath()
+  const payload = { promotions: Array.isArray(store?.promotions) ? store.promotions : [] }
+  await fs.writeFile(filePath, JSON.stringify(payload, null, 2))
+}
 
 function isNumericId(value) {
   return /^[0-9]+$/.test(String(value || '').trim())
@@ -96,10 +119,6 @@ export async function uploadPromotionImages(req, res) {
 
 export async function createPromotion(req, res) {
   try {
-    if (!process.env.DATABASE_URL) {
-      return res.status(500).json({ success: false, error: 'DATABASE_URL is required' })
-    }
-
     const title = String(req.body?.title ?? '').trim()
     if (!title) {
       return res.status(400).json({ success: false, error: 'Titolo obbligatorio.' })
@@ -121,72 +140,53 @@ export async function createPromotion(req, res) {
       return res.status(400).json({ success: false, error: 'Carica almeno una immagine.' })
     }
 
-    const client = await pool.connect()
-    try {
-      await client.query('BEGIN')
-      const promoInsert = await client.query(
-        `
-          INSERT INTO promotions (title, description, price_eur, is_active)
-          VALUES ($1,$2,$3,$4)
-          RETURNING id, title, description, price_eur, is_active, created_at, updated_at
-        `,
-        [title, description, priceEur, isActive]
-      )
-      const promotion = promoInsert.rows[0]
+    const now = new Date().toISOString()
+    const promoId = crypto.randomUUID()
 
-      const values = []
-      const params = []
-      let p = 1
-      for (let i = 0; i < images.length; i += 1) {
-        const img = images[i]
+    const normalizedImages = images
+      .map((img, i) => {
         const publicId = String(img.public_id ?? img.publicId ?? '').trim()
         const secureUrl = String(img.secure_url ?? img.secureUrl ?? '').trim()
-        if (!publicId || !secureUrl) continue
-        const mime = normalizeMime(img.mime_type ?? img.mimeType ?? '')
+        if (!publicId || !secureUrl) return null
+        const mime = normalizeMime(img.mime_type ?? img.mimeType ?? '') || 'image/jpeg'
         const format = img.format ? String(img.format) : null
         const width = typeof img.width === 'number' ? img.width : null
         const height = typeof img.height === 'number' ? img.height : null
         const bytes = typeof img.bytes === 'number' ? img.bytes : null
         const sortOrder = typeof img.sort_order === 'number' ? img.sort_order : typeof img.sortOrder === 'number' ? img.sortOrder : i
 
-        values.push(`($${p++},$${p++},$${p++},$${p++},$${p++},$${p++},$${p++},$${p++},$${p++})`)
-        params.push(
-          promotion.id,
-          publicId,
-          secureUrl,
-          mime || 'image/jpeg',
+        return {
+          id: crypto.randomUUID(),
+          public_id: publicId,
+          secure_url: secureUrl,
+          mime_type: mime,
           format,
           width,
           height,
           bytes,
-          sortOrder
-        )
-      }
+          sort_order: sortOrder,
+          created_at: now,
+        }
+      })
+      .filter(Boolean)
 
-      if (values.length === 0) {
-        await client.query('ROLLBACK')
-        return res.status(400).json({ success: false, error: 'Immagini non valide.' })
-      }
-
-      const imagesInsert = await client.query(
-        `
-          INSERT INTO promotion_images
-            (promotion_id, public_id, secure_url, mime_type, format, width, height, bytes, sort_order)
-          VALUES
-            ${values.join(',')}
-          RETURNING id, promotion_id, public_id, secure_url, mime_type, format, width, height, bytes, sort_order, created_at
-        `,
-        params
-      )
-
-      await client.query('COMMIT')
-      return res.status(201).json({ success: true, promotion, images: imagesInsert.rows })
-    } catch (e) {
-      await client.query('ROLLBACK')
-      return res.status(500).json({ success: false, error: 'Errore interno.' })
-    } finally {
-      client.release()
+    if (normalizedImages.length === 0) {
+      return res.status(400).json({ success: false, error: 'Immagini non valide.' })
     }
+
+    const store = await readStore()
+    const promotion = {
+      id: promoId,
+      title,
+      description,
+      price_eur: priceEur,
+      is_active: isActive,
+      created_at: now,
+      updated_at: now,
+      images: normalizedImages,
+    }
+    await writeStore({ promotions: [...store.promotions, promotion] })
+    return res.status(201).json({ success: true, promotion, images: normalizedImages })
   } catch (_err) {
     return res.status(500).json({ success: false, error: 'Errore interno.' })
   }
@@ -194,24 +194,28 @@ export async function createPromotion(req, res) {
 
 export async function deletePromotionImage(req, res) {
   try {
-    if (!process.env.DATABASE_URL) {
-      return res.status(500).json({ success: false, error: 'DATABASE_URL is required' })
-    }
-
     const id = String(req.params?.id || '').trim()
     if (!id) return res.status(400).json({ success: false, error: 'ID mancante.' })
 
-    if (!isNumericId(id)) {
-      await deleteByPublicId(id)
-      return res.status(200).json({ success: true })
+    const store = await readStore()
+    let publicId = null
+    for (const p of store.promotions) {
+      const found = Array.isArray(p?.images) ? p.images.find((img) => String(img?.id || '') === id) : null
+      if (found?.public_id) {
+        publicId = found.public_id
+        break
+      }
     }
 
-    const { rows } = await pool.query('SELECT id, public_id FROM promotion_images WHERE id = $1', [id])
-    const row = rows[0]
-    if (!row) return res.status(404).json({ success: false, error: 'Immagine non trovata.' })
+    await deleteByPublicId(publicId || id)
 
-    await deleteByPublicId(row.public_id)
-    await pool.query('DELETE FROM promotion_images WHERE id = $1', [id])
+    if (publicId) {
+      const nextPromotions = store.promotions.map((p) => {
+        const imgs = Array.isArray(p?.images) ? p.images : []
+        return { ...p, images: imgs.filter((img) => String(img?.id || '') !== id) }
+      })
+      await writeStore({ promotions: nextPromotions })
+    }
     return res.status(200).json({ success: true })
   } catch (_err) {
     return res.status(500).json({ success: false, error: 'Errore interno.' })
@@ -220,19 +224,19 @@ export async function deletePromotionImage(req, res) {
 
 export async function deletePromotion(req, res) {
   try {
-    if (!process.env.DATABASE_URL) {
-      return res.status(500).json({ success: false, error: 'DATABASE_URL is required' })
-    }
-
     const id = String(req.params?.id || '').trim()
-    if (!isNumericId(id)) return res.status(400).json({ success: false, error: 'ID non valido.' })
+    if (!id) return res.status(400).json({ success: false, error: 'ID mancante.' })
 
-    const { rows } = await pool.query('SELECT public_id FROM promotion_images WHERE promotion_id = $1', [id])
-    for (const r of rows) {
-      await deleteByPublicId(r.public_id)
+    const store = await readStore()
+    const promotion = store.promotions.find((p) => String(p?.id || '') === id)
+    if (!promotion) return res.status(404).json({ success: false, error: 'Promozione non trovata.' })
+
+    for (const img of promotion.images || []) {
+      if (img?.public_id) await deleteByPublicId(img.public_id)
     }
 
-    await pool.query('DELETE FROM promotions WHERE id = $1', [id])
+    const nextPromotions = store.promotions.filter((p) => String(p?.id || '') !== id)
+    await writeStore({ promotions: nextPromotions })
     return res.status(200).json({ success: true })
   } catch (_err) {
     return res.status(500).json({ success: false, error: 'Errore interno.' })

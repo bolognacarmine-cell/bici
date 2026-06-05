@@ -1,12 +1,35 @@
 import { getCloudinary } from '../config/cloudinary.js'
-import pgPkg from 'pg'
+import fs from 'fs/promises'
+import path from 'path'
 
-const { Pool } = pgPkg
+function getStorePath() {
+  return path.join(process.cwd(), 'storage', 'carousel.json')
+}
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
-})
+async function ensureStoreDir() {
+  await fs.mkdir(path.dirname(getStorePath()), { recursive: true })
+}
+
+async function readStore() {
+  const filePath = getStorePath()
+  try {
+    const raw = await fs.readFile(filePath, 'utf8')
+    const parsed = JSON.parse(raw)
+    const items = Array.isArray(parsed?.items) ? parsed.items : []
+    return { items }
+  } catch (e) {
+    const code = e && typeof e === 'object' && 'code' in e ? String(e.code) : ''
+    if (code === 'ENOENT') return { items: [] }
+    throw e
+  }
+}
+
+async function writeStore(store) {
+  await ensureStoreDir()
+  const filePath = getStorePath()
+  const payload = { items: Array.isArray(store?.items) ? store.items : [] }
+  await fs.writeFile(filePath, JSON.stringify(payload, null, 2))
+}
 
 function uploadToCloudinary(buffer, mimetype) {
   return new Promise((resolve, reject) => {
@@ -44,10 +67,6 @@ function toBoolOrDefault(value, fallback) {
 
 export async function uploadCarouselMedia(req, res) {
   try {
-    if (!process.env.DATABASE_URL) {
-      return res.status(500).json({ success: false, error: 'DATABASE_URL is required' })
-    }
-
     const file = req.file
     if (!file || !file.buffer) {
       return res.status(400).json({ success: false, error: 'File mancante (field name: file).' })
@@ -79,32 +98,12 @@ export async function uploadCarouselMedia(req, res) {
       return res.status(500).json({ success: false, error: 'Upload incompleto su Cloudinary.' })
     }
 
-    const { rows } = await pool.query(
-      `
-        INSERT INTO carousel_media
-          (title, alt_text, media_type, mime_type, secure_url, public_id, format, width, height, bytes, sort_order, is_active)
-        VALUES
-          ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
-        RETURNING
-          id, title, alt_text, media_type, mime_type, secure_url, public_id, format, width, height, bytes, sort_order, is_active, created_at
-      `,
-      [
-        record.title,
-        record.alt_text,
-        record.media_type,
-        record.mime_type,
-        record.secure_url,
-        record.public_id,
-        record.format,
-        record.width,
-        record.height,
-        record.bytes,
-        record.sort_order,
-        record.is_active,
-      ]
-    )
+    const now = new Date().toISOString()
+    const item = { id: crypto.randomUUID(), ...record, created_at: now }
+    const store = await readStore()
+    await writeStore({ items: [...store.items, item] })
 
-    return res.status(201).json({ success: true, record: rows[0] })
+    return res.status(201).json({ success: true, record: item })
   } catch (err) {
     const msg = err instanceof Error ? err.message : null
     if (msg && msg.endsWith(' is required')) {

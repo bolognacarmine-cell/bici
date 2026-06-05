@@ -1,43 +1,39 @@
 import { NextResponse } from 'next/server'
 import { deleteByPublicId } from '@/lib/cloudinary-server'
-import { getPgPool } from '@/lib/db'
-import { ensurePromotionsTables, normalizePgSchema } from '@/lib/promotions-db'
+import { deletePromotionById } from '@/lib/promotions-repo'
 
 export const dynamic = 'force-dynamic'
 
-function isNumericId(value: string) {
-  return /^[0-9]+$/.test(String(value || '').trim())
+function toSafeErrorMessage(err: unknown) {
+  const msg = err instanceof Error ? err.message : ''
+  if (msg === 'MONGODB_URI is not set') return msg
+  if (msg.includes('ENOTFOUND') || msg.includes('MongoServerSelectionError')) {
+    return 'Connessione MongoDB fallita (verifica MONGODB_URI e Network Access su Atlas).'
+  }
+  if (msg.toLowerCase().includes('authentication failed') || msg.toLowerCase().includes('bad auth')) {
+    return 'Autenticazione MongoDB fallita (verifica username/password nella MONGODB_URI).'
+  }
+  if (msg.endsWith(' is required')) return msg
+  return 'Errore interno.'
 }
 
 export async function DELETE(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await ctx.params
     const value = String(id || '').trim()
-    if (!isNumericId(value)) {
-      return NextResponse.json({ success: false, error: 'ID non valido.' }, { status: 400 })
+    if (!value) return NextResponse.json({ success: false, error: 'ID mancante.' }, { status: 400 })
+
+    const promotion = await deletePromotionById(value)
+    if (!promotion) return NextResponse.json({ success: false, error: 'Promozione non trovata.' }, { status: 404 })
+
+    for (const img of promotion.images || []) {
+      if (img?.public_id) {
+        await deleteByPublicId(img.public_id)
+      }
     }
 
-    const schema = normalizePgSchema(process.env.PG_SCHEMA)
-    const promotions = `"${schema}"."promotions"`
-    const promotionImages = `"${schema}"."promotion_images"`
-
-    const pool = getPgPool()
-    await ensurePromotionsTables(pool, schema)
-    const { rows } = await pool.query(`SELECT public_id FROM ${promotionImages} WHERE promotion_id = $1`, [value])
-    for (const r of rows) {
-      await deleteByPublicId(r.public_id)
-    }
-
-    await pool.query(`DELETE FROM ${promotions} WHERE id = $1`, [value])
     return NextResponse.json({ success: true }, { status: 200 })
   } catch (e) {
-    const msg = e instanceof Error ? e.message : ''
-    if (msg === 'DATABASE_URL is not set') {
-      return NextResponse.json({ success: false, error: 'DATABASE_URL is required' }, { status: 500 })
-    }
-    if (msg.endsWith(' is required')) {
-      return NextResponse.json({ success: false, error: msg }, { status: 500 })
-    }
-    return NextResponse.json({ success: false, error: 'Errore interno.' }, { status: 500 })
+    return NextResponse.json({ success: false, error: toSafeErrorMessage(e) }, { status: 500 })
   }
 }
