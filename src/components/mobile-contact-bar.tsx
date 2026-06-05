@@ -17,17 +17,19 @@ export function MobileContactBar() {
           <div className="grid grid-cols-2 gap-2">
             <a
               href={CONTACT_ANTONIO_TEL_HREF}
-              className="tap-target btn-secondary h-12 font-bold border border-white/12 inline-flex items-center justify-center gap-2"
+              aria-label={`Chiama Antonio ${CONTACT_ANTONIO_PHONE}`}
+              className="tap-target btn-secondary h-12 px-2 text-[13px] font-bold border border-white/12 inline-flex items-center justify-center gap-2 tracking-tight whitespace-nowrap"
             >
               <PhoneCall className="h-5 w-5" />
-              Chiama Antonio: {CONTACT_ANTONIO_PHONE}
+              Chiama Antonio
             </a>
             <a
-              className="tap-target btn-secondary h-12 font-bold border border-white/12 inline-flex items-center justify-center gap-2"
+              className="tap-target btn-secondary h-12 px-2 text-[13px] font-bold border border-white/12 inline-flex items-center justify-center gap-2 tracking-tight whitespace-nowrap"
               href={CONTACT_LUIGI_TEL_HREF}
+              aria-label={`Chiama Luigi ${CONTACT_LUIGI_PHONE}`}
             >
               <PhoneCall className="h-5 w-5" />
-              Chiama Luigi: {CONTACT_LUIGI_PHONE}
+              Chiama Luigi
             </a>
           </div>
         </div>
