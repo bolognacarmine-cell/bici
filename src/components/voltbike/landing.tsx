@@ -273,7 +273,7 @@ export function VoltbikeLanding() {
       <section id="hero" className="relative min-h-[108svh] md:min-h-[100svh] pt-28 md:pt-32">
         <div className="absolute inset-0">
           <Image
-            src="/7.jpg"
+            src="/6.jpg"
             alt="Officina biciclette"
             fill
             priority
@@ -282,7 +282,7 @@ export function VoltbikeLanding() {
             style={{ objectPosition: '32% 20%' }}
           />
           <Image
-            src="/7.jpg"
+            src="/6.jpg"
             alt=""
             aria-hidden="true"
             fill
@@ -475,7 +475,7 @@ export function VoltbikeLanding() {
                 >
                   <div className="relative aspect-[16/10] bg-white/3 overflow-hidden">
                     <MediaCarousel
-                      images={getImageUrls(p, '/7.jpg')}
+                      images={getImageUrls(p, '/6.jpg')}
                       alt={p.title || 'Promozione'}
                       sizes="(max-width: 768px) 92vw, 46vw"
                       className="absolute inset-0"
@@ -592,7 +592,7 @@ export function VoltbikeLanding() {
                     aria-label={`Apri dettagli: ${String(p?.name || 'Prodotto')}`}
                   >
                     <MediaCarousel
-                      images={getImageUrls(p, '/7.jpg')}
+                      images={getImageUrls(p, '/6.jpg')}
                       alt={p.name || 'Prodotto'}
                       sizes="(max-width: 768px) 92vw, (max-width: 1024px) 46vw, 22vw"
                       className="absolute inset-0"
@@ -1112,7 +1112,7 @@ export function VoltbikeLanding() {
 
           <div className="mt-14 columns-2 md:columns-3 gap-4 md:gap-6">
             {gallery.map((item, idx) => {
-              const src = toImageUrl(item, 'portrait_4_3') ?? '/7.jpg'
+              const src = toImageUrl(item, 'portrait_4_3') ?? '/6.jpg'
               const aspect =
                 idx % 6 === 0
                   ? 'aspect-[4/5]'
