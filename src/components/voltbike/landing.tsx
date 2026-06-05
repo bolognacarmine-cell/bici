@@ -279,7 +279,7 @@ export function VoltbikeLanding() {
             priority
             sizes="100vw"
             className="md:hidden object-cover opacity-60"
-            style={{ objectPosition: '32% 20%' }}
+            style={{ objectPosition: '50% 38%' }}
           />
           <Image
             src="/6.jpg"
@@ -289,7 +289,7 @@ export function VoltbikeLanding() {
             priority
             sizes="100vw"
             className="hidden md:block object-cover opacity-65"
-            style={{ objectPosition: '30% 14%' }}
+            style={{ objectPosition: '50% 30%' }}
           />
           <div className="absolute inset-0 bg-[radial-gradient(1200px_700px_at_50%_18%,rgba(0,245,255,0.12),transparent_62%),radial-gradient(900px_600px_at_90%_45%,rgba(163,255,0,0.10),transparent_60%),linear-gradient(180deg,rgba(5,6,8,0.18),rgba(5,6,8,0.82))]" />
           <div className="absolute inset-0 grid-overlay opacity-70" />
