@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ChevronDown, Facebook, Instagram, MapPin } from 'lucide-react'
+import { ChevronDown, MapPinned } from 'lucide-react'
 import { CONTACT_TEL_HREF, CONTACT_LUIGI_TEL_HREF, CONTACT_WHATSAPP_HREF } from '@/lib/contact'
 
 type SectionKey = 'contatti' | 'link' | 'social'
@@ -116,7 +116,12 @@ export function MobileFooterAccordion() {
                   title="Facebook"
                   className="tap-target w-11 h-11 inline-flex items-center justify-center rounded-2xl bg-white/6 border border-white/12 text-white/85 hover:text-[#1877f2] transition-colors"
                 >
-                  <Facebook className="w-5 h-5" />
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path
+                      fill="currentColor"
+                      d="M22 12a10 10 0 1 0-11.56 9.87v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.77l-.44 2.88h-2.33v6.99A10 10 0 0 0 22 12z"
+                    />
+                  </svg>
                 </a>
                 <a
                   href="https://www.instagram.com/ciclomoto2026/"
@@ -126,7 +131,12 @@ export function MobileFooterAccordion() {
                   title="Instagram"
                   className="tap-target w-11 h-11 inline-flex items-center justify-center rounded-2xl bg-white/6 border border-white/12 text-white/85 hover:text-[#e1306c] transition-colors"
                 >
-                  <Instagram className="w-5 h-5" />
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path
+                      fill="currentColor"
+                      d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9A5.5 5.5 0 0 1 16.5 22h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm9 2h-9A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4Zm-4.5 4.2A3.8 3.8 0 1 1 8.2 12 3.8 3.8 0 0 1 12 8.2Zm0 2A1.8 1.8 0 1 0 13.8 12 1.8 1.8 0 0 0 12 10.2ZM17.9 6.8a.9.9 0 1 1-.9.9.9.9 0 0 1 .9-.9Z"
+                    />
+                  </svg>
                 </a>
               </div>
 
@@ -137,7 +147,7 @@ export function MobileFooterAccordion() {
                 className="tap-target w-full px-4 py-4 rounded-2xl bg-white/6 border border-white/12 font-bold text-white inline-flex items-center justify-between"
               >
                 Google Maps
-                <MapPin className="w-5 h-5 text-white/75" />
+                <MapPinned className="w-5 h-5 text-white/75" />
               </a>
             </div>
           ),
