@@ -106,25 +106,30 @@ export function MobileFooterAccordion() {
           title: 'Social',
           contentId: 'footer-accordion-social',
           items: (
-            <div className="grid gap-2">
-              <a
-                href="https://instagram.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="tap-target w-full px-4 py-4 rounded-2xl bg-white/6 border border-white/12 font-bold text-white inline-flex items-center justify-between"
-              >
-                Instagram
-                <Instagram className="w-5 h-5 text-white/75" />
-              </a>
-              <a
-                href="https://facebook.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="tap-target w-full px-4 py-4 rounded-2xl bg-white/6 border border-white/12 font-bold text-white inline-flex items-center justify-between"
-              >
-                Facebook
-                <Facebook className="w-5 h-5 text-white/75" />
-              </a>
+            <div className="grid gap-3">
+              <div className="inline-flex items-center gap-3">
+                <a
+                  href="https://www.facebook.com/profile.php?id=61590511562992"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook (apre in una nuova scheda)"
+                  title="Facebook"
+                  className="tap-target w-11 h-11 inline-flex items-center justify-center rounded-2xl bg-white/6 border border-white/12 text-white/85 hover:text-[#1877f2] transition-colors"
+                >
+                  <Facebook className="w-5 h-5" />
+                </a>
+                <a
+                  href="https://www.instagram.com/ciclomoto2026/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram (apre in una nuova scheda)"
+                  title="Instagram"
+                  className="tap-target w-11 h-11 inline-flex items-center justify-center rounded-2xl bg-white/6 border border-white/12 text-white/85 hover:text-[#e1306c] transition-colors"
+                >
+                  <Instagram className="w-5 h-5" />
+                </a>
+              </div>
+
               <a
                 href="https://maps.google.com/"
                 target="_blank"
@@ -189,4 +194,3 @@ export function MobileFooterAccordion() {
     </footer>
   )
 }
-
