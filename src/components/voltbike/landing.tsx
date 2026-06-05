@@ -773,17 +773,18 @@ export function VoltbikeLanding() {
           </div>
 
           <div className="mt-6 h-[74vh] md:h-[76vh]">
-            <div
-              ref={repairsTrackRef}
-              data-track
-              className="h-full flex gap-6 md:gap-8 px-6 md:px-20 overflow-x-auto overscroll-x-contain"
-              style={{
-                scrollSnapType: 'x mandatory',
-                WebkitOverflowScrolling: 'touch',
-                scrollBehavior: prefersReducedMotion ? 'auto' : 'smooth',
-                touchAction: 'pan-x',
-              }}
-            >
+            <div className="relative h-full">
+              <div
+                ref={repairsTrackRef}
+                data-track
+                className="h-full flex gap-6 md:gap-8 px-6 md:px-20 overflow-x-auto overscroll-x-contain"
+                style={{
+                  scrollSnapType: 'x mandatory',
+                  WebkitOverflowScrolling: 'touch',
+                  scrollBehavior: prefersReducedMotion ? 'auto' : 'smooth',
+                  touchAction: 'pan-x',
+                }}
+              >
               {repairs.map((s, i) => (
                 <div
                   key={String(s.id ?? s.title)}
@@ -857,6 +858,36 @@ export function VoltbikeLanding() {
                   </TiltCard>
                 </div>
               ))}
+              </div>
+
+              <button
+                type="button"
+                aria-label="Foto precedente"
+                className="md:hidden tap-target absolute left-2 top-1/2 -translate-y-1/2 z-30 h-11 w-11 rounded-2xl bg-black/35 border border-white/15 text-white/90 backdrop-blur-sm"
+                onClick={() => {
+                  const el = repairsTrackRef.current
+                  if (!el) return
+                  const children = Array.from(el.children) as HTMLElement[]
+                  const next = Math.max(0, Math.min(children.length - 1, repairsIndex - 1))
+                  children[next]?.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', inline: 'center', block: 'nearest' })
+                }}
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                aria-label="Foto successiva"
+                className="md:hidden tap-target absolute right-2 top-1/2 -translate-y-1/2 z-30 h-11 w-11 rounded-2xl bg-black/35 border border-white/15 text-white/90 backdrop-blur-sm"
+                onClick={() => {
+                  const el = repairsTrackRef.current
+                  if (!el) return
+                  const children = Array.from(el.children) as HTMLElement[]
+                  const next = Math.max(0, Math.min(children.length - 1, repairsIndex + 1))
+                  children[next]?.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', inline: 'center', block: 'nearest' })
+                }}
+              >
+                →
+              </button>
             </div>
           </div>
 
@@ -1200,7 +1231,7 @@ export function VoltbikeLanding() {
                 <a
                   href={mapsHref}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="btn-secondary px-7 py-4 font-bold rounded-2xl inline-flex items-center justify-center gap-2 border border-white/12"
                 >
                   Apri in Maps

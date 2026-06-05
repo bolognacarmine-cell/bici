@@ -12,6 +12,9 @@ export function MobileFooterAccordion() {
   const pathname = usePathname()
   const hidden = pathname.startsWith('/admin')
   const [open, setOpen] = useState<SectionKey | null>('contatti')
+  const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    'Via Novelli, 51, Marcianise (CE) 81025, Italia'
+  )}`
 
   const sections = useMemo(
     () =>
@@ -141,7 +144,7 @@ export function MobileFooterAccordion() {
               </div>
 
               <a
-                href="https://maps.google.com/"
+                href={mapsHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="tap-target w-full px-4 py-4 rounded-2xl bg-white/6 border border-white/12 font-bold text-white inline-flex items-center justify-between"
