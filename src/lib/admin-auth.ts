@@ -9,7 +9,7 @@ export function isAdminConfigured() {
 }
 
 export function getAdminUser() {
-  return process.env.ADMIN_USER || 'admin'
+  return 'ciclomoto'
 }
 
 function sign(payload: string) {

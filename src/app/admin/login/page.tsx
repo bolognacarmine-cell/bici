@@ -69,15 +69,10 @@ export default async function AdminLoginPage({ searchParams }: { searchParams: P
         )}
 
         <form action={adminLogin} className="mt-6 space-y-4">
-          <div>
-            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">User</label>
-            <input
-              name="user"
-              defaultValue={user}
-              className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500 focus:ring-2 focus:ring-emerald-500/40"
-              autoComplete="username"
-              required
-            />
+          <input name="user" value={user} readOnly hidden />
+          <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+            <div className="text-xs font-bold text-zinc-400 uppercase">User</div>
+            <div className="mt-1 font-extrabold text-zinc-100">{user}</div>
           </div>
           <div>
             <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Password</label>

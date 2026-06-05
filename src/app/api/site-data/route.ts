@@ -17,7 +17,11 @@ export async function GET() {
       },
     })
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error'
+    const raw = err instanceof Error ? err.message : 'Unknown error'
+    const message =
+      raw.includes('SSL routines') || raw.includes('tlsv1 alert')
+        ? 'Errore TLS verso MongoDB (verifica MONGODB_URI, Network Access su Atlas e che il cluster sia attivo).'
+        : raw
     return NextResponse.json(
       { error: message },
       {
@@ -83,7 +87,11 @@ export async function PUT(req: Request) {
         }
       )
     }
-    const message = err instanceof Error ? err.message : 'Unknown error'
+    const raw = err instanceof Error ? err.message : 'Unknown error'
+    const message =
+      raw.includes('SSL routines') || raw.includes('tlsv1 alert')
+        ? 'Errore TLS verso MongoDB (verifica MONGODB_URI, Network Access su Atlas e che il cluster sia attivo).'
+        : raw
     return NextResponse.json(
       { error: message },
       {
