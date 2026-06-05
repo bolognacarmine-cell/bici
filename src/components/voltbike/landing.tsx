@@ -49,6 +49,9 @@ export function VoltbikeLanding() {
   const rootRef = useRef<HTMLDivElement | null>(null)
   const [data, setData] = useState<any>(initialData as any)
   const [dataError, setDataError] = useState<string | null>(null)
+  const repairsTrackRef = useRef<HTMLDivElement | null>(null)
+  const [repairsIndex, setRepairsIndex] = useState(0)
+  const [repairsLightbox, setRepairsLightbox] = useState<{ src: string; alt: string } | null>(null)
   const didFetchRef = useRef(false)
   const prefersReducedMotion = useMemo(() => {
     if (typeof window === 'undefined') return true
@@ -214,6 +217,54 @@ export function VoltbikeLanding() {
     if (prefersReducedMotion) return
     ScrollTrigger.refresh()
   }, [prefersReducedMotion, data])
+
+  useEffect(() => {
+    const el = repairsTrackRef.current
+    if (!el) return
+
+    let raf = 0
+    const onScroll = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        const rect = el.getBoundingClientRect()
+        const center = rect.left + rect.width / 2
+        const children = Array.from(el.children) as HTMLElement[]
+        let best = 0
+        let bestDist = Number.POSITIVE_INFINITY
+        children.forEach((c, i) => {
+          const r = c.getBoundingClientRect()
+          const cCenter = r.left + r.width / 2
+          const dist = Math.abs(cCenter - center)
+          if (dist < bestDist) {
+            bestDist = dist
+            best = i
+          }
+        })
+        setRepairsIndex(best)
+      })
+    }
+
+    el.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => {
+      cancelAnimationFrame(raf)
+      el.removeEventListener('scroll', onScroll)
+    }
+  }, [repairs.length])
+
+  useEffect(() => {
+    if (!repairsLightbox) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setRepairsLightbox(null)
+    }
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = prevOverflow
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [repairsLightbox])
 
   return (
     <div ref={rootRef} className="min-h-screen overflow-x-hidden bg-noise">
@@ -687,12 +738,68 @@ export function VoltbikeLanding() {
             </motion.div>
           </div>
 
-          <div className="mt-12 h-[74vh] md:h-[76vh]">
-            <div data-track className="h-full flex gap-6 md:gap-8 px-6 md:px-20">
+          <div className="mt-10 container mx-auto px-6 flex items-center justify-between gap-4">
+            <div className="text-white/55 text-sm font-semibold">Foto {repairsIndex + 1}/{repairs.length}</div>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                aria-label="Foto precedente"
+                className="tap-target h-11 w-11 rounded-2xl bg-black/25 border border-white/12 text-white/90 backdrop-blur-sm"
+                onClick={() => {
+                  const el = repairsTrackRef.current
+                  if (!el) return
+                  const children = Array.from(el.children) as HTMLElement[]
+                  const next = Math.max(0, Math.min(children.length - 1, repairsIndex - 1))
+                  children[next]?.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', inline: 'center', block: 'nearest' })
+                }}
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                aria-label="Foto successiva"
+                className="tap-target h-11 w-11 rounded-2xl bg-black/25 border border-white/12 text-white/90 backdrop-blur-sm"
+                onClick={() => {
+                  const el = repairsTrackRef.current
+                  if (!el) return
+                  const children = Array.from(el.children) as HTMLElement[]
+                  const next = Math.max(0, Math.min(children.length - 1, repairsIndex + 1))
+                  children[next]?.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', inline: 'center', block: 'nearest' })
+                }}
+              >
+                →
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-6 h-[74vh] md:h-[76vh]">
+            <div
+              ref={repairsTrackRef}
+              data-track
+              className="h-full flex gap-6 md:gap-8 px-6 md:px-20 overflow-x-auto overscroll-x-contain"
+              style={{
+                scrollSnapType: 'x mandatory',
+                WebkitOverflowScrolling: 'touch',
+                scrollBehavior: prefersReducedMotion ? 'auto' : 'smooth',
+                touchAction: 'pan-x',
+              }}
+            >
               {repairs.map((s, i) => (
-                <div key={String(s.id ?? s.title)} className="h-full w-[82vw] sm:w-[68vw] md:w-[640px] flex-none">
+                <div
+                  key={String(s.id ?? s.title)}
+                  className="h-full w-[82vw] sm:w-[68vw] md:w-[640px] flex-none"
+                  style={{ scrollSnapAlign: 'center' }}
+                >
                   <TiltCard className="h-full">
                     <div className="relative h-full rounded-[32px] overflow-hidden border border-white/12 bg-white/2">
+                      <button
+                        type="button"
+                        aria-label="Apri immagine"
+                        className="tap-target absolute right-4 top-4 z-20 h-11 px-4 rounded-2xl bg-black/35 border border-white/15 text-white/90 backdrop-blur-sm font-bold"
+                        onClick={() => setRepairsLightbox({ src: `/${(i % 6) + 1}.jpg`, alt: String(s.title ?? 'Riparazioni') })}
+                      >
+                        Zoom
+                      </button>
                       <Image
                         src={`/${(i % 6) + 1}.jpg`}
                         alt={s.title}
@@ -753,12 +860,61 @@ export function VoltbikeLanding() {
             </div>
           </div>
 
+          <div className="mt-5 flex items-center justify-center gap-2 px-6">
+            {repairs.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                aria-label={`Vai alla foto ${i + 1}`}
+                aria-current={repairsIndex === i}
+                className={`h-2.5 w-2.5 rounded-full border ${repairsIndex === i ? 'bg-[rgba(0,245,255,0.70)] border-[rgba(0,245,255,0.90)]' : 'bg-white/10 border-white/15'}`}
+                onClick={() => {
+                  const el = repairsTrackRef.current
+                  if (!el) return
+                  const children = Array.from(el.children) as HTMLElement[]
+                  children[i]?.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', inline: 'center', block: 'nearest' })
+                }}
+              />
+            ))}
+          </div>
+
           <div className="container mx-auto px-6 pb-10">
             <div className="text-white/50 text-xs">
               Tip: su desktop passa il mouse sulle card per un tilt 3D. Su mobile, scorri orizzontalmente.
             </div>
           </div>
         </div>
+
+        {repairsLightbox && (
+          <div
+            className="fixed inset-0 z-[200] bg-black/70 backdrop-blur-sm flex items-center justify-center px-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Anteprima immagine"
+            onClick={() => setRepairsLightbox(null)}
+          >
+            <div
+              className="relative w-full max-w-4xl rounded-[28px] overflow-hidden border border-white/12 bg-black/40 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="tap-target absolute right-3 top-3 z-10 h-11 w-11 rounded-2xl bg-black/45 border border-white/15 text-white/90 backdrop-blur-sm"
+                aria-label="Chiudi"
+                onClick={() => setRepairsLightbox(null)}
+              >
+                ×
+              </button>
+              <img
+                src={repairsLightbox.src}
+                alt={repairsLightbox.alt}
+                className="w-full h-auto block"
+                loading="eager"
+                decoding="async"
+              />
+            </div>
+          </div>
+        )}
       </section>
 
       <section id="perche" className="py-24 md:py-32">
@@ -1096,7 +1252,7 @@ export function VoltbikeLanding() {
         </div>
       </section>
 
-      <footer className="py-16 border-t border-white/10">
+      <footer className="hidden md:block py-16 border-t border-white/10">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
             <div className="md:col-span-5">
@@ -1166,12 +1322,43 @@ export function VoltbikeLanding() {
 
           <div className="mt-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-white/45 text-xs">
             <div>© {new Date().getFullYear()} Ciclomoto. Tutti i diritti riservati.</div>
-            <div className="flex items-center gap-4">
-              {(data as any).footer.social.map((s: any) => (
-                <a key={s.label} href={s.href} className="hover:text-white/70 transition-colors">
-                  {s.label}
-                </a>
-              ))}
+            <div className="flex items-center gap-3">
+              <a
+                href="https://www.facebook.com/profile.php?id=61590511562992"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook (apre in una nuova scheda)"
+                title="Facebook"
+                className="tap-target h-11 w-11 rounded-2xl bg-white/5 border border-white/12 text-white/80 hover:text-[#1877F2] transition-colors inline-flex items-center justify-center"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path
+                    fill="currentColor"
+                    d="M22 12a10 10 0 1 0-11.56 9.87v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.77l-.44 2.88h-2.33v6.99A10 10 0 0 0 22 12z"
+                  />
+                </svg>
+              </a>
+              <a
+                href="https://www.instagram.com/ciclomoto2026/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram (apre in una nuova scheda)"
+                title="Instagram"
+                className="tap-target h-11 w-11 rounded-2xl bg-white/5 border border-white/12 text-white/80 hover:text-white transition-colors inline-flex items-center justify-center"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <defs>
+                    <linearGradient id="cmIgGradLanding" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor="#E4405F" />
+                      <stop offset="100%" stopColor="#F77737" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    fill="url(#cmIgGradLanding)"
+                    d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9A5.5 5.5 0 0 1 16.5 22h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm9 2h-9A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4Zm-4.5 4.2A3.8 3.8 0 1 1 8.2 12 3.8 3.8 0 0 1 12 8.2Zm0 2A1.8 1.8 0 1 0 13.8 12 1.8 1.8 0 0 0 12 10.2ZM17.9 6.8a.9.9 0 1 1-.9.9.9.9 0 0 1 .9-.9Z"
+                  />
+                </svg>
+              </a>
             </div>
           </div>
         </div>
