@@ -270,9 +270,6 @@ export default async function ProdottoPage({ params }: { params: Promise<{ slug:
               <h1 className="mt-3 font-display font-extrabold tracking-tight text-3xl md:text-4xl text-white">{product.name}</h1>
               <div className="mt-3 flex flex-wrap items-center gap-3">
                 <div className="px-3 py-2 rounded-full bg-white/5 border border-white/10 text-white/80 text-xs font-semibold">
-                  SKU: {sku || '—'}
-                </div>
-                <div className="px-3 py-2 rounded-full bg-white/5 border border-white/10 text-white/80 text-xs font-semibold">
                   {categoryLabel(category)}
                 </div>
                 {gender && (
