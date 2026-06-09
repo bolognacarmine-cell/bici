@@ -1766,28 +1766,6 @@ export default function AdminClientPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">SKU</label>
-                        <input
-                          type="text"
-                          value={String((product as any).sku ?? '')}
-                          onChange={(e) => updateProduct(idx, 'sku', e.target.value === '' ? undefined : e.target.value)}
-                          disabled={saving || productEditIndex !== idx}
-                          className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Slug</label>
-                        <input
-                          type="text"
-                          value={String((product as any).slug ?? '')}
-                          onChange={(e) => updateProduct(idx, 'slug', e.target.value === '' ? undefined : e.target.value)}
-                          disabled={saving || productEditIndex !== idx}
-                          className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
                         <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Genere</label>
                         <select
                           value={String((product as any).gender ?? '')}
@@ -1884,82 +1862,6 @@ export default function AdminClientPage() {
                         placeholder="Dettagli completi del prodotto (materiali, componenti, note, utilizzo...)"
                       />
                     </div>
-                    {(() => {
-                      const raw = (product as any).extensions
-                      const extensions: Array<{ label: string; value: string }> = Array.isArray(raw)
-                        ? raw.map((x: any) => ({
-                            label: String(x?.label ?? ''),
-                            value: String(x?.value ?? ''),
-                          }))
-                        : []
-
-                      const setExtensions = (next: Array<{ label: string; value: string }>) => {
-                        const normalized = next.map((x) => ({
-                          label: String(x.label ?? ''),
-                          value: String(x.value ?? ''),
-                        }))
-                        updateProduct(idx, 'extensions', normalized.length > 0 ? normalized : undefined)
-                      }
-
-                      return (
-                        <div>
-                          <div className="flex items-center justify-between">
-                            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">Dettagli tecnici</label>
-                            <button
-                              type="button"
-                              onClick={() => setExtensions([...extensions, { label: '', value: '' }])}
-                              disabled={saving || productEditIndex !== idx}
-                              className="text-xs font-extrabold text-emerald-300 hover:text-emerald-200 disabled:opacity-50"
-                            >
-                              + Aggiungi
-                            </button>
-                          </div>
-                          <div className="space-y-2">
-                            {(extensions.length > 0 ? extensions : []).map((ext, extIndex) => (
-                              <div key={extIndex} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2">
-                                <input
-                                  type="text"
-                                  placeholder="Etichetta"
-                                  value={ext.label}
-                                  onChange={(e) => {
-                                    const next = [...extensions]
-                                    next[extIndex] = { ...next[extIndex], label: e.target.value }
-                                    setExtensions(next)
-                                  }}
-                                  disabled={saving || productEditIndex !== idx}
-                                  className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
-                                />
-                                <input
-                                  type="text"
-                                  placeholder="Valore"
-                                  value={ext.value}
-                                  onChange={(e) => {
-                                    const next = [...extensions]
-                                    next[extIndex] = { ...next[extIndex], value: e.target.value }
-                                    setExtensions(next)
-                                  }}
-                                  disabled={saving || productEditIndex !== idx}
-                                  className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const next = [...extensions]
-                                    next.splice(extIndex, 1)
-                                    setExtensions(next)
-                                  }}
-                                  disabled={saving || productEditIndex !== idx}
-                                  className="h-11 w-full md:w-auto px-4 rounded-2xl border border-red-500/30 bg-red-500/10 text-red-200 font-extrabold disabled:opacity-50"
-                                >
-                                  Rimuovi
-                                </button>
-                              </div>
-                            ))}
-                            {extensions.length === 0 && <div className="text-xs text-zinc-500">Nessun dettaglio tecnico.</div>}
-                          </div>
-                        </div>
-                      )
-                    })()}
                     {String((product as any).category ?? '').startsWith('ebike_') && (
                       <div className="rounded-2xl border border-white/10 bg-black/20 p-4 space-y-3">
                         <div className="text-sm font-extrabold text-zinc-100">Dati e-bike</div>
