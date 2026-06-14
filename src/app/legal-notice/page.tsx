@@ -52,6 +52,12 @@ export default function LegalNoticePage() {
               >
                 Cookie Policy
               </Link>
+              <Link
+                href="/termini-e-condizioni"
+                className="tap-target btn-secondary px-6 py-4 font-bold border border-white/12 inline-flex justify-center"
+              >
+                Termini e Condizioni
+              </Link>
               <Link href="/" className="tap-target btn-primary px-6 py-4 font-bold inline-flex justify-center">
                 Home
               </Link>

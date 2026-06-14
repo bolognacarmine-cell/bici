@@ -4,80 +4,76 @@ const COMPANY_NAME = 'Cicli Moto Amati Bonaccorsi'
 const COMPANY_CF = '02402630616'
 const COMPANY_REA = 'CE170393'
 const COMPANY_EMAIL = 'ciclomoto2026@libero.it'
-const COMPANY_ADDRESS = 'Via Novelli, 51, Marcianise (CE) 81025, Italia'
+const COMPANY_ADDRESS = 'Via Novelli, 51, Marcianise (CE) 81025'
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(900px_540px_at_10%_30%,rgba(0,245,255,0.10),transparent_60%),radial-gradient(900px_540px_at_90%_40%,rgba(163,255,0,0.08),transparent_60%)]">
-      <div className="container mx-auto px-6 py-16">
-        <div className="glass border border-white/12 rounded-[32px] p-8 md:p-10 max-w-3xl">
-          <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Privacy</div>
-          <h1 className="mt-3 font-display font-extrabold tracking-tight text-3xl md:text-4xl text-white">Informativa Privacy</h1>
+    <main className="min-h-screen bg-[#1a1a1a] py-12 px-4">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-[#4da6ff] mb-8">Privacy Policy</h1>
 
-          <div className="mt-6 text-white/70 leading-relaxed space-y-4">
-            <p>
-              Questa informativa descrive come vengono trattati i dati personali quando navighi su questo sito e quando ci
-              contatti per informazioni, disponibilità o assistenza.
-            </p>
+        <div className="bg-[#2a2a2a] p-6 rounded-lg text-gray-300 space-y-4">
+          <p>
+            Questa informativa descrive come vengono trattati i dati personali quando navighi su questo sito e quando ci
+            contatti per informazioni, disponibilita o assistenza.
+          </p>
 
-            <p>
-              <span className="text-white font-semibold">Titolare del trattamento:</span> {COMPANY_NAME} — CF {COMPANY_CF} — REA {COMPANY_REA}
-              <br />
-              <span className="text-white font-semibold">Sede:</span> {COMPANY_ADDRESS}
-              <br />
-              <span className="text-white font-semibold">Email:</span>{' '}
-              <a className="underline underline-offset-4" href={`mailto:${COMPANY_EMAIL}`}>
-                {COMPANY_EMAIL}
-              </a>
-            </p>
+          <p>
+            <strong className="text-white">Titolare:</strong> {COMPANY_NAME}
+          </p>
+          <p>
+            <strong className="text-white">Codice Fiscale:</strong> {COMPANY_CF}
+          </p>
+          <p>
+            <strong className="text-white">REA:</strong> {COMPANY_REA}
+          </p>
+          <p>
+            <strong className="text-white">Indirizzo:</strong> {COMPANY_ADDRESS}
+          </p>
+          <p>
+            <strong className="text-white">Email:</strong>{' '}
+            <a className="text-[#4da6ff] underline underline-offset-4" href={`mailto:${COMPANY_EMAIL}`}>
+              {COMPANY_EMAIL}
+            </a>
+          </p>
 
-            <h2 className="text-white font-extrabold tracking-tight text-xl pt-2">Dati che trattiamo</h2>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>
-                <span className="text-white font-semibold">Dati di contatto</span> che ci fornisci (es. numero, nome, messaggio) quando ci chiami o ci scrivi.
-              </li>
-              <li>
-                <span className="text-white font-semibold">Dati tecnici</span> di navigazione (es. indirizzo IP, user-agent, log di sistema) necessari a sicurezza e funzionamento.
-              </li>
-              <li>
-                <span className="text-white font-semibold">Cookie tecnici</span> strettamente necessari (vedi{' '}
-                <Link href="/cookie-policy" className="underline underline-offset-4">
-                  Cookie Policy
-                </Link>
-                ).
-              </li>
-            </ul>
+          <p>
+            <strong className="text-white">Dati trattati:</strong> dati di contatto forniti volontariamente, dati tecnici
+            di navigazione e cookie tecnici necessari al funzionamento del sito.
+          </p>
 
-            <h2 className="text-white font-extrabold tracking-tight text-xl pt-2">Finalità e base giuridica</h2>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>Rispondere a richieste e fornire assistenza (esecuzione di misure precontrattuali/contrattuali).</li>
-              <li>Sicurezza del sito e prevenzione abusi (legittimo interesse).</li>
-              <li>Obblighi di legge e fiscali, se applicabili (obbligo legale).</li>
-            </ul>
+          <p>
+            <strong className="text-white">Finalita:</strong> gestione delle richieste di contatto, assistenza clienti,
+            sicurezza del sito, adempimenti amministrativi e obblighi di legge.
+          </p>
 
-            <h2 className="text-white font-extrabold tracking-tight text-xl pt-2">Conservazione</h2>
-            <p>I dati vengono conservati per il tempo necessario a gestire la richiesta e per eventuali obblighi di legge.</p>
+          <p>
+            <strong className="text-white">Base giuridica:</strong> esecuzione di misure precontrattuali o contrattuali,
+            legittimo interesse e obblighi di legge.
+          </p>
 
-            <h2 className="text-white font-extrabold tracking-tight text-xl pt-2">Destinatari e trasferimenti</h2>
-            <p>
-              Il sito è ospitato su infrastruttura di hosting. Contenuti multimediali possono essere serviti tramite fornitori tecnici (es. CDN).
-              Non utilizziamo cookie di profilazione senza consenso.
-            </p>
+          <p>
+            <strong className="text-white">Conservazione:</strong> i dati vengono conservati per il tempo strettamente
+            necessario alla gestione delle richieste e agli obblighi normativi applicabili.
+          </p>
 
-            <h2 className="text-white font-extrabold tracking-tight text-xl pt-2">Diritti</h2>
-            <p>
-              Puoi richiedere accesso, rettifica, cancellazione, limitazione, opposizione e portabilità nei limiti previsti dal GDPR, scrivendo a{' '}
-              <a className="underline underline-offset-4" href={`mailto:${COMPANY_EMAIL}`}>
-                {COMPANY_EMAIL}
-              </a>
-              .
-            </p>
+          <p>
+            <strong className="text-white">Diritti dell&apos;interessato:</strong> puoi richiedere accesso, rettifica,
+            cancellazione, limitazione o opposizione scrivendo all&apos;indirizzo email sopra indicato.
+          </p>
 
-            <div className="pt-4">
-              <Link href="/" className="tap-target btn-secondary px-6 py-4 font-bold border border-white/12 inline-flex">
-                Torna alla home
-              </Link>
-            </div>
+          <p>
+            Per maggiori dettagli sui cookie tecnici utilizzati dal sito consulta anche la{' '}
+            <Link href="/cookie-policy" className="text-[#4da6ff] underline underline-offset-4">
+              Cookie Policy
+            </Link>
+            .
+          </p>
+
+          <div className="pt-4">
+            <Link href="/" className="tap-target inline-flex rounded-lg border border-[#4da6ff]/30 px-5 py-3 font-bold text-[#4da6ff]">
+              Torna alla home
+            </Link>
           </div>
         </div>
       </div>

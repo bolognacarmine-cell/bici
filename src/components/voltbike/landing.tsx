@@ -1400,7 +1400,22 @@ export function VoltbikeLanding() {
 
           <div className="mt-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-white/45 text-xs">
             <div>© {new Date().getFullYear()} Ciclomoto. Tutti i diritti riservati.</div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col items-start gap-3 md:items-end">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <Link href="/privacy" className="hover:text-white transition-colors">
+                  Privacy
+                </Link>
+                <Link href="/cookie-policy" className="hover:text-white transition-colors">
+                  Cookie Policy
+                </Link>
+                <Link href="/legal-notice" className="hover:text-white transition-colors">
+                  Note legali
+                </Link>
+                <Link href="/termini-e-condizioni" className="hover:text-white transition-colors">
+                  Termini e Condizioni
+                </Link>
+              </div>
+              <div className="flex items-center gap-3">
               <a
                 href="https://www.facebook.com/profile.php?id=61590511562992"
                 target="_blank"
@@ -1437,6 +1452,7 @@ export function VoltbikeLanding() {
                   />
                 </svg>
               </a>
+              </div>
             </div>
           </div>
         </div>

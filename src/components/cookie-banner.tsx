@@ -48,6 +48,10 @@ export function CookieBanner() {
               <Link href="/privacy" className="underline underline-offset-4">
                 Privacy
               </Link>
+              {' '}e{' '}
+              <Link href="/termini-e-condizioni" className="underline underline-offset-4">
+                Termini e Condizioni
+              </Link>
               .
             </div>
           </div>

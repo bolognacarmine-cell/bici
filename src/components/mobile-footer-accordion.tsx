@@ -100,6 +100,12 @@ export function MobileFooterAccordion() {
                 >
                   Note legali
                 </Link>
+                <Link
+                  href="/termini-e-condizioni"
+                  className="tap-target w-full px-4 py-4 rounded-2xl bg-white/6 border border-white/12 font-bold text-white/90"
+                >
+                  Termini e Condizioni
+                </Link>
               </div>
             </div>
           ),
