@@ -7,6 +7,7 @@ import { SiteDataSchema, type SiteData } from '@/lib/site-data-schema'
 import type { Product, Promotion } from '@/lib/site-data-schema'
 import { MediaCarousel } from '@/components/media-carousel'
 import { ImageUploader, type ImageItem, type UploaderItem } from './image-uploader'
+import { normalizePromotionDateInput } from '@/lib/promotion-date'
 import Image from 'next/image'
 
 const CATEGORY_OPTIONS = [
@@ -618,8 +619,8 @@ export default function AdminClientPage() {
       showOnHome: promoEditShowOnHome,
       category: promoEditScope === 'category' ? (promoEditCategory || undefined) : undefined,
       productSku: promoEditScope === 'product' ? (promoEditProductSku.trim() || undefined) : undefined,
-      startsAt: promoEditStartsAt.trim() || undefined,
-      endsAt: promoEditEndsAt.trim() || undefined,
+      startsAt: normalizePromotionDateInput(promoEditStartsAt) || undefined,
+      endsAt: normalizePromotionDateInput(promoEditEndsAt) || undefined,
       priceEur: typeof priceEur === 'number' ? priceEur : undefined,
       offerActive: promoEditOfferActive ? true : false,
       offerPriceEur: promoEditOfferActive && typeof offerPriceEur === 'number' ? offerPriceEur : undefined,
@@ -1347,8 +1348,9 @@ export default function AdminClientPage() {
                                           <input
                                             value={promoEditStartsAt}
                                             onChange={(e) => setPromoEditStartsAt(e.target.value)}
+                                            onBlur={() => setPromoEditStartsAt(normalizePromotionDateInput(promoEditStartsAt))}
                                             className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
-                                            placeholder="Es. 2026-05-03T10:00:00Z"
+                                            placeholder="Es. 15/06/2026 oppure 2026-06-15"
                                           />
                                         </div>
 
@@ -1357,8 +1359,9 @@ export default function AdminClientPage() {
                                           <input
                                             value={promoEditEndsAt}
                                             onChange={(e) => setPromoEditEndsAt(e.target.value)}
+                                            onBlur={() => setPromoEditEndsAt(normalizePromotionDateInput(promoEditEndsAt))}
                                             className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
-                                            placeholder="Es. 2026-05-20T10:00:00Z"
+                                            placeholder="Es. 17/06/2026 oppure 2026-06-17"
                                           />
                                         </div>
 

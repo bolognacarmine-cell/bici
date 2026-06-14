@@ -28,6 +28,7 @@ import initialData from '@/data.json'
 import { SiteDataSchema } from '@/lib/site-data-schema'
 import { toHostedAssetUrl } from '@/lib/asset-url'
 import { CONTACT_ANTONIO_PHONE, CONTACT_ANTONIO_TEL_HREF, CONTACT_LUIGI_PHONE, CONTACT_LUIGI_TEL_HREF, CONTACT_WHATSAPP_HREF } from '@/lib/contact'
+import { parsePromotionDateValue } from '@/lib/promotion-date'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -67,8 +68,8 @@ export function VoltbikeLanding() {
   const formatPromoDate = (input: unknown) => {
     const raw = String(input ?? '').trim()
     if (!raw) return null
-    const ms = Date.parse(raw)
-    if (!Number.isFinite(ms)) return null
+    const ms = parsePromotionDateValue(raw)
+    if (ms === null) return null
     const d = new Date(ms)
     const hasTime = raw.includes('T') || raw.includes(':')
     return hasTime ? dateTimeFmt.format(d) : dateFmt.format(d)
@@ -113,10 +114,10 @@ export function VoltbikeLanding() {
     if (status === 'active') return true
     if (status === 'scheduled') {
       const now = Date.now()
-      const starts = p?.startsAt ? Date.parse(String(p.startsAt)) : NaN
-      const ends = p?.endsAt ? Date.parse(String(p.endsAt)) : NaN
-      if (Number.isFinite(starts) && now < starts) return false
-      if (Number.isFinite(ends) && now > ends) return false
+      const starts = parsePromotionDateValue(p?.startsAt)
+      const ends = parsePromotionDateValue(p?.endsAt)
+      if (typeof starts === 'number' && now < starts) return false
+      if (typeof ends === 'number' && now > ends) return false
       return true
     }
     return false
