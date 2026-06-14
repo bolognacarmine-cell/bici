@@ -6,7 +6,8 @@ import { usePathname } from 'next/navigation'
 
 type CookieConsent = 'accepted' | 'rejected'
 
-const STORAGE_KEY = 'cookie_consent'
+const CONSENT_VERSION = 'v2'
+const STORAGE_KEY = `cookie_consent_${CONSENT_VERSION}`
 
 function readConsent(): CookieConsent | null {
   if (typeof window === 'undefined') return null
@@ -25,7 +26,10 @@ export function CookieBanner() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    if (hidden) return
+    if (hidden) {
+      setVisible(false)
+      return
+    }
     const existing = readConsent()
     setVisible(!existing)
   }, [hidden])
