@@ -3,7 +3,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { MobileContactBar } from "@/components/mobile-contact-bar";
-import { CookieBanner } from "@/components/cookie-banner";
+import CookieBanner from "@/components/CookieBanner";
 import { Navbar } from "@/components/navbar";
 import { MobileFooterAccordion } from "@/components/mobile-footer-accordion";
 
