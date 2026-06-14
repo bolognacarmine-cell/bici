@@ -956,11 +956,6 @@ export function VoltbikeLanding() {
             ))}
           </div>
 
-          <div className="container mx-auto px-6 pb-10">
-            <div className="text-white/50 text-xs">
-              Tip: su desktop passa il mouse sulle card per un tilt 3D. Su mobile, scorri orizzontalmente.
-            </div>
-          </div>
         </div>
 
         {repairsLightbox && (
