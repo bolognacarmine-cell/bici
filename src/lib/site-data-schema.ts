@@ -65,6 +65,7 @@ const PromotionSchema = z
         })
       )
       .optional(),
+    price: z.string().optional(),
     priceEur: z.number().positive().optional(),
     offerActive: z.boolean().optional(),
     offerPriceEur: z.number().positive().optional(),

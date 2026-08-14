@@ -262,8 +262,9 @@ export default function AdminClientPage() {
       return
     }
 
-    const price = parsePriceEur(createPriceInput)
-    if (price === null) {
+    const priceRaw = createPriceInput.trim()
+    const price = priceRaw ? parsePriceEur(priceRaw) : null
+    if (priceRaw && price === null) {
       setCreateStatus('Prezzo non valido.')
       return
     }
@@ -292,7 +293,7 @@ export default function AdminClientPage() {
           ...x.uploaded,
           sort_order: i,
         })),
-      }
+      } as any
 
       const res = await fetch(`${apiBase}/api/promotions`, {
         method: 'POST',
@@ -315,7 +316,7 @@ export default function AdminClientPage() {
         description: createDescription.trim(),
         image: firstUrl,
         images: images.map((x) => ({ url: x.uploaded!.secure_url, alt: title })),
-        priceEur: price,
+        ...(typeof price === 'number' ? { priceEur: price } : {}),
         offerActive: false,
         showOnHome: true,
       } satisfies Promotion
@@ -975,7 +976,7 @@ export default function AdminClientPage() {
                       if (typeof n === 'number') setCreatePriceInput(euro.format(n))
                     }}
                     className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
-                    placeholder="Es. 12500,00 €"
+                    placeholder="Lascia vuoto se la promozione non ha prezzo"
                     inputMode="decimal"
                   />
                 </div>
@@ -1262,7 +1263,7 @@ export default function AdminClientPage() {
                                             value={promoEditPriceInput}
                                             onChange={(e) => setPromoEditPriceInput(e.target.value)}
                                             className="w-full px-3 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100"
-                                            placeholder="Es. 12500,00 €"
+                                            placeholder="Lascia vuoto se la promozione non ha prezzo"
                                             inputMode="decimal"
                                           />
                                         </div>
@@ -1432,12 +1433,14 @@ export default function AdminClientPage() {
                                             <div className="font-semibold text-zinc-100">{promo.productSku}</div>
                                           </div>
                                         ) : null}
-                                        {typeof promo.priceEur === 'number' ? (
-                                          <div>
-                                            <div className="text-xs font-bold text-zinc-400 uppercase">Prezzo</div>
+                                        <div>
+                                          <div className="text-xs font-bold text-zinc-400 uppercase">Prezzo</div>
+                                          {typeof promo.priceEur === 'number' ? (
                                             <div className="font-semibold text-zinc-100">{euro.format(promo.priceEur)}</div>
-                                          </div>
-                                        ) : null}
+                                          ) : (
+                                            <div className="font-semibold text-zinc-500 italic">Prezzo da definire</div>
+                                          )}
+                                        </div>
                                         {promo.offerActive && typeof promo.offerPriceEur === 'number' ? (
                                           <div>
                                             <div className="text-xs font-bold text-zinc-400 uppercase">Prezzo offerta</div>

@@ -15,17 +15,24 @@ function toSafeErrorMessage(err: unknown) {
   return 'Errore interno.'
 }
 
-function parsePriceEur(input: unknown) {
-  if (input === null || input === undefined || input === '') return null
-  if (typeof input === 'number') {
-    if (!Number.isFinite(input)) return null
-    return Math.round(input * 100) / 100
+function parsePriceEurStrict(input: unknown): { ok: boolean; value: number | null } {
+  if (input === null || input === undefined || (typeof input === 'string' && input.trim() === '')) {
+    return { ok: true, value: null }
   }
-  const raw = String(input).trim()
-  const normalized = raw.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '')
-  const n = Number.parseFloat(normalized)
-  if (!Number.isFinite(n)) return null
-  return Math.round(n * 100) / 100
+  let n: number
+  if (typeof input === 'number') {
+    if (!Number.isFinite(input)) return { ok: false, value: null }
+    n = input
+  } else {
+    const raw = String(input).trim()
+    const normalized = raw.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '')
+    if (!normalized) return { ok: false, value: null }
+    const parsed = Number.parseFloat(normalized)
+    if (!Number.isFinite(parsed)) return { ok: false, value: null }
+    n = parsed
+  }
+  if (!(n > 0)) return { ok: false, value: null }
+  return { ok: true, value: Math.round(n * 100) / 100 }
 }
 
 export async function GET() {
@@ -46,8 +53,9 @@ export async function POST(req: Request) {
     if (!title) return NextResponse.json({ success: false, error: 'Titolo obbligatorio.' }, { status: 400 })
 
     const description = String((body as any).description ?? '').trim() || null
-    const priceEur = parsePriceEur((body as any).price_eur ?? (body as any).priceEur)
-    if (priceEur === null) return NextResponse.json({ success: false, error: 'Prezzo non valido.' }, { status: 400 })
+    const priceParseResult = parsePriceEurStrict((body as any).price_eur ?? (body as any).priceEur)
+    if (!priceParseResult.ok) return NextResponse.json({ success: false, error: 'Prezzo non valido.' }, { status: 400 })
+    const priceEur = priceParseResult.value
     const isActive = Boolean((body as any).is_active ?? (body as any).isActive ?? true)
 
     const images = Array.isArray((body as any).images) ? ((body as any).images as any[]) : []

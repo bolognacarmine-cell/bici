@@ -490,11 +490,16 @@ export function VoltbikeLanding() {
                       {p.title || 'Promozione'}
                     </div>
                     {(() => {
-                      const price = typeof (p as any).priceEur === 'number' ? euro.format(Number((p as any).priceEur)) : null
+                      const price =
+                        typeof (p as any).priceEur === 'number'
+                          ? euro.format(Number((p as any).priceEur))
+                          : (p as any).price
+                            ? String((p as any).price)
+                            : null
                       const offerActive = Boolean((p as any).offerActive)
                       const offerPrice =
                         typeof (p as any).offerPriceEur === 'number' ? euro.format(Number((p as any).offerPriceEur)) : null
-                      if (!price && !offerPrice) return null
+                      const hasAnyPrice = Boolean(price || offerPrice)
                       return (
                         <div className="mt-4 flex items-center gap-3">
                           {offerActive && offerPrice ? (
@@ -504,9 +509,13 @@ export function VoltbikeLanding() {
                                 {offerPrice}
                               </div>
                             </>
-                          ) : (
+                          ) : hasAnyPrice ? (
                             <div className="px-3 py-2 rounded-2xl bg-white/5 border border-white/10 text-white font-extrabold">
                               {price ?? offerPrice}
+                            </div>
+                          ) : (
+                            <div className="px-3 py-2 rounded-2xl bg-white/4 border border-white/10 text-white/55 italic font-semibold">
+                              Prezzo da definire
                             </div>
                           )}
                         </div>

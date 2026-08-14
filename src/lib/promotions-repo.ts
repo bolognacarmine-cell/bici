@@ -17,7 +17,7 @@ export type PromotionRecord = {
   id: string
   title: string
   description: string | null
-  price_eur: number
+  price_eur: number | null
   is_active: boolean
   created_at: string
   updated_at: string
