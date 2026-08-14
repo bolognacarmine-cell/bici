@@ -137,9 +137,9 @@ const ProductSchema = z
     slug: z.string().optional(),
 
     price: z.string().optional(),
-    priceEur: z.number().positive().optional(),
+    priceEur: z.number().nonnegative().optional(),
     salePrice: z.string().optional(),
-    salePriceEur: z.number().positive().optional(),
+    salePriceEur: z.number().nonnegative().optional(),
 
     description: z.string().optional(),
     fullDescription: z.string().optional(),
@@ -170,30 +170,49 @@ const ProductSchema = z
   .passthrough()
   .superRefine((val, ctx) => {
     const priceFromString = Number.parseFloat(String(val.price ?? '').replace(',', '.'))
-    const resolvedPrice =
-      typeof val.priceEur === 'number' ? val.priceEur : Number.isFinite(priceFromString) ? priceFromString : Number.NaN
-    if (!Number.isFinite(resolvedPrice) || resolvedPrice <= 0) {
+    const resolvedPrice: number | null =
+      typeof val.priceEur === 'number'
+        ? val.priceEur
+        : val.price && String(val.price).trim() !== '' && Number.isFinite(priceFromString)
+          ? priceFromString
+          : null
+    const hasExplicitPrice = typeof val.priceEur === 'number' || (val.price != null && String(val.price).trim() !== '')
+    if (hasExplicitPrice && resolvedPrice === null) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['priceEur'],
-        message: 'Il prezzo deve essere maggiore di zero.',
+        message: 'Se il prezzo è indicato, deve essere un numero valido.',
+      })
+    } else if (hasExplicitPrice && resolvedPrice !== null && resolvedPrice < 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['priceEur'],
+        message: 'Il prezzo non può essere negativo.',
       })
     }
     const saleFromString = Number.parseFloat(String(val.salePrice ?? '').replace(',', '.'))
-    const resolvedSale =
+    const resolvedSale: number | null =
       typeof val.salePriceEur === 'number'
         ? val.salePriceEur
-        : Number.isFinite(saleFromString)
+        : val.salePrice && String(val.salePrice).trim() !== '' && Number.isFinite(saleFromString)
           ? saleFromString
-          : Number.NaN
-    if (val.salePrice || typeof val.salePriceEur === 'number') {
-      if (!Number.isFinite(resolvedSale) || resolvedSale <= 0) {
+          : null
+    const hasExplicitSale =
+      typeof val.salePriceEur === 'number' || (val.salePrice != null && String(val.salePrice).trim() !== '')
+    if (hasExplicitSale) {
+      if (resolvedSale === null) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['salePriceEur'],
-          message: 'Il prezzo scontato deve essere maggiore di zero.',
+          message: 'Se il prezzo scontato è indicato, deve essere un numero valido.',
         })
-      } else if (Number.isFinite(resolvedPrice) && resolvedSale > resolvedPrice) {
+      } else if (resolvedSale < 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['salePriceEur'],
+          message: 'Il prezzo scontato non può essere negativo.',
+        })
+      } else if (resolvedPrice !== null && resolvedSale > resolvedPrice) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['salePriceEur'],

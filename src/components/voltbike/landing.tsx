@@ -130,9 +130,7 @@ export function VoltbikeLanding() {
     if (category === 'spare_part') {
       const sizes = Array.isArray(p?.sizes) ? (p.sizes as Array<any>).map(String).map((s) => s.trim()).filter(Boolean) : []
       const hasSizes = sizes.length > 0
-      const priceEur = typeof p?.priceEur === 'number' ? p.priceEur : Number.NaN
-      const hasPriceEur = Number.isFinite(priceEur) && priceEur > 0
-      return hasSizes && hasPriceEur
+      return hasSizes
     }
 
     return true
@@ -634,7 +632,13 @@ export function VoltbikeLanding() {
                           : (p as any).salePrice
                             ? String((p as any).salePrice)
                             : null
-                      if (!base && !sale) return null
+                      if (!base && !sale) {
+                        return (
+                          <div className="text-right text-white/45 text-sm italic font-semibold px-3 py-1 rounded-full border border-white/5 bg-white/3">
+                            Prezzo da definire
+                          </div>
+                        )
+                      }
                       return sale ? (
                         <div className="text-right">
                           {base && <div className="text-white/45 text-xs line-through font-semibold">{base}</div>}

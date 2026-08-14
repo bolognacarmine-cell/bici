@@ -1808,6 +1808,7 @@ export default function AdminClientPage() {
                           onChange={(e) =>
                             updateProduct(idx, 'priceEur', e.target.value === '' ? undefined : Number(e.target.value))
                           }
+                          placeholder="Lascia vuoto se il prodotto non ha prezzo"
                           disabled={saving || productEditIndex !== idx}
                           className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none font-extrabold bg-black/30 text-zinc-100 placeholder-zinc-500 focus:ring-2 focus:ring-emerald-500/40"
                         />
@@ -1821,6 +1822,7 @@ export default function AdminClientPage() {
                           onChange={(e) =>
                             updateProduct(idx, 'salePriceEur', e.target.value === '' ? undefined : Number(e.target.value))
                           }
+                          placeholder="Lascia vuoto se non c'è offerta"
                           disabled={saving || productEditIndex !== idx}
                           className="w-full px-4 py-3 border border-white/10 rounded-2xl outline-none bg-black/30 text-zinc-100 placeholder-zinc-500"
                         />

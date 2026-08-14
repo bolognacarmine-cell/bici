@@ -231,11 +231,11 @@ export default async function ProdottoPage({ params }: { params: Promise<{ slug:
   const price =
     typeof (product as any).priceEur === 'number'
       ? euro.format(Number((product as any).priceEur))
-      : String((product as any).price || '').trim()
+      : String((product as any).price || '').trim() || null
   const salePrice =
     typeof (product as any).salePriceEur === 'number'
       ? euro.format(Number((product as any).salePriceEur))
-      : String((product as any).salePrice || '').trim()
+      : String((product as any).salePrice || '').trim() || null
   const description = String(product.fullDescription || product.description || '').trim()
   const sizes = Array.isArray((product as any).sizes) ? ((product as any).sizes as string[]).map(String).filter(Boolean) : []
   const ebike =
@@ -299,9 +299,13 @@ export default async function ProdottoPage({ params }: { params: Promise<{ slug:
               <div className="rounded-2xl bg-white/4 border border-white/10 p-5">
                 <div className="text-white/60 text-xs tracking-widest uppercase font-semibold">Prezzo</div>
                 <div className="mt-3 flex items-baseline gap-2">
-                  <div className={salePrice ? 'text-white/55 text-lg font-bold line-through' : 'text-white text-3xl font-extrabold'}>
-                    {price || '—'}
-                  </div>
+                  {price || salePrice ? (
+                    <div className={salePrice ? 'text-white/55 text-lg font-bold line-through' : 'text-white text-3xl font-extrabold'}>
+                      {price || '—'}
+                    </div>
+                  ) : (
+                    <div className="text-white/50 text-xl font-extrabold italic">Prezzo da definire</div>
+                  )}
                 </div>
                 {salePrice && (
                   <div className="mt-3">
